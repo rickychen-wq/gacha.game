@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>Solo_Leveling_System_v4</title>
+    <title>Solo_Leveling_System_v5</title>
     <style>
         /* --- 基礎特效保留 --- */
         body {
@@ -18,7 +18,8 @@
 
         /* --- 左側導覽列 --- */
         .sidebar {
-            width: 220px;
+            width: 200px;
+            min-width: 200px;
             background: rgba(15, 15, 15, 0.95);
             border-right: 2px solid #333;
             display: flex;
@@ -50,23 +51,25 @@
             background: rgba(0, 255, 204, 0.1);
         }
 
-        /* --- 右側主區域 --- */
+        /* --- 右側主區域 (修正超出框框) --- */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             padding: 20px;
             overflow-y: auto;
+            max-width: calc(100vw - 220px);
         }
 
         .container {
-            width: 100%;
+            width: 95%;
             background: rgba(10, 10, 10, 0.9);
             padding: 25px;
             border: 2px solid #333;
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
             position: relative;
             animation: rgb-glow 8s linear infinite;
+            margin: 0 auto;
         }
 
         @keyframes rgb-glow {
@@ -100,7 +103,7 @@
         }
 
         .display-area {
-            min-height: 350px;
+            min-height: 300px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -114,14 +117,14 @@
 
         /* --- 卡片與稀有度特效 --- */
         .card {
-            width: 140px; height: 210px; background: #111; border: 2px solid #444;
+            width: 130px; height: 190px; background: #111; border: 2px solid #444;
             display: flex; flex-direction: column; align-items: center; transition: 0.3s;
         }
-        .card img { width: 100%; height: 165px; object-fit: cover; }
+        .card img { width: 100%; height: 145px; object-fit: cover; }
         .card .card-rank { 
             width: 100%; height: 45px; 
             display: flex; justify-content: center; align-items: center; 
-            font-weight: bold; font-size: 14px; 
+            font-weight: bold; font-size: 13px; 
             background: rgba(0,0,0,0.9); text-align: center; 
         }
 
@@ -135,16 +138,16 @@
 
         /* --- 背包統計 --- */
         .stats-panel { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); 
+            display: flex;
+            justify-content: space-around;
             gap: 10px; margin-bottom: 20px; padding: 15px; 
             background: rgba(0, 255, 204, 0.05); 
             border: 1px solid #333; 
+            flex-wrap: wrap;
         }
-        .stat-item { text-align: center; font-size: 11px; border-right: 1px solid #222; }
-        .stat-item:last-child { border-right: none; }
-        .stat-label { color: #555; display: block; margin-bottom: 5px; }
-        .stat-val { display: block; font-size: 20px; font-weight: bold; color: #00ffcc; }
+        .stat-item { text-align: center; min-width: 60px; }
+        .stat-label { color: #555; display: block; margin-bottom: 5px; font-size: 11px; }
+        .stat-val { display: block; font-size: 18px; font-weight: bold; color: #00ffcc; }
 
         .button-group { display: flex; gap: 15px; }
         .btn { background: transparent; color: #00ffcc; border: 1px solid #00ffcc; padding: 12px 25px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; }
@@ -218,9 +221,6 @@
         let currentUserDocRef = null;
         let currentPoolId = 'frieren';
 
-        // ==========================================
-        // 🛠️ 卡池設定 (已移除「獵人」字樣)
-        // ==========================================
         const pools = {
             'frieren': {
                 title: ">_ DUNGEON: FRIEREN",
@@ -266,8 +266,6 @@
             }
         };
 
-        // --- 功能邏輯 ---
-
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const realId = user.email.split('@')[0];
@@ -280,7 +278,7 @@
         });
 
         function createCardHTML(card) {
-            return `<div class="card ${card.class}"><img src="${card.img}" onerror="this.src='https://via.placeholder.com/140x165/111/00ffcc?text=No_Image'"><div class="card-rank">${card.name}</div></div>`;
+            return `<div class="card ${card.class}"><img src="${card.img}" onerror="this.src='https://via.placeholder.com/130x145/111/00ffcc?text=No_Image'"><div class="card-rank">${card.name}</div></div>`;
         }
 
         async function performGacha(times) {
@@ -297,7 +295,7 @@
                 resultsIds.push(picked.id);
                 drawArea.innerHTML += createCardHTML(picked);
             }
-            try { await updateDoc(currentUserDocRef, { inventory: arrayUnion(...resultsIds) }); sysMessage.innerText = `[系統] 召喚成功。${times} 位成員已就位。`; } catch (e) { sysMessage.innerText = "[系統] 召喚失敗。"; }
+            try { await updateDoc(currentUserDocRef, { inventory: arrayUnion(...resultsIds) }); sysMessage.innerText = `[成功] 召喚成功。${times} 位成員已加入軍團。`; } catch (e) { sysMessage.innerText = "[系統] 召喚失敗。"; }
         }
 
         async function loadBackpack() {
@@ -305,31 +303,32 @@
             const statsPanel = document.getElementById('army-stats');
             const sysMessage = document.getElementById('sys-message');
             inventoryArea.innerHTML = '';
-            sysMessage.innerText = "正在讀取全球軍團檔案...";
+            sysMessage.innerText = "讀取全球軍團檔案中...";
 
             try {
                 const docSnap = await getDoc(currentUserDocRef);
                 if (docSnap.exists()) {
                     const inv = docSnap.data().inventory || [];
-                    const allCards = Object.values(pools).flatMap(p => p.cards);
+                    const allPoolCards = Object.values(pools).flatMap(p => p.cards);
                     
-                    // --- 修正後的統計引擎 ---
                     const countMap = { "f":0, "e":0, "d":0, "c":0, "b":0, "a":0, "s":0, "ss":0, "sss":0 };
                     
                     inv.forEach(id => {
-                        // 這裡用正則表達式或拆分字串來抓取等級 (例如 f_s 抓最後一個字母 s)
-                        const rankKey = id.split('_').pop(); 
-                        if (countMap.hasOwnProperty(rankKey)) {
-                            countMap[rankKey]++;
+                        // 1. 修正顯示：從全卡池找正確資料
+                        const cardData = allPoolCards.find(c => c.id === id);
+                        if (cardData) {
+                            inventoryArea.innerHTML += createCardHTML(cardData);
+                            // 2. 修正統計：累加數量
+                            const rankKey = id.split('_').pop();
+                            if (countMap.hasOwnProperty(rankKey)) {
+                                countMap[rankKey] += 1;
+                            }
                         }
-                        
-                        const data = allCards.find(c => c.id === id) || allCards[0];
-                        inventoryArea.innerHTML += createCardHTML(data);
                     });
 
-                    // 渲染統計面板 (隱藏數量為 0 的 SSS)
+                    // 3. 渲染修正後的統計數據
                     statsPanel.innerHTML = Object.keys(countMap).map(key => {
-                        if (key === 'sss' && countMap[key] === 0) return ''; 
+                        if (key === 'sss' && countMap[key] === 0) return '';
                         return `
                             <div class="stat-item">
                                 <span class="stat-label">${key.toUpperCase()}級</span>
@@ -340,10 +339,9 @@
 
                     sysMessage.innerText = `[成功] 全球軍團規模：${inv.length} 人。`;
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { sysMessage.innerText = "[錯誤] 無法連結資料庫。"; }
         }
 
-        // --- 切換卡池 ---
         document.querySelectorAll('.pool-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.pool-btn').forEach(b => b.classList.remove('active'));
@@ -352,7 +350,6 @@
                 document.getElementById('system-title').innerText = pools[currentPoolId].title;
                 document.getElementById('draw-area').innerHTML = `<p style="color: #333;">[已切換至 ${btn.innerText} 區]</p>`;
                 document.getElementById('sys-message').innerText = "系統就緒。";
-                
                 document.getElementById('backpack-view').classList.add('hidden');
                 document.getElementById('gacha-view').classList.remove('hidden');
             });
