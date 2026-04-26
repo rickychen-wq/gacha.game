@@ -2,73 +2,272 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>Solo_Leveling_System_v6_Stacking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo_Leveling_System_PRO_MAX_ULTIMATE</title>
     <style>
-        /* --- 核心版面鎖死 (防噴出牆) --- */
-        * { box-sizing: border-box; }
+        /* ==========================================================================
+           [1] 系統全域設定與底層鎖死 (絕對防破版)
+           ========================================================================== */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
         body { 
-            background-color: #050505; color: #00ffcc; 
+            background-color: #050505; 
+            /* 科技感網格背景 (Pro 級細節) */
+            background-image: 
+                linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #00ffcc; 
             font-family: 'Courier New', Courier, monospace; 
-            display: flex; flex-direction: row; margin: 0; 
-            height: 100vh; width: 100vw; overflow: hidden; 
+            display: flex; 
+            flex-direction: row; 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; /* 全域禁止滾動，封印所有破版可能 */
+            user-select: none;
         }
 
-        /* --- 左側選單 --- */
+        /* ==========================================================================
+           [2] 左側終端機導覽列 (Gradient Sidebar)
+           ========================================================================== */
         .sidebar { 
-            width: 220px; min-width: 220px; background: #0a0a0a; 
-            border-right: 2px solid #333; display: flex; flex-direction: column; 
-            padding: 20px; gap: 10px; z-index: 10; 
+            width: 240px; 
+            min-width: 240px; 
+            background: linear-gradient(180deg, rgba(15,15,15,0.95) 0%, rgba(0,0,0,1) 100%); 
+            border-right: 2px solid #222; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 30px 20px; 
+            gap: 15px; 
+            box-shadow: 10px 0 20px rgba(0,0,0,0.8);
+            z-index: 10;
         }
-        .pool-btn { background: transparent; color: #555; border: 1px solid #222; padding: 15px; text-align: left; cursor: pointer; transition: 0.3s; font-weight: bold; }
-        .pool-btn.active { border-color: #00ffcc; color: #00ffcc; background: rgba(0, 255, 204, 0.1); }
 
-        /* --- 右側區域 (捲軸只在內部) --- */
+        .sidebar-title { 
+            font-size: 15px; 
+            color: #00ffcc; 
+            margin-bottom: 25px; 
+            padding-left: 12px; 
+            letter-spacing: 4px; 
+            border-left: 4px solid #ff0055; 
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        .pool-btn { 
+            background: rgba(255, 255, 255, 0.02); 
+            color: #777; 
+            border: 1px solid #333; 
+            padding: 18px 15px; 
+            text-align: left; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pool-btn:hover { 
+            border-color: #00ffcc; 
+            color: #fff; 
+            background: rgba(0, 255, 204, 0.05); 
+            transform: translateX(5px); /* 懸停時微動效 */
+        }
+
+        .pool-btn.active { 
+            border-color: #00ffcc; 
+            color: #00ffcc; 
+            background: rgba(0, 255, 204, 0.15); 
+            box-shadow: inset 0 0 15px rgba(0, 255, 204, 0.2), 0 0 15px rgba(0, 255, 204, 0.2); 
+            transform: translateX(5px);
+        }
+
+        /* ==========================================================================
+           [3] 右側主控制區與 RGB 呼吸燈容器
+           ========================================================================== */
         .main-content { 
-            flex: 1; height: 100vh; overflow-y: auto; overflow-x: hidden; 
-            padding: 20px; background: radial-gradient(circle at center, #111 0%, #000 100%); 
-            display: flex; justify-content: center; 
+            flex: 1; 
+            height: 100vh; 
+            overflow-y: auto; /* 內容過多時允許垂直滾動 */
+            overflow-x: hidden; /* 絕對禁止水平滾動 */
+            padding: 40px; 
+            background: radial-gradient(circle at center, rgba(20,20,20,0.8) 0%, rgba(0,0,0,0.9) 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start;
         }
-        .container { width: 100%; max-width: 1050px; background: rgba(10, 10, 10, 0.9); padding: 25px; border: 1px solid #333; }
 
-        /* --- 召喚動畫層 (原神感) --- */
+        .container { 
+            width: 100%; 
+            max-width: 1200px; 
+            background: rgba(5, 5, 5, 0.95); 
+            padding: 35px; 
+            border: 2px solid #333; 
+            box-shadow: 0 0 40px rgba(0, 0, 0, 1);
+            position: relative; 
+            animation: rgb-glow 8s linear infinite; /* RGB 信仰之光 */
+        }
+
+        @keyframes rgb-glow { 
+            0% { border-color: #ff0055; box-shadow: 0 0 20px rgba(255,0,85,0.2); } 
+            33% { border-color: #00ffcc; box-shadow: 0 0 20px rgba(0,255,204,0.2); } 
+            66% { border-color: #aa00ff; box-shadow: 0 0 20px rgba(170,0,255,0.2); } 
+            100% { border-color: #ff0055; box-shadow: 0 0 20px rgba(255,0,85,0.2); } 
+        }
+
+        /* 標題與頂部資訊列 */
+        h2 { 
+            border-bottom: 2px solid #222; 
+            padding-bottom: 20px; 
+            margin-bottom: 20px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-size: 24px;
+        }
+
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .user-info { color: #ff0055; font-size: 14px; font-weight: bold; background: rgba(255,0,85,0.1); padding: 8px 15px; border-radius: 4px; }
+        .logout-link { color: #666; font-size: 12px; cursor: pointer; transition: 0.3s; border-bottom: 1px dashed #666; }
+        .logout-link:hover { color: #ff0055; border-bottom-color: #ff0055; }
+
+        #sys-message { color: #00ffcc; margin-bottom: 25px; font-size: 15px; font-weight: bold; height: 20px; }
+
+        /* ==========================================================================
+           [4] 原神級全螢幕召喚動畫 (Gacha Overlay)
+           ========================================================================== */
         #gacha-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; z-index: 999; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.5s;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+            z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.6s ease-in-out;
         }
         #gacha-overlay.active { opacity: 1; pointer-events: auto; }
-        .summon-beam { width: 5px; height: 100vh; position: absolute; top: -100vh; animation: beam-drop 0.8s ease-in forwards; box-shadow: 0 0 20px #00ffcc; background: #00ffcc; }
-        .rare-gold { background: #ffd700; box-shadow: 0 0 40px #ffd700; }
-        @keyframes beam-drop { 0% { top: -100vh; } 100% { top: 100vh; } }
-
-        /* --- 卡片設計 --- */
-        .display-area { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; padding: 20px; background: #000; }
-        .card { 
-            width: 135px; height: 200px; background: #111; border: 2px solid #333; 
-            position: relative; overflow: hidden; display: flex; flex-direction: column; 
-        }
-        .card img { width: 100%; height: 155px; object-fit: cover; }
-        .card .card-rank { flex: 1; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; background: #050505; }
         
-        /* 重複數量標記 (xN) */
-        .card-count {
-            position: absolute; top: 5px; right: 5px;
-            background: rgba(255, 0, 85, 0.8); color: white;
-            padding: 2px 8px; font-size: 12px; font-weight: bold; border-radius: 10px;
-            box-shadow: 0 0 5px #000; z-index: 5;
+        /* 墜落光束 */
+        .summon-beam { 
+            width: 8px; height: 100vh; position: absolute; top: -100vh; 
+            animation: beam-drop 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+            box-shadow: 0 0 30px #00ffcc, 0 0 60px #00ffcc; background: #00ffcc; 
+        }
+        .rare-gold { 
+            background: #ffd700; 
+            box-shadow: 0 0 40px #ffd700, 0 0 80px #ffd700, 0 0 120px #ffd700; 
+        }
+        @keyframes beam-drop { 
+            0% { top: -100vh; opacity: 1; } 
+            80% { top: 50vh; opacity: 1; height: 50vh; }
+            100% { top: 100vh; opacity: 0; height: 0; } 
+        }
+        
+        /* 畫面震動 */
+        .shake-effect { animation: shake 0.5s; }
+        @keyframes shake { 
+            0% { transform: translate(2px, 2px) rotate(0deg); } 
+            20% { transform: translate(-4px, 0px) rotate(1deg); } 
+            40% { transform: translate(4px, 3px) rotate(0deg); } 
+            60% { transform: translate(-4px, 2px) rotate(-1deg); }
+            80% { transform: translate(-2px, -2px) rotate(1deg); }
+            100% { transform: translate(0, 0) rotate(0deg); } 
         }
 
-        .rank-s { border-color: #ff0055; box-shadow: 0 0 10px #ff0055; }
-        .rank-ss { border-color: #ffd700; box-shadow: 0 0 15px #ffd700; }
-        .rank-sss { border-color: #fff; box-shadow: 0 0 25px #fff; }
+        /* ==========================================================================
+           [5] 卡片展示區與堆疊設計 (Stacking System)
+           ========================================================================== */
+        .display-area { 
+            min-height: 450px; 
+            display: flex; 
+            justify-content: center; 
+            align-content: flex-start; /* 滿了自動往下排 */
+            flex-wrap: wrap; 
+            gap: 20px; 
+            background: rgba(0,0,0,0.6); 
+            padding: 30px; 
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+        }
 
-        /* --- 統計面板 --- */
-        .stats-panel { display: flex; flex-wrap: wrap; justify-content: space-around; gap: 10px; margin-bottom: 20px; padding: 15px; background: rgba(0, 255, 204, 0.05); border: 1px solid #222; }
-        .stat-item { text-align: center; min-width: 65px; }
-        .stat-val { font-size: 18px; font-weight: bold; color: #ff0055; display: block; }
+        .card { 
+            width: 150px; height: 220px; background: #000; border: 2px solid #333; 
+            position: relative; overflow: hidden; display: flex; flex-direction: column; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+        }
+        
+        /* 抽出動畫延遲揭曉 */
+        .reveal-card {
+            transform: scale(0); opacity: 0;
+            animation: card-pop 0.6s forwards;
+        }
+        @keyframes card-pop { to { transform: scale(1); opacity: 1; } }
 
-        .btn { background: transparent; color: #00ffcc; border: 1px solid #00ffcc; padding: 12px 25px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn:hover { background: #00ffcc; color: #000; }
+        .card:hover { transform: scale(1.08) translateY(-10px); z-index: 10; border-color: #fff; box-shadow: 0 15px 30px rgba(0,0,0,1); }
+        .card img { width: 100%; height: 170px; object-fit: cover; filter: brightness(0.8); transition: 0.3s; }
+        .card:hover img { filter: brightness(1.1); }
+        
+        /* 卡片底部稀有度條 */
+        .card .card-rank { 
+            width: 100%; height: 50px; display: flex; justify-content: center; 
+            align-items: center; font-weight: bold; font-size: 15px; 
+            background: #0a0a0a; text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        /* 堆疊數量徽章 (xN) */
+        .card-count {
+            position: absolute; top: 8px; right: 8px;
+            background: linear-gradient(135deg, #ff0055 0%, #aa00ff 100%);
+            color: white; padding: 4px 12px; font-size: 13px; font-weight: bold; 
+            border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.8); 
+            z-index: 5; border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        /* 稀有度發光邊框系統 */
+        .rank-f, .rank-e, .rank-d, .rank-c { border-color: #333; color: #888; }
+        .rank-b, .rank-a { border-color: #aa00ff; color: #d480ff; box-shadow: 0 0 15px rgba(170, 0, 255, 0.3); }
+        .rank-s { border-color: #ff0055; color: #ff80aa; box-shadow: 0 0 25px rgba(255, 0, 85, 0.5); }
+        .rank-ss { border-color: #ffd700; color: #ffe680; box-shadow: 0 0 35px rgba(255, 215, 0, 0.7); }
+        .rank-sss { border-color: #fff; color: #fff; box-shadow: 0 0 45px #fff, inset 0 0 20px #fff; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 60px #fff; } 100% { opacity: 0.8; } }
+
+        /* ==========================================================================
+           [6] 統計面板與互動按鈕
+           ========================================================================== */
+        .stats-panel { 
+            display: flex; justify-content: space-around; flex-wrap: wrap; 
+            gap: 15px; margin-bottom: 30px; padding: 25px; 
+            background: rgba(0, 255, 204, 0.03); border: 1px solid #222; 
+            border-radius: 8px;
+        }
+        .stat-item { text-align: center; min-width: 80px; position: relative; }
+        .stat-item:not(:last-child)::after {
+            content: ''; position: absolute; right: -10px; top: 10%; height: 80%; width: 1px; background: #333;
+        }
+        .stat-label { color: #666; font-size: 11px; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .stat-val { font-size: 26px; font-weight: bold; color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.3);}
+
+        .button-group { display: flex; gap: 20px; justify-content: center; margin-top: 30px; }
+        .btn { 
+            background: rgba(0,0,0,0.5); color: #00ffcc; border: 1px solid #00ffcc; 
+            padding: 16px 40px; cursor: pointer; font-size: 15px; font-weight: bold; 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            text-transform: uppercase; letter-spacing: 2px; position: relative; overflow: hidden;
+        }
+        .btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,255,204,0.4), transparent);
+            transition: 0.5s;
+        }
+        .btn:hover::before { left: 100%; }
+        .btn:hover { background: #00ffcc; color: #000; box-shadow: 0 0 25px rgba(0,255,204,0.6); transform: translateY(-2px); }
+        
+        .btn-purple { border-color: #aa00ff; color: #aa00ff; }
+        .btn-purple::before { background: linear-gradient(90deg, transparent, rgba(170,0,255,0.4), transparent); }
+        .btn-purple:hover { background: #aa00ff; color: #fff; box-shadow: 0 0 25px rgba(170,0,255,0.6); }
+
         .hidden { display: none !important; }
     </style>
 </head>
@@ -76,49 +275,63 @@
 
     <div id="gacha-overlay">
         <div id="beam-container"></div>
-        <div id="reveal-area" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;"></div>
-        <button class="btn" id="btn-close-reveal" style="margin-top: 40px;">[ 點擊繼續 ]</button>
+        <div id="reveal-area" style="display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; width: 80%; max-width: 1000px;"></div>
+        <button class="btn btn-purple" id="btn-close-reveal" style="margin-top: 60px; opacity: 0; animation: card-pop 0.5s forwards; animation-delay: 2s;">[ 點擊確認戰力 ]</button>
     </div>
 
     <div class="sidebar">
-        <div class="sidebar-title">SYSTEM_V6</div>
+        <div class="sidebar-title">SYSTEM_V6.5</div>
         <button class="pool-btn active" data-pool="frieren">葬送的芙莉蓮</button>
         <button class="pool-btn" data-pool="elite">實力至上教室</button>
         <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
+        
         <div style="margin-top: auto;">
-            <button class="btn" id="btn-go-backpack" style="width: 100%; border-color: #aa00ff; color: #aa00ff;">查看背包 (INV)</button>
+            <button class="btn btn-purple" id="btn-go-backpack" style="width: 100%; padding: 15px 0;">查看背包 (INV)</button>
         </div>
     </div>
 
     <div class="main-content">
-        <div class="container">
+        <div class="container" id="main-view">
+            
             <h2>
                 <span id="system-title">>_ DUNGEON: FRIEREN</span>
-                <span style="font-size: 12px; color: #ff0055;" id="player-id">ID: SYNCING...</span>
+                <span class="header-right">
+                    <span class="user-info" id="player-name">USER: CONNECTING...</span>
+                    <span class="logout-link" id="btn-logout">[SHUTDOWN]</span>
+                </span>
             </h2>
-            <div id="sys-message">系統就緒。</div>
-
+            
+            <div id="sys-message">系統連線穩定。等待召喚指令...</div>
+            
             <div id="gacha-view">
-                <div class="display-area" id="draw-area"></div>
-                <div style="margin-top: 20px; display: flex; gap: 15px;">
-                    <button class="btn" id="btn-draw-1">單次召喚</button>
-                    <button class="btn" id="btn-draw-5">五連召喚</button>
+                <div class="display-area" id="draw-area">
+                    <p style="color: #333; font-size: 18px; letter-spacing: 2px; align-self: center;">[ 系統待命中 ]</p>
+                </div>
+                <div class="button-group">
+                    <button class="btn" id="btn-draw-1">單次召喚 (1x)</button>
+                    <button class="btn" id="btn-draw-5">連續召喚 (5x)</button>
                 </div>
             </div>
 
             <div id="backpack-view" class="hidden">
-                <div class="stats-panel" id="army-stats"></div>
-                <div class="display-area" id="inventory-area"></div>
-                <button class="btn" id="btn-go-gacha" style="margin-top: 20px;"><< 返回</button>
+                <div class="stats-panel" id="army-stats">
+                    </div>
+                <div class="display-area" id="inventory-area">
+                    </div>
+                <div class="button-group">
+                    <button class="btn" id="btn-go-gacha"><< 返回終端大廳</button>
+                </div>
             </div>
+
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+        // 你的專屬 Firebase 金鑰
         const firebaseConfig = {
             apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
             authDomain: "my-gacha-game-f7663.firebaseapp.com",
@@ -134,121 +347,217 @@
         let currentUserDocRef = null;
         let currentPoolId = 'frieren';
 
+        // ---------------------------------------------------------
+        // 核心設定：各卡池等級圖片張數總覽
+        // ---------------------------------------------------------
         const poolSettings = {
             'frieren': { f:1, e:20, d:10, c:5, b:3, a:2, s:1, ss:1, sss:1 },
             'elite':   { f:1, e:10, d:5, c:5, b:3, a:2, s:1, ss:1, sss:1 },
             'jujutsu': { f:1, e:15, d:8, c:5, b:4, a:3, s:1, ss:1, sss:1 }
         };
 
+        // 核心設定：稀有度機率表 (總和必須為 1)
         const chances = [
             { r: 'f', p: 0.20 }, { r: 'e', p: 0.25 }, { r: 'd', p: 0.205 },
             { r: 'c', p: 0.17 }, { r: 'b', p: 0.13 }, { r: 'a', p: 0.025 },
             { r: 's', p: 0.015 }, { r: 'ss', p: 0.005 }, { r: 'sss', p: 0 }
         ];
 
+        // ---------------------------------------------------------
+        // 身分驗證與初始化
+        // ---------------------------------------------------------
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const id = user.email.split('@')[0];
                 currentUserDocRef = doc(db, "users", id);
-                document.getElementById('player-id').innerText = `USER: ${id}`;
-            } else { window.location.href = "index.html"; }
+                document.getElementById('player-name').innerText = `ID: ${id}`;
+            } else { 
+                window.location.href = "index.html"; // 未登入踢回大門
+            }
         });
 
-        function generateCard(pId) {
+        // ---------------------------------------------------------
+        // 工具函數：抽卡數學引擎
+        // ---------------------------------------------------------
+        function generateCardId(pId) {
             let rand = Math.random(), cum = 0, rank = 'f';
-            for (let c of chances) { cum += c.p; if (rand <= cum) { rank = c.r; break; } }
-            const num = Math.floor(Math.random() * poolSettings[pId][rank]) + 1;
+            for (let c of chances) { 
+                cum += c.p; 
+                if (rand <= cum) { rank = c.r; break; } 
+            }
+            const maxImages = poolSettings[pId][rank];
+            const num = Math.floor(Math.random() * maxImages) + 1;
             return `${pId}_${rank}_${num}`;
         }
 
-        function getCardHTML(fullId, count = 1) {
-            const [p, r, n] = fullId.split('_');
-            const countTag = count > 1 ? `<div class="card-count">x${count}</div>` : '';
-            return `<div class="card rank-${r}">
-                ${countTag}
-                <img src="images/${p}/${r}${n}.png" onerror="this.src='https://via.placeholder.com/130x145/000/00ffcc?text=DATA'">
-                <div class="card-rank">${r.toUpperCase()}</div>
+        // 工具函數：生成卡片 HTML (支援堆疊標籤)
+        function createCardHTML(fullId, count = 1, isReveal = false) {
+            const [pool, rank, num] = fullId.split('_');
+            const countBadge = count > 1 ? `<div class="card-count">x${count}</div>` : '';
+            const animDelay = isReveal ? `style="animation-delay: ${Math.random() * 0.5 + 0.5}s;"` : '';
+            const animClass = isReveal ? 'reveal-card' : '';
+            
+            return `
+            <div class="card rank-${rank} ${animClass}" ${animDelay}>
+                ${countBadge}
+                <img src="images/${pool}/${rank}${num}.png" onerror="this.src='https://via.placeholder.com/150x170/111/00ffcc?text=LOCKED'">
+                <div class="card-rank">${rank} 級</div>
             </div>`;
         }
 
+        // ---------------------------------------------------------
+        // 主邏輯：執行召喚 (含原神動畫特效)
+        // ---------------------------------------------------------
         async function performGacha(times) {
             const overlay = document.getElementById('gacha-overlay');
             const revealArea = document.getElementById('reveal-area');
             const beamContainer = document.getElementById('beam-container');
             const drawArea = document.getElementById('draw-area');
+            const sysMessage = document.getElementById('sys-message');
 
-            revealArea.innerHTML = ''; beamContainer.innerHTML = '';
+            // 1. 初始化動畫層
+            revealArea.innerHTML = ''; 
+            beamContainer.innerHTML = '';
             overlay.classList.add('active');
+            sysMessage.innerText = "警告：正在干涉空間因果律...";
 
             let results = [];
-            let isGold = false;
+            let isGold = false; // 是否抽出 S 級以上
+
+            // 2. 抽出卡片
             for(let i=0; i<times; i++) {
-                const id = generateCard(currentPoolId);
+                const id = generateCardId(currentPoolId);
                 results.push(id);
                 if (['s','ss','sss'].includes(id.split('_')[1])) isGold = true;
-                revealArea.innerHTML += getCardHTML(id);
+                
+                // 將卡片放入揭曉區 (帶有彈出動畫)
+                revealArea.innerHTML += createCardHTML(id, 1, true);
             }
 
+            // 3. 觸發光束與震動特效
             const beam = document.createElement('div');
             beam.className = `summon-beam ${isGold ? 'rare-gold' : ''}`;
             beamContainer.appendChild(beam);
 
-            await updateDoc(currentUserDocRef, { inventory: arrayUnion(...results) });
-            drawArea.innerHTML = results.map(id => getCardHTML(id)).join('');
+            if (isGold) {
+                document.getElementById('main-view').classList.add('shake-effect');
+                setTimeout(() => document.getElementById('main-view').classList.remove('shake-effect'), 500);
+            }
+
+            // 4. 寫入 Firebase 資料庫
+            try {
+                await updateDoc(currentUserDocRef, { inventory: arrayUnion(...results) });
+                sysMessage.innerText = `[成功] 召喚完畢，已將 ${times} 組戰力編入軍團。`;
+            } catch (error) {
+                sysMessage.innerText = `[錯誤] 資料庫同步失敗。`;
+            }
+
+            // 5. 同步顯示在大廳底圖 (無堆疊)
+            drawArea.innerHTML = results.map(id => createCardHTML(id)).join('');
         }
 
+        // ---------------------------------------------------------
+        // 主邏輯：讀取背包與精準統計
+        // ---------------------------------------------------------
         async function loadBackpack() {
             const invArea = document.getElementById('inventory-area');
             const statArea = document.getElementById('army-stats');
+            const sysMessage = document.getElementById('sys-message');
+            
             invArea.innerHTML = '';
-            const docSnap = await getDoc(currentUserDocRef);
-            if (docSnap.exists()) {
-                const inv = docSnap.data().inventory || [];
-                
-                // --- 核心邏輯：統計重複卡片 ---
-                const stackedInv = {}; // { 'frieren_e1': 5, 'elite_s1': 1 }
-                const rankCounts = { f:0, e:0, d:0, c:0, b:0, a:0, s:0, ss:0, sss:0 };
+            statArea.innerHTML = '';
+            sysMessage.innerText = "正在解密全球軍團檔案...";
 
-                inv.forEach(id => {
-                    stackedInv[id] = (stackedInv[id] || 0) + 1;
-                    const r = id.split('_')[1];
-                    if (rankCounts.hasOwnProperty(r)) rankCounts[r]++;
-                });
+            try {
+                const docSnap = await getDoc(currentUserDocRef);
+                if (docSnap.exists()) {
+                    const inv = docSnap.data().inventory || [];
+                    
+                    // 核心計數器
+                    const stackedInv = {}; // 記錄特定卡片重複數 { 'frieren_e1': 5 }
+                    const rankCounts = { f:0, e:0, d:0, c:0, b:0, a:0, s:0, ss:0, sss:0 }; // 記錄階級總數
+                    
+                    // 掃描背包
+                    inv.forEach(id => {
+                        stackedInv[id] = (stackedInv[id] || 0) + 1; // 堆疊同圖
+                        const rank = id.split('_')[1];
+                        if (rankCounts.hasOwnProperty(rank)) rankCounts[rank]++; // 累加階級
+                    });
 
-                // 渲染背包卡片
-                Object.keys(stackedInv).forEach(id => {
-                    invArea.innerHTML += getCardHTML(id, stackedInv[id]);
-                });
+                    // 渲染堆疊後的卡片 (會顯示 xN)
+                    Object.keys(stackedInv).forEach(id => {
+                        invArea.innerHTML += createCardHTML(id, stackedInv[id]);
+                    });
 
-                // 渲染統計文字
-                statArea.innerHTML = Object.keys(rankCounts).map(k => `
-                    <div class="stat-item"><span class="stat-label">${k.toUpperCase()}</span><span class="stat-val">${rankCounts[k]}</span></div>
-                `).join('');
+                    // 渲染統計面板 (隱藏數量為 0 的 SSS 級)
+                    statArea.innerHTML = Object.keys(rankCounts).map(rankKey => {
+                        if (rankKey === 'sss' && rankCounts[rankKey] === 0) return '';
+                        return `
+                        <div class="stat-item">
+                            <span class="stat-label">${rankKey} 級單元</span>
+                            <span class="stat-val">${rankCounts[rankKey]}</span>
+                        </div>`;
+                    }).join('');
+
+                    sysMessage.innerText = `[成功] 全球軍團總規模：${inv.length} 人。`;
+                }
+            } catch (error) {
+                sysMessage.innerText = "[錯誤] 無法連結暗影空間。";
             }
         }
 
-        document.getElementById('btn-close-reveal').addEventListener('click', () => document.getElementById('gacha-overlay').classList.remove('active'));
+        // ---------------------------------------------------------
+        // UI 事件綁定區
+        // ---------------------------------------------------------
+        
+        // 關閉動畫層
+        document.getElementById('btn-close-reveal').addEventListener('click', () => {
+            document.getElementById('gacha-overlay').classList.remove('active');
+        });
+
+        // 左側卡池切換
         document.querySelectorAll('.pool-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.pool-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentPoolId = btn.dataset.pool;
+                
+                // 更新標題與畫面
                 document.getElementById('system-title').innerText = `>_ DUNGEON: ${currentPoolId.toUpperCase()}`;
+                document.getElementById('draw-area').innerHTML = `<p style="color: #333; font-size: 18px; letter-spacing: 2px; align-self: center;">[ 系統切換至 ${btn.innerText} ]</p>`;
+                document.getElementById('sys-message').innerText = "卡池參數已重置。等待指令...";
+                
+                // 強制跳回抽卡大廳
                 document.getElementById('backpack-view').classList.add('hidden');
                 document.getElementById('gacha-view').classList.remove('hidden');
             });
         });
 
+        // 抽卡按鈕
         document.getElementById('btn-draw-1').addEventListener('click', () => performGacha(1));
         document.getElementById('btn-draw-5').addEventListener('click', () => performGacha(5));
+        
+        // 背包切換按鈕
         document.getElementById('btn-go-backpack').addEventListener('click', () => {
             document.getElementById('gacha-view').classList.add('hidden');
             document.getElementById('backpack-view').classList.remove('hidden');
+            document.getElementById('system-title').innerText = ">_ GLOBAL_INVENTORY_DATABASE";
             loadBackpack();
         });
+        
+        // 返回大廳按鈕
         document.getElementById('btn-go-gacha').addEventListener('click', () => {
             document.getElementById('backpack-view').classList.add('hidden');
             document.getElementById('gacha-view').classList.remove('hidden');
+            document.getElementById('system-title').innerText = `>_ DUNGEON: ${currentPoolId.toUpperCase()}`;
+            document.getElementById('sys-message').innerText = "系統已就緒。等待指令...";
+        });
+
+        // 登出按鈕
+        document.getElementById('btn-logout').addEventListener('click', () => { 
+            if(confirm("確定中斷神經連結並登出系統？")) {
+                signOut(auth).then(() => window.location.href = "index.html"); 
+            }
         });
     </script>
 </body>
