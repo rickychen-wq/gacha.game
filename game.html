@@ -2,8 +2,9 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>Gacha_Terminal_Main</title>
+    <title>Solo_Leveling_System_Terminal</title>
     <style>
+        /* --- 全域設定 --- */
         body {
             background-color: #050505;
             color: #00ffcc;
@@ -14,79 +15,176 @@
             margin: 0;
             padding: 20px;
         }
+
+        /* --- 主容器 --- */
         .container {
-            width: 85%;
-            background: rgba(10, 10, 10, 0.8);
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid #333;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
+            width: 90%;
+            max-width: 1000px;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 30px;
+            border: 2px solid #333;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+            position: relative;
         }
+
+        /* --- 頂部標題與玩家資訊 --- */
         h2 {
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
+            border-bottom: 2px solid #00ffcc;
+            padding-bottom: 15px;
             margin-top: 0;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
-        .user-info { color: #ff0055; font-size: 14px; }
+        .user-info {
+            color: #ff0055;
+            font-size: 14px;
+            background: rgba(255, 0, 85, 0.1);
+            padding: 5px 15px;
+            border-radius: 4px;
+        }
+
+        /* --- 系統訊息列 --- */
+        #sys-message {
+            color: #00ffcc;
+            margin: 15px 0;
+            font-size: 14px;
+            height: 20px;
+            border-left: 3px solid #ff0055;
+            padding-left: 10px;
+        }
+
+        /* --- 顯示區域 (抽卡與背包共用) --- */
+        .display-area {
+            min-height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            background: #000;
+            border: 1px solid #222;
+            padding: 20px;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        /* --- 卡片設計 --- */
+        .card {
+            width: 140px;
+            height: 210px;
+            background: #111;
+            border: 2px solid #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            z-index: 10;
+        }
+        .card img {
+            width: 100%;
+            height: 165px;
+            object-fit: cover;
+            background: #000;
+        }
+        .card .card-rank {
+            width: 100%;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        /* --- 稀有度顏色特效 --- */
+        /* F, E, D, C (普通) */
+        .rank-f, .rank-e, .rank-d, .rank-c { border-color: #555; color: #aaa; }
+        
+        /* B, A (史詩) */
+        .rank-b, .rank-a { border-color: #aa00ff; color: #aa00ff; box-shadow: 0 0 10px rgba(170, 0, 255, 0.3); }
+        
+        /* S, SS (傳說) */
+        .rank-s { border-color: #ff0055; color: #ff0055; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5); }
+        .rank-ss { border-color: #ffd700; color: #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); }
+
+        /* SSS (君王 - 閃爍白光) */
+        .rank-sss { 
+            border-color: #fff; 
+            color: #fff; 
+            box-shadow: 0 0 35px #fff; 
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px #fff; }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px #fff; }
+            100% { transform: scale(1); box-shadow: 0 0 20px #fff; }
+        }
+
+        /* --- 按鈕設定 --- */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
         .btn {
             background: transparent;
             color: #00ffcc;
             border: 1px solid #00ffcc;
-            padding: 12px 24px;
+            padding: 12px 25px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
             transition: 0.2s;
-            margin-right: 15px;
+            text-transform: uppercase;
         }
-        .btn:hover { background: #00ffcc; color: #000; box-shadow: 0 0 15px #00ffcc; }
-        #display-area {
-            min-height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            background: #0a0a0a;
-            border: 1px dashed #444;
-            padding: 15px;
+        .btn:hover {
+            background: #00ffcc;
+            color: #000;
+            box-shadow: 0 0 15px #00ffcc;
         }
-        .card {
-            width: 100px;
-            height: 150px;
-            background: #111;
-            border: 1px solid #555;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            margin: 5px;
-            font-size: 14px;
-            color: #fff;
-            text-align: center;
-            padding: 5px;
-        }
-        .ssr { border-color: #ff0055; color: #ff0055; font-weight: bold; box-shadow: 0 0 10px #ff0055;}
-        .sr { border-color: #aa00ff; color: #aa00ff; }
-        .r { border-color: #00ffcc; }
-        #sys-message { color: #00ffcc; margin-bottom: 15px; font-size: 14px; }
+        .btn-purple { border-color: #aa00ff; color: #aa00ff; }
+        .btn-purple:hover { background: #aa00ff; color: #fff; box-shadow: 0 0 15px #aa00ff; }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h2>
-            <span>>_ 抽卡系統啟動</span>
-            <span class="user-info" id="player-name">正在讀取玩家資料...</span>
+            <span id="system-title">>_ DUNGEON_STAGING</span>
+            <span class="user-info" id="player-name">ID: UNKNOWN | 玩家: 載入中...</span>
         </h2>
-        <div id="sys-message">系統就緒。請選擇抽取模式。</div>
-        <div id="display-area">等待指令中...</div>
         
-        <button class="btn" id="btn-draw-1">單抽 (1x)</button>
-        <button class="btn" id="btn-draw-5">五連抽 (5x)</button>
+        <div id="sys-message">系統初始化完成... 等待指令。</div>
+        
+        <div id="gacha-view">
+            <div class="display-area" id="draw-area">
+                <p style="color: #333;">[請選擇抽取模式進行獵人召喚]</p>
+            </div>
+            <div class="button-group">
+                <button class="btn" id="btn-draw-1">單次召喚 (1x)</button>
+                <button class="btn" id="btn-draw-5">連續召喚 (5x)</button>
+                <button class="btn btn-purple" id="btn-go-backpack" style="margin-left: auto;">查看背包 (Inventory)</button>
+            </div>
+        </div>
+
+        <div id="backpack-view" class="hidden">
+            <div class="display-area" id="inventory-area">
+                </div>
+            <div class="button-group">
+                <button class="btn" id="btn-go-gacha"><< 返回大廳</button>
+            </div>
+        </div>
     </div>
 
     <script type="module">
@@ -94,7 +192,7 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // 你的專屬金鑰
+        // 你的 Firebase 金鑰
         const firebaseConfig = {
             apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
             authDomain: "my-gacha-game-f7663.firebaseapp.com",
@@ -110,71 +208,129 @@
 
         let currentUserDocRef = null;
 
-        // 1. 檢查玩家有沒有登入
+        // 登入狀態監控
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const realId = user.email.split('@')[0];
                 currentUserDocRef = doc(db, "users", realId);
-                
-                // 抓取玩家名字顯示在畫面上
                 const docSnap = await getDoc(currentUserDocRef);
                 if (docSnap.exists()) {
                     document.getElementById('player-name').innerText = `ID: ${realId} | 玩家: ${docSnap.data().name}`;
                 }
             } else {
-                alert("未偵測到存取權限，請先登入！");
-                window.location.href = "index.html"; // 踢回首頁
+                window.location.href = "index.html"; 
             }
         });
 
-        // 2. 卡池機率設定 (之後教你怎麼換成圖片)
+        // ==========================================
+        // 🛠️ Solo Leveling 卡池與機率設定
+        // ==========================================
         const cardPool = [
-            { name: "S級神器", type: "ssr", chance: 0.05 },  // 5% 機率
-            { name: "A級裝備", type: "sr", chance: 0.15 },   // 15% 機率
-            { name: "普通素材", type: "r", chance: 0.80 }    // 80% 機率
+            { id: "f", name: "F級 獵人", img: "images/f.png", class: "rank-f", chance: 0.20 },  
+            { id: "e", name: "E級 獵人", img: "images/e.png", class: "rank-e", chance: 0.25 },  
+            { id: "d", name: "D級 獵人", img: "images/d.png", class: "rank-d", chance: 0.205 }, 
+            { id: "c", name: "C級 獵人", img: "images/c.png", class: "rank-c", chance: 0.17 },  
+            { id: "b", name: "B級 獵人", img: "images/b.png", class: "rank-b", chance: 0.13 },  
+            { id: "a", name: "A級 獵人", img: "images/a.png", class: "rank-a", chance: 0.025 }, 
+            { id: "s", name: "S級 獵人", img: "images/s.png", class: "rank-s", chance: 0.015 }, 
+            { id: "ss", name: "SS級 獵人", img: "images/ss.png", class: "rank-ss", chance: 0.005 },
+            // SSS 級機率為 0，正常抽不到
+            { id: "sss", name: "SSS級 暗影君王", img: "images/sss.png", class: "rank-sss", chance: 0 }
         ];
 
-        // 抽卡數學邏輯
+        // 找卡片資料
+        function getCardDataById(id) {
+            return cardPool.find(c => c.id === id) || cardPool[0];
+        }
+
+        // 抽卡核心邏輯
         function executeDraw() {
             let rand = Math.random();
             let cumulative = 0;
-            for (let i = 0; i < cardPool.length; i++) {
-                cumulative += cardPool[i].chance;
-                if (rand <= cumulative) return cardPool[i];
+            for (let card of cardPool) {
+                cumulative += card.chance;
+                if (rand <= cumulative) return card;
             }
-            return cardPool[cardPool.length - 1];
+            return cardPool[0];
         }
 
-        // 點擊抽卡後的動作
-        async function performGacha(times) {
-            const displayArea = document.getElementById('display-area');
-            const sysMessage = document.getElementById('sys-message');
-            displayArea.innerHTML = '';
-            sysMessage.innerText = "資料庫寫入中...";
-            
-            let drawResults = [];
+        // 生成卡片 HTML
+        function createCardHTML(card) {
+            return `
+                <div class="card ${card.class}">
+                    <img src="${card.img}" onerror="this.src='https://via.placeholder.com/140x165/111/00ffcc?text=No_Image'">
+                    <div class="card-rank">${card.name}</div>
+                </div>
+            `;
+        }
 
-            // 畫出卡片
+        // 執行抽卡
+        async function performGacha(times) {
+            const drawArea = document.getElementById('draw-area');
+            const sysMessage = document.getElementById('sys-message');
+            drawArea.innerHTML = '';
+            sysMessage.innerText = "召喚陣啟動中...";
+            
+            let drawResultsIds = [];
+
             for(let i=0; i<times; i++) {
                 let card = executeDraw();
-                drawResults.push(card.name);
-                displayArea.innerHTML += `<div class="card ${card.type}">${card.name}<br>(${card.type.toUpperCase()})</div>`;
+                drawResultsIds.push(card.id);
+                drawArea.innerHTML += createCardHTML(card);
             }
 
-            // 將抽到的卡片存進資料庫
             try {
                 await updateDoc(currentUserDocRef, {
-                    inventory: arrayUnion(...drawResults)
+                    inventory: arrayUnion(...drawResultsIds)
                 });
-                sysMessage.innerText = `[成功] 已將 ${times} 張卡片存入雲端背包。`;
+                sysMessage.innerText = `[系統] 召喚成功。${times} 名獵人已編入影之軍團。`;
             } catch (error) {
-                sysMessage.innerText = `[錯誤] 資料庫寫入失敗：${error.message}`;
+                sysMessage.innerText = `[系統] 召喚失敗：資料庫連線異常。`;
             }
         }
 
-        // 按鈕綁定
+        // 載入背包
+        async function loadBackpack() {
+            const inventoryArea = document.getElementById('inventory-area');
+            const sysMessage = document.getElementById('sys-message');
+            inventoryArea.innerHTML = '';
+            sysMessage.innerText = "正在讀取影之軍團檔案...";
+
+            try {
+                const docSnap = await getDoc(currentUserDocRef);
+                if (docSnap.exists()) {
+                    const inventoryIds = docSnap.data().inventory || [];
+                    if (inventoryIds.length === 0) {
+                        inventoryArea.innerHTML = "<p style='color:#333;'>目前軍團中沒有獵人。</p>";
+                    } else {
+                        inventoryIds.forEach(id => {
+                            const cardData = getCardDataById(id);
+                            inventoryArea.innerHTML += createCardHTML(cardData);
+                        });
+                        sysMessage.innerText = `[成功] 讀取完成。軍團規模：${inventoryIds.length} 人。`;
+                    }
+                }
+            } catch (error) {
+                sysMessage.innerText = "[系統] 無法連結暗影空間。";
+            }
+        }
+
+        // 按鈕事件
         document.getElementById('btn-draw-1').addEventListener('click', () => performGacha(1));
         document.getElementById('btn-draw-5').addEventListener('click', () => performGacha(5));
+        
+        document.getElementById('btn-go-backpack').addEventListener('click', () => {
+            document.getElementById('gacha-view').classList.add('hidden');
+            document.getElementById('backpack-view').classList.remove('hidden');
+            document.getElementById('system-title').innerText = ">_ SHADOW_ARMY_DATABASE";
+            loadBackpack();
+        });
+
+        document.getElementById('btn-go-gacha').addEventListener('click', () => {
+            document.getElementById('backpack-view').classList.add('hidden');
+            document.getElementById('gacha-view').classList.remove('hidden');
+            document.getElementById('system-title').innerText = ">_ DUNGEON_STAGING";
+        });
     </script>
 </body>
 </html>
