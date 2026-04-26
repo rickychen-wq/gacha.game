@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo_Leveling_System_V10_FINAL</title>
+    <title>Solo_Leveling_System_V11_StackFix</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -157,7 +157,7 @@
     </div>
 
     <div class="sidebar">
-        <div class="sidebar-title">TERMINAL_V10</div>
+        <div class="sidebar-title">TERMINAL_V11</div>
         <button class="pool-btn active" data-pool="freren">葬送的芙莉蓮</button>
         <button class="pool-btn" data-pool="elite">實力至上教室</button>
         <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
@@ -203,29 +203,26 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         // =========================================================================
-        // 🔑 已經換上你的專屬 Firebase 金鑰
+        // ⚠️ 警告：請務必再次把下面換成你的真實金鑰！ ⚠️
         // =========================================================================
         const firebaseConfig = {
-            apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
-            authDomain: "my-gacha-game-f7663.firebaseapp.com",
-            projectId: "my-gacha-game-f7663",
-            storageBucket: "my-gacha-game-f7663.firebasestorage.app",
-            messagingSenderId: "1035192644413",
-            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54",
-            measurementId: "G-XV7XQ3RMXW"
+            apiKey: "替換成你的_API_KEY",
+            authDomain: "替換成你的_authDomain",
+            projectId: "替換成你的_projectId",
+            storageBucket: "替換成你的_storageBucket",
+            messagingSenderId: "替換成你的_messagingSenderId",
+            appId: "替換成你的_appId"
         };
 
-        // 這裡幫你修好了！絕對不會重複宣告！
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         let currentUserDocRef = null;
         let currentPoolId = 'freren';
 
-        // 📸 圖片代號字典
         const PIC = {
             1: '127401.jpg',
             2: '15662354952458560.jpg',
@@ -238,7 +235,6 @@
             9: 'ow6l5a9lvR7EiALivAByvQl3VAjAEBbuPbAVE~tplv-dy-aweme-images_q75.webp'
         };
 
-        // 🛠️ 控制面板：決定哪個等級有幾張圖
         const poolSettings = {
             'freren': { 
                 f: [1], 
@@ -358,9 +354,19 @@
                 btnClose.style.animationDelay = `${(times * 0.15) + 0.5}s`;
             }, explosionDelay);
 
-            // 使用 setDoc 與 merge，確保新帳號不會出錯
+            // ==========================================
+            // 🐛 [終極修復] 開除夜店保鑣，全部塞進背包！
+            // ==========================================
             try {
-                await setDoc(currentUserDocRef, { inventory: arrayUnion(...results) }, { merge: true });
+                const docSnap = await getDoc(currentUserDocRef);
+                let currentInv = [];
+                if (docSnap.exists() && docSnap.data().inventory) {
+                    currentInv = docSnap.data().inventory;
+                }
+                // 把新抽到的卡全部串接到舊背包後面，保留所有重複卡片！
+                const newInv = currentInv.concat(results);
+                
+                await setDoc(currentUserDocRef, { inventory: newInv }, { merge: true });
                 sysMessage.innerText = `[成功] 召喚完畢。戰力已就位。`;
             } catch (error) { sysMessage.innerText = `[錯誤] 資料庫同步失敗：${error.message}`; }
 
@@ -415,7 +421,6 @@
             }
         }
 
-        // 刪除全部資料按鈕邏輯
         document.getElementById('btn-clear-backpack').addEventListener('click', async () => {
             if(confirm("警告：這將會清空你所有的抽卡紀錄與背包資料！確定要刪除嗎？")) {
                 try {
