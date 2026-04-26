@@ -2,130 +2,86 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>Solo_Leveling_System_Stable_v5.1</title>
+    <title>Solo_Leveling_System_v6_Stacking</title>
     <style>
-        /* --- 核心版面：絕對禁止橫向溢出 --- */
-        * { box-sizing: border-box; } /* 確保邊框不會撐大容器 */
-
-        body {
-            background-color: #050505;
-            color: #00ffcc;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: row;
-            margin: 0;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden; /* 全域禁止滾動 */
+        /* --- 核心版面鎖死 (防噴出牆) --- */
+        * { box-sizing: border-box; }
+        body { 
+            background-color: #050505; color: #00ffcc; 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex; flex-direction: row; margin: 0; 
+            height: 100vh; width: 100vw; overflow: hidden; 
         }
 
         /* --- 左側選單 --- */
-        .sidebar {
-            width: 220px;
-            min-width: 220px;
-            background: #0a0a0a;
-            border-right: 2px solid #333;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            gap: 10px;
-            z-index: 10;
+        .sidebar { 
+            width: 220px; min-width: 220px; background: #0a0a0a; 
+            border-right: 2px solid #333; display: flex; flex-direction: column; 
+            padding: 20px; gap: 10px; z-index: 10; 
         }
-
-        .pool-btn {
-            background: transparent;
-            color: #555;
-            border: 1px solid #222;
-            padding: 15px;
-            text-align: left;
-            cursor: pointer;
-            transition: 0.3s;
-            font-weight: bold;
-        }
+        .pool-btn { background: transparent; color: #555; border: 1px solid #222; padding: 15px; text-align: left; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .pool-btn.active { border-color: #00ffcc; color: #00ffcc; background: rgba(0, 255, 204, 0.1); }
 
-        /* --- 右側主區域：關鍵修正 --- */
-        .main-content {
-            flex: 1;
-            height: 100vh;
-            overflow-y: auto; /* 只有上下可以滾動 */
-            overflow-x: hidden; /* 絕對禁止左右滾動 */
-            padding: 20px;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-            display: flex;
-            justify-content: center; /* 讓內容居中 */
+        /* --- 右側區域 (捲軸只在內部) --- */
+        .main-content { 
+            flex: 1; height: 100vh; overflow-y: auto; overflow-x: hidden; 
+            padding: 20px; background: radial-gradient(circle at center, #111 0%, #000 100%); 
+            display: flex; justify-content: center; 
+        }
+        .container { width: 100%; max-width: 1050px; background: rgba(10, 10, 10, 0.9); padding: 25px; border: 1px solid #333; }
+
+        /* --- 召喚動畫層 (原神感) --- */
+        #gacha-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 999; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.5s;
+        }
+        #gacha-overlay.active { opacity: 1; pointer-events: auto; }
+        .summon-beam { width: 5px; height: 100vh; position: absolute; top: -100vh; animation: beam-drop 0.8s ease-in forwards; box-shadow: 0 0 20px #00ffcc; background: #00ffcc; }
+        .rare-gold { background: #ffd700; box-shadow: 0 0 40px #ffd700; }
+        @keyframes beam-drop { 0% { top: -100vh; } 100% { top: 100vh; } }
+
+        /* --- 卡片設計 --- */
+        .display-area { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; padding: 20px; background: #000; }
+        .card { 
+            width: 135px; height: 200px; background: #111; border: 2px solid #333; 
+            position: relative; overflow: hidden; display: flex; flex-direction: column; 
+        }
+        .card img { width: 100%; height: 155px; object-fit: cover; }
+        .card .card-rank { flex: 1; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; background: #050505; }
+        
+        /* 重複數量標記 (xN) */
+        .card-count {
+            position: absolute; top: 5px; right: 5px;
+            background: rgba(255, 0, 85, 0.8); color: white;
+            padding: 2px 8px; font-size: 12px; font-weight: bold; border-radius: 10px;
+            box-shadow: 0 0 5px #000; z-index: 5;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1100px; /* 限制最大寬度，避免在大螢幕上太散 */
-            background: rgba(10, 10, 10, 0.9);
-            padding: 25px;
-            border: 1px solid #333;
-            animation: rgb-glow 10s linear infinite;
-        }
-
-        @keyframes rgb-glow { 0% { border-color: #ff0055; } 50% { border-color: #00ffcc; } 100% { border-color: #ff0055; } }
-
-        h2 { border-bottom: 2px solid #222; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .rank-s { border-color: #ff0055; box-shadow: 0 0 10px #ff0055; }
+        .rank-ss { border-color: #ffd700; box-shadow: 0 0 15px #ffd700; }
+        .rank-sss { border-color: #fff; box-shadow: 0 0 25px #fff; }
 
         /* --- 統計面板 --- */
-        .stats-panel {
-            display: flex;
-            flex-wrap: wrap; /* 自動換行，防止撐破螢幕 */
-            justify-content: space-around;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(0, 255, 204, 0.05);
-            border: 1px solid #222;
-        }
-        .stat-item { text-align: center; min-width: 70px; padding: 5px; border-bottom: 1px solid #222; }
-        .stat-label { color: #555; font-size: 10px; display: block; }
-        .stat-val { font-size: 18px; font-weight: bold; color: #ff0055; }
+        .stats-panel { display: flex; flex-wrap: wrap; justify-content: space-around; gap: 10px; margin-bottom: 20px; padding: 15px; background: rgba(0, 255, 204, 0.05); border: 1px solid #222; }
+        .stat-item { text-align: center; min-width: 65px; }
+        .stat-val { font-size: 18px; font-weight: bold; color: #ff0055; display: block; }
 
-        /* --- 卡片顯示區 --- */
-        .display-area {
-            min-height: 400px;
-            display: flex;
-            justify-content: center;
-            align-content: flex-start;
-            flex-wrap: wrap; /* 關鍵：卡片滿了自動往下掉 */
-            gap: 15px;
-            background: #000;
-            padding: 20px;
-            border: 1px solid #111;
-        }
-
-        .card {
-            width: 130px;
-            height: 190px;
-            background: #050505;
-            border: 2px solid #333;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: 0.2s;
-        }
-        .card img { width: 100%; height: 145px; object-fit: cover; }
-        .card .card-rank { width: 100%; height: 45px; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; background: #0a0a0a; }
-
-        /* 稀有度顏色 */
-        .rank-f, .rank-e, .rank-d, .rank-c { border-color: #333; color: #666; }
-        .rank-b, .rank-a { border-color: #aa00ff; color: #aa00ff; }
-        .rank-s { border-color: #ff0055; color: #ff0055; box-shadow: 0 0 10px rgba(255,0,85,0.3); }
-        .rank-ss { border-color: #ffd700; color: #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
-        .rank-sss { border-color: #fff; color: #fff; box-shadow: 0 0 25px #fff; }
-
-        .btn { background: transparent; color: #00ffcc; border: 1px solid #00ffcc; padding: 12px 25px; cursor: pointer; font-weight: bold; font-family: inherit; }
+        .btn { background: transparent; color: #00ffcc; border: 1px solid #00ffcc; padding: 12px 25px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn:hover { background: #00ffcc; color: #000; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
+    <div id="gacha-overlay">
+        <div id="beam-container"></div>
+        <div id="reveal-area" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;"></div>
+        <button class="btn" id="btn-close-reveal" style="margin-top: 40px;">[ 點擊繼續 ]</button>
+    </div>
+
     <div class="sidebar">
-        <div class="sidebar-title">TERMINAL</div>
+        <div class="sidebar-title">SYSTEM_V6</div>
         <button class="pool-btn active" data-pool="frieren">葬送的芙莉蓮</button>
         <button class="pool-btn" data-pool="elite">實力至上教室</button>
         <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
@@ -135,12 +91,12 @@
     </div>
 
     <div class="main-content">
-        <div class="container" id="main-container">
+        <div class="container">
             <h2>
                 <span id="system-title">>_ DUNGEON: FRIEREN</span>
                 <span style="font-size: 12px; color: #ff0055;" id="player-id">ID: SYNCING...</span>
             </h2>
-            <div id="sys-message">系統已就緒。</div>
+            <div id="sys-message">系統就緒。</div>
 
             <div id="gacha-view">
                 <div class="display-area" id="draw-area"></div>
@@ -153,7 +109,7 @@
             <div id="backpack-view" class="hidden">
                 <div class="stats-panel" id="army-stats"></div>
                 <div class="display-area" id="inventory-area"></div>
-                <button class="btn" id="btn-go-gacha" style="margin-top: 20px;"><< 返回大廳</button>
+                <button class="btn" id="btn-go-gacha" style="margin-top: 20px;"><< 返回</button>
             </div>
         </div>
     </div>
@@ -178,7 +134,6 @@
         let currentUserDocRef = null;
         let currentPoolId = 'frieren';
 
-        // 設定每個等級的張數
         const poolSettings = {
             'frieren': { f:1, e:20, d:10, c:5, b:3, a:2, s:1, ss:1, sss:1 },
             'elite':   { f:1, e:10, d:5, c:5, b:3, a:2, s:1, ss:1, sss:1 },
@@ -206,26 +161,40 @@
             return `${pId}_${rank}_${num}`;
         }
 
-        function getCardHTML(fullId) {
+        function getCardHTML(fullId, count = 1) {
             const [p, r, n] = fullId.split('_');
-            const imgPath = `images/${p}/${r}${n}.png`;
+            const countTag = count > 1 ? `<div class="card-count">x${count}</div>` : '';
             return `<div class="card rank-${r}">
-                <img src="${imgPath}" onerror="this.src='https://via.placeholder.com/130x145/000/00ffcc?text=DATA_LOCKED'">
-                <div class="card-rank">${r.toUpperCase()}級</div>
+                ${countTag}
+                <img src="images/${p}/${r}${n}.png" onerror="this.src='https://via.placeholder.com/130x145/000/00ffcc?text=DATA'">
+                <div class="card-rank">${r.toUpperCase()}</div>
             </div>`;
         }
 
         async function performGacha(times) {
-            const area = document.getElementById('draw-area');
-            area.innerHTML = '';
-            let newCards = [];
+            const overlay = document.getElementById('gacha-overlay');
+            const revealArea = document.getElementById('reveal-area');
+            const beamContainer = document.getElementById('beam-container');
+            const drawArea = document.getElementById('draw-area');
+
+            revealArea.innerHTML = ''; beamContainer.innerHTML = '';
+            overlay.classList.add('active');
+
+            let results = [];
+            let isGold = false;
             for(let i=0; i<times; i++) {
                 const id = generateCard(currentPoolId);
-                newCards.push(id);
-                area.innerHTML += getCardHTML(id);
+                results.push(id);
+                if (['s','ss','sss'].includes(id.split('_')[1])) isGold = true;
+                revealArea.innerHTML += getCardHTML(id);
             }
-            await updateDoc(currentUserDocRef, { inventory: arrayUnion(...newCards) });
-            document.getElementById('sys-message').innerText = `召喚完成，共 ${times} 個單元。`;
+
+            const beam = document.createElement('div');
+            beam.className = `summon-beam ${isGold ? 'rare-gold' : ''}`;
+            beamContainer.appendChild(beam);
+
+            await updateDoc(currentUserDocRef, { inventory: arrayUnion(...results) });
+            drawArea.innerHTML = results.map(id => getCardHTML(id)).join('');
         }
 
         async function loadBackpack() {
@@ -235,19 +204,30 @@
             const docSnap = await getDoc(currentUserDocRef);
             if (docSnap.exists()) {
                 const inv = docSnap.data().inventory || [];
-                const counts = { f:0, e:0, d:0, c:0, b:0, a:0, s:0, ss:0, sss:0 };
+                
+                // --- 核心邏輯：統計重複卡片 ---
+                const stackedInv = {}; // { 'frieren_e1': 5, 'elite_s1': 1 }
+                const rankCounts = { f:0, e:0, d:0, c:0, b:0, a:0, s:0, ss:0, sss:0 };
+
                 inv.forEach(id => {
-                    invArea.innerHTML += getCardHTML(id);
+                    stackedInv[id] = (stackedInv[id] || 0) + 1;
                     const r = id.split('_')[1];
-                    if (counts.hasOwnProperty(r)) counts[r]++;
+                    if (rankCounts.hasOwnProperty(r)) rankCounts[r]++;
                 });
-                // 渲染統計文字：F級: 數量
-                statArea.innerHTML = Object.keys(counts).map(k => {
-                    return `<div class="stat-item"><span class="stat-label">${k.toUpperCase()}級</span><span class="stat-val">${counts[k]}</span></div>`;
-                }).join('');
+
+                // 渲染背包卡片
+                Object.keys(stackedInv).forEach(id => {
+                    invArea.innerHTML += getCardHTML(id, stackedInv[id]);
+                });
+
+                // 渲染統計文字
+                statArea.innerHTML = Object.keys(rankCounts).map(k => `
+                    <div class="stat-item"><span class="stat-label">${k.toUpperCase()}</span><span class="stat-val">${rankCounts[k]}</span></div>
+                `).join('');
             }
         }
 
+        document.getElementById('btn-close-reveal').addEventListener('click', () => document.getElementById('gacha-overlay').classList.remove('active'));
         document.querySelectorAll('.pool-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.pool-btn').forEach(b => b.classList.remove('active'));
