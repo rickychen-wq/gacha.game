@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo_Leveling_System_V8_NoRename</title>
+    <title>Solo_Leveling_System_V8.1_CleanCode</title>
     <style>
         /* ==========================================================================
            [1] 系統全域設定與底層鎖死 (絕對防破版)
@@ -200,7 +200,7 @@
     </div>
 
     <div class="sidebar">
-        <div class="sidebar-title">TERMINAL_V8</div>
+        <div class="sidebar-title">TERMINAL_V8.1</div>
         <button class="pool-btn active" data-pool="frieren">葬送的芙莉蓮</button>
         <button class="pool-btn" data-pool="elite">實力至上教室</button>
         <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
@@ -263,29 +263,37 @@
         let currentPoolId = 'frieren';
 
         // ==========================================
-        // 🛠️ 終極免改名陣列：把你資料夾的檔名直接貼進來！
+        // 📸 圖片代號字典：把落落長的檔名綁定到短代號
+        // ==========================================
+        const IMG = {
+            // 芙莉蓮池的圖
+            fri_pic1: '127401.jpg',
+            fri_pic2: '15662354952450560.jpg',
+            fri_pic3: 'b3f5eb5c0b7d640bc7d765d50eb6cb....jpg', // 請替換成真檔名
+            fri_pic4: 'frieren-wallpaper-4k-made-by-me-3-...webp', // 請替換成真檔名
+            
+            // 如果你有實力至上的圖，也可以加在這裡，例如：
+            // eli_pic1: 'ayanokouji.jpg',
+        };
+
+        // ==========================================
+        // 🛠️ 控制面板：版面瞬間變超乾淨
         // ==========================================
         const poolSettings = {
             'frieren': { 
-                f: ['f_f1.png'], 
-                e: [
-                    '127401.jpg', 
-                    '15662354952450560.jpg',
-                    'b3f5eb5c0b7d640bc7d765d50eb6cb....jpg', // 範例
-                    'frieren-wallpaper-4k-made-by-me-3-...webp' // 範例
-                    // 你有幾張圖，就用單引號包起來，逗號隔開貼進來
-                ], 
-                d: ['d1.png'], 
-                c: ['c1.png'], 
-                b: ['b1.png'], 
-                a: ['a1.png'], 
-                s: ['s1.png'], 
-                ss: ['ss1.png'], 
-                sss: ['sss1.png'] 
+                f: [], 
+                e: [ IMG.fri_pic1, IMG.fri_pic2, IMG.fri_pic3, IMG.fri_pic4 ], // 直接寫代號！
+                d: [], 
+                c: [], 
+                b: [], 
+                a: [], 
+                s: [], 
+                ss: [], 
+                sss: [] 
             },
-            // 如果其他池還沒上傳圖，先放空字串或預設名防呆
-            'elite':   { f:[''], e:[''], d:[''], c:[''], b:[''], a:[''], s:[''], ss:[''], sss:[''] },
-            'jujutsu': { f:[''], e:[''], d:[''], c:[''], b:[''], a:[''], s:[''], ss:[''], sss:[''] }
+            // 其他池如果沒圖，就留空陣列
+            'elite':   { f:[], e:[], d:[], c:[], b:[], a:[], s:[], ss:[], sss:[] },
+            'jujutsu': { f:[], e:[], d:[], c:[], b:[], a:[], s:[], ss:[], sss:[] }
         };
 
         const chances = [
@@ -308,11 +316,9 @@
             let rand = Math.random(), cum = 0, rank = 'f';
             for (let c of chances) { cum += c.p; if (rand <= cum) { rank = c.r; break; } }
             
-            // 根據你在 poolSettings 裡填的圖片數量來隨機抽
             const imgArray = poolSettings[pId][rank];
             const maxCount = imgArray.length;
             
-            // 如果陣列是空的，給個防呆 index 0
             const index = maxCount > 0 ? Math.floor(Math.random() * maxCount) : 0;
             return `${pId}_${rank}_${index}`;
         }
@@ -323,7 +329,6 @@
             const animClass = isReveal ? 'reveal-card' : '';
             const styleDelay = isReveal ? `style="animation-delay: ${delayDelay}s;"` : '';
             
-            // 根據 ID 去陣列找對應的真實檔名
             let realFileName = 'locked.png';
             if (poolSettings[pool] && poolSettings[pool][rank] && poolSettings[pool][rank][index]) {
                 realFileName = poolSettings[pool][rank][index];
@@ -471,6 +476,7 @@
             document.getElementById('gacha-view').classList.remove('hidden');
             document.getElementById('system-title').innerText = `>_ DUNGEON: ${currentPoolId.toUpperCase()}`;
         });
+        document.getElementById('btn-logout').addEventListener('click', () => { if(confirm("確定中斷神經連結？")) signOut(auth).then(() => window.location.href = "index.html"); });
     </script>
 </body>
 </html>
