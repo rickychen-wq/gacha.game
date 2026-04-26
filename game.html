@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Solo_Leveling_System_Terminal</title>
     <style>
-        /* --- 全域設定 --- */
+        /* --- 原有特效保留與增強 --- */
         body {
             background-color: #050505;
             color: #00ffcc;
@@ -16,7 +16,6 @@
             padding: 20px;
         }
 
-        /* --- 主容器 --- */
         .container {
             width: 90%;
             max-width: 1000px;
@@ -27,7 +26,6 @@
             position: relative;
         }
 
-        /* --- 頂部標題與玩家資訊 --- */
         h2 {
             border-bottom: 2px solid #00ffcc;
             padding-bottom: 15px;
@@ -38,6 +36,14 @@
             justify-content: space-between;
             align-items: center;
         }
+
+        /* 玩家資訊與登出按鈕 */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .user-info {
             color: #ff0055;
             font-size: 14px;
@@ -46,7 +52,14 @@
             border-radius: 4px;
         }
 
-        /* --- 系統訊息列 --- */
+        .logout-link {
+            color: #555;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .logout-link:hover { color: #fff; }
+
         #sys-message {
             color: #00ffcc;
             margin: 15px 0;
@@ -56,7 +69,6 @@
             padding-left: 10px;
         }
 
-        /* --- 顯示區域 (抽卡與背包共用) --- */
         .display-area {
             min-height: 350px;
             display: flex;
@@ -71,7 +83,7 @@
             overflow-y: auto;
         }
 
-        /* --- 卡片設計 --- */
+        /* --- 卡片與稀有度特效 (全部保留) --- */
         .card {
             width: 140px;
             height: 210px;
@@ -83,16 +95,8 @@
             position: relative;
             transition: all 0.3s ease;
         }
-        .card:hover {
-            transform: translateY(-10px);
-            z-index: 10;
-        }
-        .card img {
-            width: 100%;
-            height: 165px;
-            object-fit: cover;
-            background: #000;
-        }
+        .card:hover { transform: translateY(-10px); z-index: 10; }
+        .card img { width: 100%; height: 165px; object-fit: cover; }
         .card .card-rank {
             width: 100%;
             height: 45px;
@@ -104,53 +108,43 @@
             background: rgba(0, 0, 0, 0.9);
         }
 
-        /* --- 稀有度顏色特效 --- */
-        /* F, E, D, C (普通) */
         .rank-f, .rank-e, .rank-d, .rank-c { border-color: #555; color: #aaa; }
-        
-        /* B, A (史詩) */
         .rank-b, .rank-a { border-color: #aa00ff; color: #aa00ff; box-shadow: 0 0 10px rgba(170, 0, 255, 0.3); }
-        
-        /* S, SS (傳說) */
         .rank-s { border-color: #ff0055; color: #ff0055; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5); }
         .rank-ss { border-color: #ffd700; color: #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); }
-
-        /* SSS (君王 - 閃爍白光) */
         .rank-sss { 
-            border-color: #fff; 
-            color: #fff; 
+            border-color: #fff; color: #fff; 
             box-shadow: 0 0 35px #fff; 
             animation: pulse 1s infinite;
         }
+
         @keyframes pulse {
             0% { transform: scale(1); box-shadow: 0 0 20px #fff; }
             50% { transform: scale(1.05); box-shadow: 0 0 40px #fff; }
             100% { transform: scale(1); box-shadow: 0 0 20px #fff; }
         }
 
-        /* --- 按鈕設定 --- */
-        .button-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+        /* --- 背包統計數據 --- */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
         }
+        .stat-item { text-align: center; font-size: 12px; }
+        .stat-val { display: block; font-size: 18px; font-weight: bold; color: #fff; }
+
+        .button-group { display: flex; gap: 15px; flex-wrap: wrap; }
         .btn {
-            background: transparent;
-            color: #00ffcc;
-            border: 1px solid #00ffcc;
-            padding: 12px 25px;
-            cursor: pointer;
-            font-size: 14px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            transition: 0.2s;
-            text-transform: uppercase;
+            background: transparent; color: #00ffcc; border: 1px solid #00ffcc;
+            padding: 12px 25px; cursor: pointer; font-size: 14px;
+            font-family: 'Courier New', Courier, monospace; font-weight: bold;
+            transition: 0.2s; text-transform: uppercase;
         }
-        .btn:hover {
-            background: #00ffcc;
-            color: #000;
-            box-shadow: 0 0 15px #00ffcc;
-        }
+        .btn:hover { background: #00ffcc; color: #000; box-shadow: 0 0 15px #00ffcc; }
         .btn-purple { border-color: #aa00ff; color: #aa00ff; }
         .btn-purple:hover { background: #aa00ff; color: #fff; box-shadow: 0 0 15px #aa00ff; }
 
@@ -162,7 +156,10 @@
     <div class="container">
         <h2>
             <span id="system-title">>_ DUNGEON_STAGING</span>
-            <span class="user-info" id="player-name">ID: UNKNOWN | 玩家: 載入中...</span>
+            <div class="header-right">
+                <span class="user-info" id="player-name">ID: UNKNOWN | 玩家: 載入中...</span>
+                <span class="logout-link" id="btn-logout">[LOGOUT]</span>
+            </div>
         </h2>
         
         <div id="sys-message">系統初始化完成... 等待指令。</div>
@@ -179,8 +176,9 @@
         </div>
 
         <div id="backpack-view" class="hidden">
-            <div class="display-area" id="inventory-area">
+            <div class="stats-panel" id="army-stats">
                 </div>
+            <div class="display-area" id="inventory-area"></div>
             <div class="button-group">
                 <button class="btn" id="btn-go-gacha"><< 返回大廳</button>
             </div>
@@ -189,10 +187,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // 你的 Firebase 金鑰
         const firebaseConfig = {
             apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
             authDomain: "my-gacha-game-f7663.firebaseapp.com",
@@ -208,7 +205,6 @@
 
         let currentUserDocRef = null;
 
-        // 登入狀態監控
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const realId = user.email.split('@')[0];
@@ -223,7 +219,7 @@
         });
 
         // ==========================================
-        // 🛠️ Solo Leveling 卡池與機率設定
+        // 🛠️ Solo Leveling 卡池 (SSS 機率為 0)
         // ==========================================
         const cardPool = [
             { id: "f", name: "F級 獵人", img: "images/f.png", class: "rank-f", chance: 0.20 },  
@@ -234,16 +230,13 @@
             { id: "a", name: "A級 獵人", img: "images/a.png", class: "rank-a", chance: 0.025 }, 
             { id: "s", name: "S級 獵人", img: "images/s.png", class: "rank-s", chance: 0.015 }, 
             { id: "ss", name: "SS級 獵人", img: "images/ss.png", class: "rank-ss", chance: 0.005 },
-            // SSS 級機率為 0，正常抽不到
             { id: "sss", name: "SSS級 暗影君王", img: "images/sss.png", class: "rank-sss", chance: 0 }
         ];
 
-        // 找卡片資料
         function getCardDataById(id) {
             return cardPool.find(c => c.id === id) || cardPool[0];
         }
 
-        // 抽卡核心邏輯
         function executeDraw() {
             let rand = Math.random();
             let cumulative = 0;
@@ -254,7 +247,6 @@
             return cardPool[0];
         }
 
-        // 生成卡片 HTML
         function createCardHTML(card) {
             return `
                 <div class="card ${card.class}">
@@ -264,7 +256,6 @@
             `;
         }
 
-        // 執行抽卡
         async function performGacha(times) {
             const drawArea = document.getElementById('draw-area');
             const sysMessage = document.getElementById('sys-message');
@@ -272,7 +263,6 @@
             sysMessage.innerText = "召喚陣啟動中...";
             
             let drawResultsIds = [];
-
             for(let i=0; i<times; i++) {
                 let card = executeDraw();
                 drawResultsIds.push(card.id);
@@ -280,18 +270,16 @@
             }
 
             try {
-                await updateDoc(currentUserDocRef, {
-                    inventory: arrayUnion(...drawResultsIds)
-                });
+                await updateDoc(currentUserDocRef, { inventory: arrayUnion(...drawResultsIds) });
                 sysMessage.innerText = `[系統] 召喚成功。${times} 名獵人已編入影之軍團。`;
             } catch (error) {
-                sysMessage.innerText = `[系統] 召喚失敗：資料庫連線異常。`;
+                sysMessage.innerText = `[系統] 召喚失敗。`;
             }
         }
 
-        // 載入背包
         async function loadBackpack() {
             const inventoryArea = document.getElementById('inventory-area');
+            const statsPanel = document.getElementById('army-stats');
             const sysMessage = document.getElementById('sys-message');
             inventoryArea.innerHTML = '';
             sysMessage.innerText = "正在讀取影之軍團檔案...";
@@ -300,22 +288,33 @@
                 const docSnap = await getDoc(currentUserDocRef);
                 if (docSnap.exists()) {
                     const inventoryIds = docSnap.data().inventory || [];
+                    
+                    // 統計各等級數量
+                    const counts = {};
+                    cardPool.forEach(p => counts[p.id] = 0);
+                    inventoryIds.forEach(id => counts[id] = (counts[id] || 0) + 1);
+
+                    // 顯示統計面板
+                    statsPanel.innerHTML = cardPool.map(p => `
+                        <div class="stat-item">
+                            <span style="color:${p.id==='sss'?'#fff':''}">${p.id.toUpperCase()}級</span>
+                            <span class="stat-val">${counts[p.id]}</span>
+                        </div>
+                    `).join('');
+
                     if (inventoryIds.length === 0) {
                         inventoryArea.innerHTML = "<p style='color:#333;'>目前軍團中沒有獵人。</p>";
                     } else {
                         inventoryIds.forEach(id => {
-                            const cardData = getCardDataById(id);
-                            inventoryArea.innerHTML += createCardHTML(cardData);
+                            inventoryArea.innerHTML += createCardHTML(getCardDataById(id));
                         });
-                        sysMessage.innerText = `[成功] 讀取完成。軍團規模：${inventoryIds.length} 人。`;
+                        sysMessage.innerText = `[成功] 軍團規模：${inventoryIds.length} 人。`;
                     }
                 }
-            } catch (error) {
-                sysMessage.innerText = "[系統] 無法連結暗影空間。";
-            }
+            } catch (error) { sysMessage.innerText = "[系統] 無法連結暗影空間。"; }
         }
 
-        // 按鈕事件
+        // --- 事件綁定 ---
         document.getElementById('btn-draw-1').addEventListener('click', () => performGacha(1));
         document.getElementById('btn-draw-5').addEventListener('click', () => performGacha(5));
         
@@ -330,6 +329,12 @@
             document.getElementById('backpack-view').classList.add('hidden');
             document.getElementById('gacha-view').classList.remove('hidden');
             document.getElementById('system-title').innerText = ">_ DUNGEON_STAGING";
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            if(confirm("確定要切換當前帳號？")) {
+                signOut(auth).then(() => window.location.href = "index.html");
+            }
         });
     </script>
 </body>
