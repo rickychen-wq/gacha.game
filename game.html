@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Gacha_Terminal_Main</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            width: 85%;
+            background: rgba(10, 10, 10, 0.8);
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
+        }
+        h2 {
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .user-info { color: #ff0055; font-size: 14px; }
+        .btn {
+            background: transparent;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.2s;
+            margin-right: 15px;
+        }
+        .btn:hover { background: #00ffcc; color: #000; box-shadow: 0 0 15px #00ffcc; }
+        #display-area {
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            background: #0a0a0a;
+            border: 1px dashed #444;
+            padding: 15px;
+        }
+        .card {
+            width: 100px;
+            height: 150px;
+            background: #111;
+            border: 1px solid #555;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            font-size: 14px;
+            color: #fff;
+            text-align: center;
+            padding: 5px;
+        }
+        .ssr { border-color: #ff0055; color: #ff0055; font-weight: bold; box-shadow: 0 0 10px #ff0055;}
+        .sr { border-color: #aa00ff; color: #aa00ff; }
+        .r { border-color: #00ffcc; }
+        #sys-message { color: #00ffcc; margin-bottom: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>
+            <span>>_ 抽卡系統啟動</span>
+            <span class="user-info" id="player-name">正在讀取玩家資料...</span>
+        </h2>
+        <div id="sys-message">系統就緒。請選擇抽取模式。</div>
+        <div id="display-area">等待指令中...</div>
+        
+        <button class="btn" id="btn-draw-1">單抽 (1x)</button>
+        <button class="btn" id="btn-draw-5">五連抽 (5x)</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        // 你的專屬金鑰
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
+            authDomain: "my-gacha-game-f7663.firebaseapp.com",
+            projectId: "my-gacha-game-f7663",
+            storageBucket: "my-gacha-game-f7663.firebasestorage.app",
+            messagingSenderId: "1035192644413",
+            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUserDocRef = null;
+
+        // 1. 檢查玩家有沒有登入
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const realId = user.email.split('@')[0];
+                currentUserDocRef = doc(db, "users", realId);
+                
+                // 抓取玩家名字顯示在畫面上
+                const docSnap = await getDoc(currentUserDocRef);
+                if (docSnap.exists()) {
+                    document.getElementById('player-name').innerText = `ID: ${realId} | 玩家: ${docSnap.data().name}`;
+                }
+            } else {
+                alert("未偵測到存取權限，請先登入！");
+                window.location.href = "index.html"; // 踢回首頁
+            }
+        });
+
+        // 2. 卡池機率設定 (之後教你怎麼換成圖片)
+        const cardPool = [
+            { name: "S級神器", type: "ssr", chance: 0.05 },  // 5% 機率
+            { name: "A級裝備", type: "sr", chance: 0.15 },   // 15% 機率
+            { name: "普通素材", type: "r", chance: 0.80 }    // 80% 機率
+        ];
+
+        // 抽卡數學邏輯
+        function executeDraw() {
+            let rand = Math.random();
+            let cumulative = 0;
+            for (let i = 0; i < cardPool.length; i++) {
+                cumulative += cardPool[i].chance;
+                if (rand <= cumulative) return cardPool[i];
+            }
+            return cardPool[cardPool.length - 1];
+        }
+
+        // 點擊抽卡後的動作
+        async function performGacha(times) {
+            const displayArea = document.getElementById('display-area');
+            const sysMessage = document.getElementById('sys-message');
+            displayArea.innerHTML = '';
+            sysMessage.innerText = "資料庫寫入中...";
+            
+            let drawResults = [];
+
+            // 畫出卡片
+            for(let i=0; i<times; i++) {
+                let card = executeDraw();
+                drawResults.push(card.name);
+                displayArea.innerHTML += `<div class="card ${card.type}">${card.name}<br>(${card.type.toUpperCase()})</div>`;
+            }
+
+            // 將抽到的卡片存進資料庫
+            try {
+                await updateDoc(currentUserDocRef, {
+                    inventory: arrayUnion(...drawResults)
+                });
+                sysMessage.innerText = `[成功] 已將 ${times} 張卡片存入雲端背包。`;
+            } catch (error) {
+                sysMessage.innerText = `[錯誤] 資料庫寫入失敗：${error.message}`;
+            }
+        }
+
+        // 按鈕綁定
+        document.getElementById('btn-draw-1').addEventListener('click', () => performGacha(1));
+        document.getElementById('btn-draw-5').addEventListener('click', () => performGacha(5));
+    </script>
+</body>
+</html>
