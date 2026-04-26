@@ -2,28 +2,78 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>Solo_Leveling_System_Terminal</title>
+    <title>Solo_Leveling_System_v4</title>
     <style>
-        /* --- 原有特效保留與增強 --- */
+        /* --- 基礎特效保留 --- */
         body {
             background-color: #050505;
             color: #00ffcc;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-direction: row;
             margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- 左側導覽列 --- */
+        .sidebar {
+            width: 220px;
+            background: rgba(15, 15, 15, 0.95);
+            border-right: 2px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 10px;
+            gap: 10px;
+        }
+        .sidebar-title {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 10px;
+            padding-left: 10px;
+            letter-spacing: 2px;
+        }
+        .pool-btn {
+            background: transparent;
+            color: #888;
+            border: 1px solid #333;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .pool-btn:hover { border-color: #00ffcc; color: #00ffcc; }
+        .pool-btn.active {
+            border-color: #00ffcc;
+            color: #00ffcc;
+            background: rgba(0, 255, 204, 0.1);
+        }
+
+        /* --- 右側主區域 --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             padding: 20px;
+            overflow-y: auto;
         }
 
         .container {
-            width: 90%;
-            max-width: 1000px;
+            width: 100%;
             background: rgba(10, 10, 10, 0.9);
-            padding: 30px;
+            padding: 25px;
             border: 2px solid #333;
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
             position: relative;
+            animation: rgb-glow 8s linear infinite;
+        }
+
+        @keyframes rgb-glow {
+            0% { border-color: #ff0055; }
+            33% { border-color: #00ffcc; }
+            66% { border-color: #aa00ff; }
+            100% { border-color: #ff0055; }
         }
 
         h2 {
@@ -31,34 +81,14 @@
             padding-bottom: 15px;
             margin-top: 0;
             text-transform: uppercase;
-            letter-spacing: 3px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        /* 玩家資訊與登出按鈕 */
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-info {
-            color: #ff0055;
-            font-size: 14px;
-            background: rgba(255, 0, 85, 0.1);
-            padding: 5px 15px;
-            border-radius: 4px;
-        }
-
-        .logout-link {
-            color: #555;
-            font-size: 12px;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-        .logout-link:hover { color: #fff; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-info { color: #ff0055; font-size: 14px; background: rgba(255, 0, 85, 0.1); padding: 5px 15px; border-radius: 4px; }
+        .logout-link { color: #555; font-size: 12px; cursor: pointer; text-decoration: underline; }
 
         #sys-message {
             color: #00ffcc;
@@ -80,106 +110,88 @@
             border: 1px solid #222;
             padding: 20px;
             gap: 15px;
-            overflow-y: auto;
         }
 
-        /* --- 卡片與稀有度特效 (全部保留) --- */
+        /* --- 卡片與稀有度特效 --- */
         .card {
-            width: 140px;
-            height: 210px;
-            background: #111;
-            border: 2px solid #444;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            transition: all 0.3s ease;
+            width: 140px; height: 210px; background: #111; border: 2px solid #444;
+            display: flex; flex-direction: column; align-items: center; transition: 0.3s;
         }
-        .card:hover { transform: translateY(-10px); z-index: 10; }
         .card img { width: 100%; height: 165px; object-fit: cover; }
-        .card .card-rank {
-            width: 100%;
-            height: 45px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 16px;
-            background: rgba(0, 0, 0, 0.9);
+        .card .card-rank { 
+            width: 100%; height: 45px; 
+            display: flex; justify-content: center; align-items: center; 
+            font-weight: bold; font-size: 14px; 
+            background: rgba(0,0,0,0.9); text-align: center; 
         }
 
         .rank-f, .rank-e, .rank-d, .rank-c { border-color: #555; color: #aaa; }
         .rank-b, .rank-a { border-color: #aa00ff; color: #aa00ff; box-shadow: 0 0 10px rgba(170, 0, 255, 0.3); }
         .rank-s { border-color: #ff0055; color: #ff0055; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5); }
         .rank-ss { border-color: #ffd700; color: #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); }
-        .rank-sss { 
-            border-color: #fff; color: #fff; 
-            box-shadow: 0 0 35px #fff; 
-            animation: pulse 1s infinite;
-        }
+        .rank-sss { border-color: #fff; color: #fff; box-shadow: 0 0 35px #fff; animation: pulse 1s infinite; }
 
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 20px #fff; }
-            50% { transform: scale(1.05); box-shadow: 0 0 40px #fff; }
-            100% { transform: scale(1); box-shadow: 0 0 20px #fff; }
-        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* --- 背包統計數據 --- */
-        .stats-panel {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid #333;
+        /* --- 背包統計 --- */
+        .stats-panel { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); 
+            gap: 10px; margin-bottom: 20px; padding: 15px; 
+            background: rgba(0, 255, 204, 0.05); 
+            border: 1px solid #333; 
         }
-        .stat-item { text-align: center; font-size: 12px; }
-        .stat-val { display: block; font-size: 18px; font-weight: bold; color: #fff; }
+        .stat-item { text-align: center; font-size: 11px; border-right: 1px solid #222; }
+        .stat-item:last-child { border-right: none; }
+        .stat-label { color: #555; display: block; margin-bottom: 5px; }
+        .stat-val { display: block; font-size: 20px; font-weight: bold; color: #00ffcc; }
 
-        .button-group { display: flex; gap: 15px; flex-wrap: wrap; }
-        .btn {
-            background: transparent; color: #00ffcc; border: 1px solid #00ffcc;
-            padding: 12px 25px; cursor: pointer; font-size: 14px;
-            font-family: 'Courier New', Courier, monospace; font-weight: bold;
-            transition: 0.2s; text-transform: uppercase;
-        }
+        .button-group { display: flex; gap: 15px; }
+        .btn { background: transparent; color: #00ffcc; border: 1px solid #00ffcc; padding: 12px 25px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; }
         .btn:hover { background: #00ffcc; color: #000; box-shadow: 0 0 15px #00ffcc; }
         .btn-purple { border-color: #aa00ff; color: #aa00ff; }
-        .btn-purple:hover { background: #aa00ff; color: #fff; box-shadow: 0 0 15px #aa00ff; }
 
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>
-            <span id="system-title">>_ DUNGEON_STAGING</span>
-            <div class="header-right">
-                <span class="user-info" id="player-name">ID: UNKNOWN | 玩家: 載入中...</span>
-                <span class="logout-link" id="btn-logout">[LOGOUT]</span>
-            </div>
-        </h2>
+    <div class="sidebar">
+        <div class="sidebar-title">TERMINAL_MENU</div>
+        <button class="pool-btn active" data-pool="frieren">葬送的芙莉蓮</button>
+        <button class="pool-btn" data-pool="elite">實力至上主義教室</button>
+        <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
         
-        <div id="sys-message">系統初始化完成... 等待指令。</div>
-        
-        <div id="gacha-view">
-            <div class="display-area" id="draw-area">
-                <p style="color: #333;">[請選擇抽取模式進行獵人召喚]</p>
-            </div>
-            <div class="button-group">
-                <button class="btn" id="btn-draw-1">單次召喚 (1x)</button>
-                <button class="btn" id="btn-draw-5">連續召喚 (5x)</button>
-                <button class="btn btn-purple" id="btn-go-backpack" style="margin-left: auto;">查看背包 (Inventory)</button>
-            </div>
+        <div style="margin-top: auto;">
+            <button class="btn btn-purple" id="btn-go-backpack" style="width: 100%;">查看背包 (INV)</button>
         </div>
+    </div>
 
-        <div id="backpack-view" class="hidden">
-            <div class="stats-panel" id="army-stats">
+    <div class="main-content">
+        <div class="container">
+            <h2>
+                <span id="system-title">>_ DUNGEON: FRIEREN</span>
+                <div class="header-right">
+                    <span class="user-info" id="player-name">ID: UNKNOWN | 玩家: 載入中...</span>
+                    <span class="logout-link" id="btn-logout">[LOGOUT]</span>
                 </div>
-            <div class="display-area" id="inventory-area"></div>
-            <div class="button-group">
+            </h2>
+            
+            <div id="sys-message">系統就緒。</div>
+            
+            <div id="gacha-view">
+                <div class="display-area" id="draw-area">
+                    <p style="color: #333;">[等待召喚指令]</p>
+                </div>
+                <div class="button-group">
+                    <button class="btn" id="btn-draw-1">單次召喚 (1x)</button>
+                    <button class="btn" id="btn-draw-5">連續召喚 (5x)</button>
+                </div>
+            </div>
+
+            <div id="backpack-view" class="hidden">
+                <div class="stats-panel" id="army-stats"></div>
+                <div class="display-area" id="inventory-area"></div>
                 <button class="btn" id="btn-go-gacha"><< 返回大廳</button>
             </div>
         </div>
@@ -204,6 +216,57 @@
         const db = getFirestore(app);
 
         let currentUserDocRef = null;
+        let currentPoolId = 'frieren';
+
+        // ==========================================
+        // 🛠️ 卡池設定 (已移除「獵人」字樣)
+        // ==========================================
+        const pools = {
+            'frieren': {
+                title: ">_ DUNGEON: FRIEREN",
+                cards: [
+                    { id: "f_f", name: "F級 芙莉蓮", img: "images/f_f.png", class: "rank-f", chance: 0.20 },
+                    { id: "f_e", name: "E級 費倫", img: "images/f_e.png", class: "rank-e", chance: 0.25 },
+                    { id: "f_d", name: "D級 修塔爾克", img: "images/f_d.png", class: "rank-d", chance: 0.205 },
+                    { id: "f_c", name: "C級 海塔", img: "images/f_c.png", class: "rank-c", chance: 0.17 },
+                    { id: "f_b", name: "B級 艾冉", img: "images/f_b.png", class: "rank-b", chance: 0.13 },
+                    { id: "f_a", name: "A級 贊恩", img: "images/f_a.png", class: "rank-a", chance: 0.025 },
+                    { id: "f_s", name: "S級 辛美爾", img: "images/f_s.png", class: "rank-s", chance: 0.015 },
+                    { id: "f_ss", name: "SS級 大魔法師", img: "images/f_ss.png", class: "rank-ss", chance: 0.005 },
+                    { id: "f_sss", name: "SSS級 暗影芙莉蓮", img: "images/f_sss.png", class: "rank-sss", chance: 0 }
+                ]
+            },
+            'elite': {
+                title: ">_ ACADEMY: ELITE",
+                cards: [
+                    { id: "e_f", name: "F級 堀北學", img: "images/e_f.png", class: "rank-f", chance: 0.20 },
+                    { id: "e_e", name: "E級 櫛田", img: "images/e_e.png", class: "rank-e", chance: 0.25 },
+                    { id: "e_d", name: "D級 須藤", img: "images/e_d.png", class: "rank-d", chance: 0.205 },
+                    { id: "e_c", name: "C級 佐倉", img: "images/e_c.png", class: "rank-c", chance: 0.17 },
+                    { id: "e_b", name: "B級 一之瀨", img: "images/e_b.png", class: "rank-b", chance: 0.13 },
+                    { id: "e_a", name: "A級 坂柳", img: "images/e_a.png", class: "rank-a", chance: 0.025 },
+                    { id: "e_s", name: "S級 綾小路", img: "images/e_s.png", class: "rank-s", chance: 0.015 },
+                    { id: "e_ss", name: "SS級 白屋王者", img: "images/e_ss.png", class: "rank-ss", chance: 0.005 },
+                    { id: "e_sss", name: "SSS級 幕後君王", img: "images/e_sss.png", class: "rank-sss", chance: 0 }
+                ]
+            },
+            'jujutsu': {
+                title: ">_ CURSE: JUJUTSU",
+                cards: [
+                    { id: "j_f", name: "F級 熊貓", img: "images/j_f.png", class: "rank-f", chance: 0.20 },
+                    { id: "j_e", name: "E級 真希", img: "images/j_e.png", class: "rank-e", chance: 0.25 },
+                    { id: "j_d", name: "D級 棘", img: "images/j_d.png", class: "rank-d", chance: 0.205 },
+                    { id: "j_c", name: "C級 釘崎", img: "images/j_c.png", class: "rank-c", chance: 0.17 },
+                    { id: "j_b", name: "B級 伏黑", img: "images/j_b.png", class: "rank-b", chance: 0.13 },
+                    { id: "j_a", name: "A級 七海", img: "images/j_a.png", class: "rank-a", chance: 0.025 },
+                    { id: "j_s", name: "S級 五條悟", img: "images/j_s.png", class: "rank-s", chance: 0.015 },
+                    { id: "j_ss", name: "SS級 宿儺", img: "images/j_ss.png", class: "rank-ss", chance: 0.005 },
+                    { id: "j_sss", name: "SSS級 詛咒之王", img: "images/j_sss.png", class: "rank-sss", chance: 0 }
+                ]
+            }
+        };
+
+        // --- 功能邏輯 ---
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -213,68 +276,28 @@
                 if (docSnap.exists()) {
                     document.getElementById('player-name').innerText = `ID: ${realId} | 玩家: ${docSnap.data().name}`;
                 }
-            } else {
-                window.location.href = "index.html"; 
-            }
+            } else { window.location.href = "index.html"; }
         });
 
-        // ==========================================
-        // 🛠️ Solo Leveling 卡池 (SSS 機率為 0)
-        // ==========================================
-        const cardPool = [
-            { id: "f", name: "F級 獵人", img: "images/f.png", class: "rank-f", chance: 0.20 },  
-            { id: "e", name: "E級 獵人", img: "images/e.png", class: "rank-e", chance: 0.25 },  
-            { id: "d", name: "D級 獵人", img: "images/d.png", class: "rank-d", chance: 0.205 }, 
-            { id: "c", name: "C級 獵人", img: "images/c.png", class: "rank-c", chance: 0.17 },  
-            { id: "b", name: "B級 獵人", img: "images/b.png", class: "rank-b", chance: 0.13 },  
-            { id: "a", name: "A級 獵人", img: "images/a.png", class: "rank-a", chance: 0.025 }, 
-            { id: "s", name: "S級 獵人", img: "images/s.png", class: "rank-s", chance: 0.015 }, 
-            { id: "ss", name: "SS級 獵人", img: "images/ss.png", class: "rank-ss", chance: 0.005 },
-            { id: "sss", name: "SSS級 暗影君王", img: "images/sss.png", class: "rank-sss", chance: 0 }
-        ];
-
-        function getCardDataById(id) {
-            return cardPool.find(c => c.id === id) || cardPool[0];
-        }
-
-        function executeDraw() {
-            let rand = Math.random();
-            let cumulative = 0;
-            for (let card of cardPool) {
-                cumulative += card.chance;
-                if (rand <= cumulative) return card;
-            }
-            return cardPool[0];
-        }
-
         function createCardHTML(card) {
-            return `
-                <div class="card ${card.class}">
-                    <img src="${card.img}" onerror="this.src='https://via.placeholder.com/140x165/111/00ffcc?text=No_Image'">
-                    <div class="card-rank">${card.name}</div>
-                </div>
-            `;
+            return `<div class="card ${card.class}"><img src="${card.img}" onerror="this.src='https://via.placeholder.com/140x165/111/00ffcc?text=No_Image'"><div class="card-rank">${card.name}</div></div>`;
         }
 
         async function performGacha(times) {
+            const pool = pools[currentPoolId].cards;
             const drawArea = document.getElementById('draw-area');
             const sysMessage = document.getElementById('sys-message');
             drawArea.innerHTML = '';
-            sysMessage.innerText = "召喚陣啟動中...";
+            sysMessage.innerText = "跨維度召喚中...";
             
-            let drawResultsIds = [];
+            let resultsIds = [];
             for(let i=0; i<times; i++) {
-                let card = executeDraw();
-                drawResultsIds.push(card.id);
-                drawArea.innerHTML += createCardHTML(card);
+                let rand = Math.random(), cumulative = 0, picked = pool[0];
+                for (let card of pool) { cumulative += card.chance; if (rand <= cumulative) { picked = card; break; } }
+                resultsIds.push(picked.id);
+                drawArea.innerHTML += createCardHTML(picked);
             }
-
-            try {
-                await updateDoc(currentUserDocRef, { inventory: arrayUnion(...drawResultsIds) });
-                sysMessage.innerText = `[系統] 召喚成功。${times} 名獵人已編入影之軍團。`;
-            } catch (error) {
-                sysMessage.innerText = `[系統] 召喚失敗。`;
-            }
+            try { await updateDoc(currentUserDocRef, { inventory: arrayUnion(...resultsIds) }); sysMessage.innerText = `[系統] 召喚成功。${times} 位成員已就位。`; } catch (e) { sysMessage.innerText = "[系統] 召喚失敗。"; }
         }
 
         async function loadBackpack() {
@@ -282,60 +305,73 @@
             const statsPanel = document.getElementById('army-stats');
             const sysMessage = document.getElementById('sys-message');
             inventoryArea.innerHTML = '';
-            sysMessage.innerText = "正在讀取影之軍團檔案...";
+            sysMessage.innerText = "正在讀取全球軍團檔案...";
 
             try {
                 const docSnap = await getDoc(currentUserDocRef);
                 if (docSnap.exists()) {
-                    const inventoryIds = docSnap.data().inventory || [];
+                    const inv = docSnap.data().inventory || [];
+                    const allCards = Object.values(pools).flatMap(p => p.cards);
                     
-                    // 統計各等級數量
-                    const counts = {};
-                    cardPool.forEach(p => counts[p.id] = 0);
-                    inventoryIds.forEach(id => counts[id] = (counts[id] || 0) + 1);
+                    // --- 修正後的統計引擎 ---
+                    const countMap = { "f":0, "e":0, "d":0, "c":0, "b":0, "a":0, "s":0, "ss":0, "sss":0 };
+                    
+                    inv.forEach(id => {
+                        // 這裡用正則表達式或拆分字串來抓取等級 (例如 f_s 抓最後一個字母 s)
+                        const rankKey = id.split('_').pop(); 
+                        if (countMap.hasOwnProperty(rankKey)) {
+                            countMap[rankKey]++;
+                        }
+                        
+                        const data = allCards.find(c => c.id === id) || allCards[0];
+                        inventoryArea.innerHTML += createCardHTML(data);
+                    });
 
-                    // 顯示統計面板
-                    statsPanel.innerHTML = cardPool.map(p => `
-                        <div class="stat-item">
-                            <span style="color:${p.id==='sss'?'#fff':''}">${p.id.toUpperCase()}級</span>
-                            <span class="stat-val">${counts[p.id]}</span>
-                        </div>
-                    `).join('');
+                    // 渲染統計面板 (隱藏數量為 0 的 SSS)
+                    statsPanel.innerHTML = Object.keys(countMap).map(key => {
+                        if (key === 'sss' && countMap[key] === 0) return ''; 
+                        return `
+                            <div class="stat-item">
+                                <span class="stat-label">${key.toUpperCase()}級</span>
+                                <span class="stat-val">${countMap[key]}</span>
+                            </div>
+                        `;
+                    }).join('');
 
-                    if (inventoryIds.length === 0) {
-                        inventoryArea.innerHTML = "<p style='color:#333;'>目前軍團中沒有獵人。</p>";
-                    } else {
-                        inventoryIds.forEach(id => {
-                            inventoryArea.innerHTML += createCardHTML(getCardDataById(id));
-                        });
-                        sysMessage.innerText = `[成功] 軍團規模：${inventoryIds.length} 人。`;
-                    }
+                    sysMessage.innerText = `[成功] 全球軍團規模：${inv.length} 人。`;
                 }
-            } catch (error) { sysMessage.innerText = "[系統] 無法連結暗影空間。"; }
+            } catch (e) { console.error(e); }
         }
 
-        // --- 事件綁定 ---
+        // --- 切換卡池 ---
+        document.querySelectorAll('.pool-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.pool-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentPoolId = btn.dataset.pool;
+                document.getElementById('system-title').innerText = pools[currentPoolId].title;
+                document.getElementById('draw-area').innerHTML = `<p style="color: #333;">[已切換至 ${btn.innerText} 區]</p>`;
+                document.getElementById('sys-message').innerText = "系統就緒。";
+                
+                document.getElementById('backpack-view').classList.add('hidden');
+                document.getElementById('gacha-view').classList.remove('hidden');
+            });
+        });
+
         document.getElementById('btn-draw-1').addEventListener('click', () => performGacha(1));
         document.getElementById('btn-draw-5').addEventListener('click', () => performGacha(5));
-        
         document.getElementById('btn-go-backpack').addEventListener('click', () => {
             document.getElementById('gacha-view').classList.add('hidden');
             document.getElementById('backpack-view').classList.remove('hidden');
-            document.getElementById('system-title').innerText = ">_ SHADOW_ARMY_DATABASE";
+            document.getElementById('system-title').innerText = ">_ GLOBAL_INVENTORY";
             loadBackpack();
         });
-
         document.getElementById('btn-go-gacha').addEventListener('click', () => {
             document.getElementById('backpack-view').classList.add('hidden');
             document.getElementById('gacha-view').classList.remove('hidden');
-            document.getElementById('system-title').innerText = ">_ DUNGEON_STAGING";
+            document.getElementById('system-title').innerText = pools[currentPoolId].title;
         });
-
-        document.getElementById('btn-logout').addEventListener('click', () => {
-            if(confirm("確定要切換當前帳號？")) {
-                signOut(auth).then(() => window.location.href = "index.html");
-            }
-        });
+        document.getElementById('btn-logout').addEventListener('click', () => { if(confirm("確定登出系統？")) signOut(auth).then(() => window.location.href = "index.html"); });
     </script>
 </body>
 </html>
