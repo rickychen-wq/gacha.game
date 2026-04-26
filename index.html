@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Gacha_System_Login</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        @keyframes rgb-glow {
+            0% { border-color: #ff0055; box-shadow: 0 0 15px #ff0055; }
+            33% { border-color: #00ffcc; box-shadow: 0 0 15px #00ffcc; }
+            66% { border-color: #aa00ff; box-shadow: 0 0 15px #aa00ff; }
+            100% { border-color: #ff0055; box-shadow: 0 0 15px #ff0055; }
+        }
+        .login-box {
+            background: rgba(10, 10, 10, 0.9);
+            padding: 30px;
+            width: 350px;
+            border: 2px solid #00ffcc;
+            animation: rgb-glow 4s linear infinite;
+        }
+        h2 {
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .input-group input {
+            width: 90%;
+            background: transparent;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 8px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .input-group input:focus {
+            border-color: #00ffcc;
+            outline: none;
+        }
+        .btn {
+            width: 100%;
+            background: transparent;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #00ffcc;
+            color: #000;
+            box-shadow: 0 0 15px #00ffcc;
+        }
+        #sys-message {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #ff0055;
+            min-height: 15px;
+        }
+        /* 隱藏區塊用的 class */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2>>_ SYSTEM_LOGIN</h2>
+        
+        <div id="step-1">
+            <div class="input-group">
+                <label>請輸入您的登入 ID：</label>
+                <input type="text" id="user-id" placeholder="例如: player01" autocomplete="off">
+            </div>
+            <button class="btn" id="btn-check-id">掃描 ID (Scan)</button>
+        </div>
+
+        <div id="step-2" class="hidden">
+            <div class="input-group">
+                <label>目標 ID：<span id="display-id" style="color: #fff;"></span></label>
+            </div>
+            
+            <div class="input-group hidden" id="name-group">
+                <label>系統偵測為新 ID，請設定玩家名稱：</label>
+                <input type="text" id="user-name" placeholder="輸入您的遊戲暱稱">
+            </div>
+
+            <div class="input-group">
+                <label>請輸入安全密碼：</label>
+                <input type="password" id="user-pwd" placeholder="至少 6 個字元">
+            </div>
+            
+            <button class="btn" id="btn-action">執行 (Execute)</button>
+        </div>
+
+        <div id="sys-message"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        // 這是你剛剛拔下來的金鑰！
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
+            authDomain: "my-gacha-game-f7663.firebaseapp.com",
+            projectId: "my-gacha-game-f7663",
+            storageBucket: "my-gacha-game-f7663.firebasestorage.app",
+            messagingSenderId: "1035192644413",
+            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54"
+        };
+
+        // 啟動 Firebase 與資料庫
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // 取得畫面上的元素
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const nameGroup = document.getElementById('name-group');
+        const inputId = document.getElementById('user-id');
+        const inputName = document.getElementById('user-name');
+        const inputPwd = document.getElementById('user-pwd');
+        const displayId = document.getElementById('display-id');
+        const btnCheckId = document.getElementById('btn-check-id');
+        const btnAction = document.getElementById('btn-action');
+        const sysMessage = document.getElementById('sys-message');
+
+        let isNewUser = false;
+        let currentId = '';
+
+        // 處理步驟一：檢查 ID 是否存在
+        btnCheckId.addEventListener('click', async () => {
+            currentId = inputId.value.trim();
+            if(!currentId) {
+                sysMessage.innerText = "[錯誤] ID 不可為空";
+                return;
+            }
+
+            sysMessage.innerText = "資料庫連線中...";
+            
+            try {
+                // 去資料庫的 users 資料夾找這個 ID
+                const docRef = doc(db, "users", currentId);
+                const docSnap = await getDoc(docRef);
+
+                step1.classList.add('hidden');
+                step2.classList.remove('hidden');
+                displayId.innerText = currentId;
+
+                if (docSnap.exists()) {
+                    // ID 存在 -> 舊玩家登入模式
+                    isNewUser = false;
+                    sysMessage.innerText = "[系統] ID 已確認，請輸入密碼解鎖。";
+                    btnAction.innerText = "登入 (Login)";
+                } else {
+                    // ID 不存在 -> 新玩家註冊模式
+                    isNewUser = true;
+                    nameGroup.classList.remove('hidden');
+                    sysMessage.innerText = "[系統] 未知 ID，請建立使用者檔案。";
+                    btnAction.innerText = "註冊綁定 (Register)";
+                }
+            } catch (error) {
+                sysMessage.innerText = "[錯誤] 無法連接資料庫：" + error.message;
+            }
+        });
+
+        // 處理步驟二：登入或註冊
+        btnAction.addEventListener('click', async () => {
+            const pwd = inputPwd.value;
+            // 把 ID 加上假網域騙過 Firebase
+            const fakeEmail = `${currentId}@gacha.game`; 
+
+            if(pwd.length < 6) {
+                sysMessage.innerText = "[錯誤] 密碼長度必須大於 6 碼";
+                return;
+            }
+
+            sysMessage.innerText = "驗證中...";
+
+            if (isNewUser) {
+                // 註冊流程
+                const name = inputName.value.trim();
+                if(!name) {
+                    sysMessage.innerText = "[錯誤] 玩家名稱不可為空";
+                    return;
+                }
+                
+                try {
+                    // 1. 在 Authentication 建立帳號
+                    await createUserWithEmailAndPassword(auth, fakeEmail, pwd);
+                    // 2. 在 Firestore 存入他的名字跟預設背包
+                    await setDoc(doc(db, "users", currentId), {
+                        name: name,
+                        inventory: [],
+                        totalDraws: 0
+                    });
+                    sysMessage.style.color = "#00ffcc";
+                    sysMessage.innerText = "[成功] 註冊完成，正在進入終端...";
+                    // 成功後可以跳轉到抽卡頁面，目前先用警告窗代替
+                    setTimeout(() => alert("登入成功！準備進入遊戲"), 1000);
+                } catch (error) {
+                    sysMessage.innerText = "[錯誤] 註冊失敗：" + error.code;
+                }
+            } else {
+                // 登入流程
+                try {
+                    await signInWithEmailAndPassword(auth, fakeEmail, pwd);
+                    sysMessage.style.color = "#00ffcc";
+                    sysMessage.innerText = "[成功] 密碼正確，連線建立。";
+                    // 成功後跳轉
+                    setTimeout(() => alert("登入成功！準備進入遊戲"), 1000);
+                } catch (error) {
+                    sysMessage.innerText = "[錯誤] 密碼錯誤或帳號異常";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
