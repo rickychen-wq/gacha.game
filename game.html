@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo_Leveling_System_V8.1_CleanCode</title>
+    <title>Solo_Leveling_System_V8.3_CustomPics</title>
     <style>
-        /* ==========================================================================
-           [1] 系統全域設定與底層鎖死 (絕對防破版)
-           ========================================================================== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body { 
@@ -21,9 +18,6 @@
             overflow: hidden; user-select: none;
         }
 
-        /* ==========================================================================
-           [2] 左側終端機導覽列
-           ========================================================================== */
         .sidebar { 
             width: 240px; min-width: 240px; 
             background: linear-gradient(180deg, rgba(15,15,15,0.95) 0%, rgba(0,0,0,1) 100%); 
@@ -47,9 +41,6 @@
             transform: translateX(5px);
         }
 
-        /* ==========================================================================
-           [3] 右側主控制區與 RGB 呼吸燈容器
-           ========================================================================== */
         .main-content { 
             flex: 1; height: 100vh; overflow-y: auto; overflow-x: hidden; 
             padding: 40px; background: radial-gradient(circle at center, rgba(20,20,20,0.8) 0%, rgba(0,0,0,0.9) 100%); 
@@ -74,9 +65,6 @@
         .logout-link:hover { color: #ff0055; border-bottom-color: #ff0055; }
         #sys-message { color: #00ffcc; margin-bottom: 25px; font-size: 15px; font-weight: bold; height: 20px; }
 
-        /* ==========================================================================
-           [4] 史詩級抽卡動畫 (流星與大爆炸)
-           ========================================================================== */
         #gacha-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
@@ -122,9 +110,6 @@
             80% { transform: translate(-2px, -3px) rotate(1deg); } 100% { transform: translate(0, 0) rotate(0deg); } 
         }
 
-        /* ==========================================================================
-           [5] 卡片展示區與堆疊排序
-           ========================================================================== */
         .display-area { 
             min-height: 450px; display: flex; justify-content: center; align-content: flex-start; 
             flex-wrap: wrap; gap: 20px; background: rgba(0,0,0,0.6); padding: 30px; 
@@ -159,9 +144,6 @@
         .rank-sss { border-color: #fff; color: #fff; box-shadow: 0 0 45px #fff, inset 0 0 20px #fff; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 60px #fff; } 100% { opacity: 0.8; } }
 
-        /* ==========================================================================
-           [6] 統計面板與互動按鈕
-           ========================================================================== */
         .stats-panel { 
             display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; 
             padding: 25px; background: rgba(0, 255, 204, 0.03); border: 1px solid #222; border-radius: 8px;
@@ -200,8 +182,8 @@
     </div>
 
     <div class="sidebar">
-        <div class="sidebar-title">TERMINAL_V8.1</div>
-        <button class="pool-btn active" data-pool="frieren">葬送的芙莉蓮</button>
+        <div class="sidebar-title">TERMINAL_V8.3</div>
+        <button class="pool-btn active" data-pool="freren">葬送的芙莉蓮</button>
         <button class="pool-btn" data-pool="elite">實力至上教室</button>
         <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
         
@@ -213,7 +195,7 @@
     <div class="main-content">
         <div class="container" id="main-view">
             <h2>
-                <span id="system-title">>_ DUNGEON: FRIEREN</span>
+                <span id="system-title">>_ DUNGEON: FREREN</span>
                 <span class="header-right">
                     <span class="user-info" id="player-name">USER: CONNECTING...</span>
                     <span class="logout-link" id="btn-logout">[SHUTDOWN]</span>
@@ -260,38 +242,38 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         let currentUserDocRef = null;
-        let currentPoolId = 'frieren';
+        let currentPoolId = 'freren'; // 配合你的資料夾名字 freren
 
         // ==========================================
-        // 📸 圖片代號字典：把落落長的檔名綁定到短代號
+        // 📸 圖片代號字典：已經幫你把截圖裡的 9 張圖設定好了！
         // ==========================================
-        const IMG = {
-            // 芙莉蓮池的圖
-            fri_pic1: '127401.jpg',
-            fri_pic2: '15662354952450560.jpg',
-            fri_pic3: 'b3f5eb5c0b7d640bc7d765d50eb6cb....jpg', // 請替換成真檔名
-            fri_pic4: 'frieren-wallpaper-4k-made-by-me-3-...webp', // 請替換成真檔名
-            
-            // 如果你有實力至上的圖，也可以加在這裡，例如：
-            // eli_pic1: 'ayanokouji.jpg',
+        const PIC = {
+            1: '127401.jpg',
+            2: '15662354952458560.jpg',
+            3: 'b3f5eb5c8b7d648bc7d765d50eb6cbb7.jpg', 
+            4: 'b9c16a185bc77814d7808a3aa44674b7.jpg',
+            5: 'cdc2efd01e991ea9de1f1d6c5e8dcdec.jpg',
+            6: 'ce62763ab81889ebab8fe558ffb9a319.jpg',
+            7: 'f90261b53e29422197a7b5207694b495.jpg',
+            8: 'frieren-wallpaper-4k-made-by-me-3-v0-for3cbmfqjoc1.webp',
+            9: 'ow6l5a9lvR7EiALivAByvQl3VAjAEBbuPbAVE~tplv-dy-aweme-images_q75.webp'
         };
 
         // ==========================================
-        // 🛠️ 控制面板：版面瞬間變超乾淨
+        // 🛠️ 控制面板：目前預設這 9 張都在 E 級，你可以隨意搬動這些數字！
         // ==========================================
         const poolSettings = {
-            'frieren': { 
-                f: [], 
-                e: [ IMG.fri_pic1, IMG.fri_pic2, IMG.fri_pic3, IMG.fri_pic4 ], // 直接寫代號！
-                d: [], 
-                c: [], 
-                b: [], 
-                a: [], 
-                s: [], 
-                ss: [], 
+            'freren': { 
+                f: [3], 
+                e: [1, 2],
+                d: [4], 
+                c: [5], 
+                b: [6], 
+                a: [7], 
+                s: [8], 
+                ss: [9], 
                 sss: [] 
             },
-            // 其他池如果沒圖，就留空陣列
             'elite':   { f:[], e:[], d:[], c:[], b:[], a:[], s:[], ss:[], sss:[] },
             'jujutsu': { f:[], e:[], d:[], c:[], b:[], a:[], s:[], ss:[], sss:[] }
         };
@@ -318,7 +300,6 @@
             
             const imgArray = poolSettings[pId][rank];
             const maxCount = imgArray.length;
-            
             const index = maxCount > 0 ? Math.floor(Math.random() * maxCount) : 0;
             return `${pId}_${rank}_${index}`;
         }
@@ -330,8 +311,11 @@
             const styleDelay = isReveal ? `style="animation-delay: ${delayDelay}s;"` : '';
             
             let realFileName = 'locked.png';
-            if (poolSettings[pool] && poolSettings[pool][rank] && poolSettings[pool][rank][index]) {
-                realFileName = poolSettings[pool][rank][index];
+            if (poolSettings[pool] && poolSettings[pool][rank] && poolSettings[pool][rank][index] !== undefined) {
+                let picId = poolSettings[pool][rank][index];
+                if (PIC[picId]) {
+                    realFileName = PIC[picId];
+                }
             }
 
             return `
