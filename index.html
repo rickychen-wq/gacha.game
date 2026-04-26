@@ -122,7 +122,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // 這是你剛剛拔下來的金鑰！
+        // 這是你的金鑰
         const firebaseConfig = {
             apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
             authDomain: "my-gacha-game-f7663.firebaseapp.com",
@@ -220,8 +220,10 @@
                     });
                     sysMessage.style.color = "#00ffcc";
                     sysMessage.innerText = "[成功] 註冊完成，正在進入終端...";
-                    // 成功後可以跳轉到抽卡頁面，目前先用警告窗代替
-                    setTimeout(() => alert("登入成功！準備進入遊戲"), 1000);
+                    
+                    // 傳送門在這裡！1秒後自動跳轉到抽卡大廳
+                    setTimeout(() => window.location.href = "game.html", 1000);
+
                 } catch (error) {
                     sysMessage.innerText = "[錯誤] 註冊失敗：" + error.code;
                 }
@@ -231,8 +233,10 @@
                     await signInWithEmailAndPassword(auth, fakeEmail, pwd);
                     sysMessage.style.color = "#00ffcc";
                     sysMessage.innerText = "[成功] 密碼正確，連線建立。";
-                    // 成功後跳轉
-                    setTimeout(() => alert("登入成功！準備進入遊戲"), 1000);
+                    
+                    // 傳送門在這裡！1秒後自動跳轉到抽卡大廳
+                    setTimeout(() => window.location.href = "game.html", 1000);
+
                 } catch (error) {
                     sysMessage.innerText = "[錯誤] 密碼錯誤或帳號異常";
                 }
