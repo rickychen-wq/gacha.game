@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo_Leveling_System_V14_TRUE_FINAL</title>
+    <title>Solo_Leveling_System_V15_Fully_Expanded</title>
     <style>
         /* ==========================================================================
-           [1] 系統全域 UI (暗黑科技感與 RGB 呼吸燈)
+           [1] 系統全域 UI (暗黑科技感與 RGB 呼吸燈) - 完全展開版
            ========================================================================== */
         * { 
             box-sizing: border-box; 
@@ -315,7 +315,7 @@
         }
 
         .card.locked img { 
-            filter: brightness(0.2) grayscale(1) blur(1px); 
+            filter: brightness(0.2) grayscale(1) blur(2px); 
         }
 
         .card.locked .card-rank { 
@@ -501,7 +501,7 @@
     </div>
 
     <div class="sidebar">
-        <div class="sidebar-title">TERMINAL_V14</div>
+        <div class="sidebar-title">TERMINAL_V15</div>
         <button class="pool-btn active" data-pool="freren">葬送的芙莉蓮</button>
         <button class="pool-btn" data-pool="elite">實力至上教室</button>
         <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
@@ -569,7 +569,7 @@
         let currentPoolId = 'freren';
 
         // ==========================================
-        // 🛠️ 三大卡池設定全數保留，沒刪除！
+        // 🛠️ 三大卡池設定全數保留
         // ==========================================
         const poolSettings = {
             'freren': { 
@@ -605,7 +605,7 @@
                 currentUserDocRef = doc(db, "users", id);
                 document.getElementById('player-name').innerText = `USER: ${id}`;
             } else { 
-                // 沒有登入時，提供單機測試模式，不再重新整理跳轉
+                // 沒有登入時，提供單機測試模式，絕對不會跳轉
                 currentUserDocRef = doc(db, "users", "test_commander");
                 document.getElementById('player-name').innerText = `MODE: TESTER`;
             }
@@ -615,7 +615,6 @@
             let rand = Math.random(), cum = 0, rank = 'd';
             for (let c of chances) { cum += c.p; if (rand <= cum) { rank = c.r; break; } }
             
-            // 檢查該卡池該等級有沒有設定圖片，沒有就預設為第0張
             const imgArray = poolSettings[pId][rank] || [];
             const maxCount = imgArray.length;
             const index = maxCount > 0 ? Math.floor(Math.random() * maxCount) : 0;
@@ -830,12 +829,11 @@
             document.getElementById('system-title').innerText = `>_ DUNGEON: ${currentPoolId.toUpperCase()}`;
         });
 
-        // 🚨 修正登出無限跳轉的 Bug
+        // 🚨 修復登出無限跳轉 Bug：只重整畫面，不跳轉
         document.getElementById('btn-logout').addEventListener('click', () => { 
             if(confirm("確定中斷神經連結？")) {
                 signOut(auth).then(() => {
                     document.getElementById('sys-message').innerText = "[系統] 已離線。進入單機測試模式。";
-                    // 這裡改為單純重整頁面，不再亂跳轉
                     window.location.reload(); 
                 });
             }
