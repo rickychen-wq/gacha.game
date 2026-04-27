@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo_Leveling_System_V11_StackFix</title>
+    <title>Solo_Leveling_System_V12.1_Final_Mission</title>
     <style>
+        /* ==========================================================================
+           [1] 系統底層 (RGB 呼吸燈與暗黑風格)
+           ========================================================================== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body { 
@@ -65,7 +68,9 @@
         .logout-link:hover { color: #ff0055; border-bottom-color: #ff0055; }
         #sys-message { color: #00ffcc; margin-bottom: 25px; font-size: 15px; font-weight: bold; height: 20px; }
 
-        /* 史詩級抽卡動畫 */
+        /* ==========================================================================
+           [2] 史詩動畫 (流星雨與爆炸)
+           ========================================================================== */
         #gacha-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
@@ -96,10 +101,12 @@
         .shake-effect { animation: shake 0.6s; }
         @keyframes shake { 0% { transform: translate(3px, 3px) rotate(0deg); } 20% { transform: translate(-5px, 0px) rotate(1deg); } 40% { transform: translate(5px, 4px) rotate(0deg); } 60% { transform: translate(-5px, 2px) rotate(-1deg); } 80% { transform: translate(-2px, -3px) rotate(1deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
 
-        /* 卡片展示區與堆疊排序 */
+        /* ==========================================================================
+           [3] 卡片展示區與封印特效
+           ========================================================================== */
         .display-area { 
-            min-height: 450px; display: flex; justify-content: center; align-content: flex-start; 
-            flex-wrap: wrap; gap: 20px; background: rgba(0,0,0,0.6); padding: 30px; border: 1px solid #1a1a1a; border-radius: 8px;
+            display: flex; justify-content: flex-start; align-content: flex-start; 
+            flex-wrap: wrap; gap: 20px; background: rgba(0,0,0,0.6); padding: 30px; border: 1px solid #1a1a1a; border-radius: 8px; margin-bottom: 30px;
         }
         .card { 
             width: 150px; height: 220px; background: #000; border: 2px solid #333; 
@@ -108,10 +115,27 @@
         .reveal-card { transform: scale(0); opacity: 0; animation: card-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         @keyframes card-pop { to { transform: scale(1); opacity: 1; } }
 
-        .card:hover { transform: scale(1.08) translateY(-10px); z-index: 10; border-color: #fff; box-shadow: 0 15px 30px rgba(0,0,0,1); }
+        /* 解鎖卡片狀態 */
+        .card:not(.locked):hover { transform: scale(1.08) translateY(-10px); z-index: 10; border-color: #fff; box-shadow: 0 15px 30px rgba(0,0,0,1); }
         .card img { width: 100%; height: 170px; object-fit: cover; filter: brightness(0.8); transition: 0.3s; }
-        .card:hover img { filter: brightness(1.1); }
+        .card:not(.locked):hover img { filter: brightness(1.1); }
         .card .card-rank { width: 100%; height: 50px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 15px; background: #0a0a0a; text-transform: uppercase; letter-spacing: 2px;}
+
+        /* 未解鎖封印狀態 */
+        .card.locked { border-color: #111 !important; box-shadow: none !important; opacity: 0.8; }
+        .card.locked img { filter: brightness(0.2) grayscale(1) blur(1px); }
+        .card.locked .card-rank { color: #444; background: #050505; }
+        
+        .lock-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(45deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 10px, rgba(10,10,10,0.8) 10px, rgba(10,10,10,0.8) 15px);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5;
+        }
+        .lock-icon { font-size: 35px; margin-bottom: 10px; filter: drop-shadow(0 0 5px #ff0055); }
+        .lock-text {
+            color: #ff0055; font-weight: bold; border: 2px solid #ff0055; padding: 4px 10px;
+            transform: rotate(-15deg); letter-spacing: 3px; background: rgba(0,0,0,0.9); box-shadow: 0 0 15px rgba(255,0,85,0.6); font-size: 14px;
+        }
 
         .card-count {
             position: absolute; top: 8px; right: 8px;
@@ -119,14 +143,21 @@
             color: white; padding: 4px 12px; font-size: 13px; font-weight: bold; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.8); z-index: 5; border: 1px solid rgba(255,255,255,0.4);
         }
 
-        .rank-f, .rank-e, .rank-d, .rank-c { border-color: #333; color: #888; }
+        /* 稀有度發光效果 */
+        .rank-d, .rank-c { border-color: #555; color: #999; }
         .rank-b, .rank-a { border-color: #aa00ff; color: #d480ff; box-shadow: 0 0 15px rgba(170, 0, 255, 0.3); }
         .rank-s { border-color: #ff0055; color: #ff80aa; box-shadow: 0 0 25px rgba(255, 0, 85, 0.5); }
         .rank-ss { border-color: #ffd700; color: #ffe680; box-shadow: 0 0 35px rgba(255, 215, 0, 0.7); }
         .rank-sss { border-color: #fff; color: #fff; box-shadow: 0 0 45px #fff, inset 0 0 20px #fff; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 60px #fff; } 100% { opacity: 0.8; } }
 
-        /* 統計面板與互動按鈕 */
+        .rank-section-title {
+            width: 100%; border-left: 5px solid #00ffcc; padding-left: 15px; font-size: 20px; 
+            font-weight: bold; color: #fff; margin-bottom: 15px; letter-spacing: 3px; display: flex; align-items: center;
+        }
+        .rank-section-title span { color: #00ffcc; margin-left: 10px; font-size: 16px; font-family: monospace;}
+
+        /* 統計面板與按鈕 */
         .stats-panel { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; padding: 25px; background: rgba(0, 255, 204, 0.03); border: 1px solid #222; border-radius: 8px; }
         .stat-item { text-align: center; min-width: 80px; position: relative; }
         .stat-item:not(:last-child)::after { content: ''; position: absolute; right: -10px; top: 10%; height: 80%; width: 1px; background: #333; }
@@ -157,13 +188,13 @@
     </div>
 
     <div class="sidebar">
-        <div class="sidebar-title">TERMINAL_V11</div>
+        <div class="sidebar-title">TERMINAL_V12.1</div>
         <button class="pool-btn active" data-pool="freren">葬送的芙莉蓮</button>
         <button class="pool-btn" data-pool="elite">實力至上教室</button>
         <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
         
         <div style="margin-top: auto;">
-            <button class="btn btn-purple" id="btn-go-backpack" style="width: 100%; padding: 15px 0;">查看背包 (INV)</button>
+            <button class="btn btn-purple" id="btn-go-backpack" style="width: 100%; padding: 15px 0;">軍團圖鑑 (INDEX)</button>
         </div>
     </div>
 
@@ -180,7 +211,7 @@
             <div id="sys-message">系統連線穩定。等待召喚指令...</div>
             
             <div id="gacha-view">
-                <div class="display-area" id="draw-area">
+                <div class="display-area" id="draw-area" style="min-height: 450px; justify-content: center;">
                     <p style="color: #333; font-size: 18px; letter-spacing: 2px; align-self: center;">[ 系統待命中 ]</p>
                 </div>
                 <div class="button-group">
@@ -191,10 +222,10 @@
 
             <div id="backpack-view" class="hidden">
                 <div class="stats-panel" id="army-stats"></div>
-                <div class="display-area" id="inventory-area"></div>
+                <div id="inventory-area"></div> 
                 <div class="button-group">
                     <button class="btn" id="btn-go-gacha"><< 返回終端大廳</button>
-                    <button class="btn btn-danger" id="btn-clear-backpack">[ 刪除全部資料 ]</button>
+                    <button class="btn btn-danger" id="btn-clear-backpack">[ 重置圖鑑資料 ]</button>
                 </div>
             </div>
         </div>
@@ -206,15 +237,16 @@
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         // =========================================================================
-        // ⚠️ 警告：請務必再次把下面換成你的真實金鑰！ ⚠️
+        // 🔑 使用軍團長提供的真實金鑰
         // =========================================================================
         const firebaseConfig = {
-            apiKey: "替換成你的_API_KEY",
-            authDomain: "替換成你的_authDomain",
-            projectId: "替換成你的_projectId",
-            storageBucket: "替換成你的_storageBucket",
-            messagingSenderId: "替換成你的_messagingSenderId",
-            appId: "替換成你的_appId"
+            apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
+            authDomain: "my-gacha-game-f7663.firebaseapp.com",
+            projectId: "my-gacha-game-f7663",
+            storageBucket: "my-gacha-game-f7663.firebasestorage.app",
+            messagingSenderId: "1035192644413",
+            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54",
+            measurementId: "G-XV7XQ3RMXW"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -223,41 +255,35 @@
         let currentUserDocRef = null;
         let currentPoolId = 'freren';
 
-        const PIC = {
-            1: '127401.jpg',
-            2: '15662354952458560.jpg',
-            3: 'b3f5eb5c8b7d648bc7d765d50eb6cbb7.jpg', 
-            4: 'b9c16a185bc77814d7808a3aa44674b7.jpg',
-            5: 'cdc2efd01e991ea9de1f1d6c5e8dcdec.jpg',
-            6: 'ce62763ab81889ebab8fe558ffb9a319.jpg',
-            7: 'f90261b53e29422197a7b5207694b495.jpg',
-            8: 'frieren-wallpaper-4k-made-by-me-3-v0-for3cbmfqjoc1.webp',
-            9: 'ow6l5a9lvR7EiALivAByvQl3VAjAEBbuPbAVE~tplv-dy-aweme-images_q75.webp'
-        };
-
+        // ==========================================
+        // 🛠️ 根據截圖整理的卡池設定 (a1, b1 命名法)
+        // ==========================================
         const poolSettings = {
             'freren': { 
-                f: [1], 
-                e: [2], 
-                d: [3], 
-                c: [4], 
-                b: [5], 
-                a: [6], 
-                s: [7], 
-                ss: [8], 
-                sss: [9] 
+                sss: ['sss1.jpg'], 
+                ss:  ['ss1.jpg'], 
+                s: ['s1.jpg', 's2.jpg', 's3.jpg', 's4.jpg', 's5.jpg'],
+                a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a4.jpg', 'a5.jpg', 'a6.jpg', 'a7.jpg', 'a8.jpg', 'a9.jpg'],
+                b: ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg', 'b7.jpg', 'b8.jpg', 'b9.jpg'],
+                c: ['c1.jpg', 'c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg', 'c7.jpg', 'c8.jpg', 'c9.jpg', 'c10.jpg'],
+                d: ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg', 'd8.jpg']
             },
-            'elite':   { f:[], e:[], d:[], c:[], b:[], a:[], s:[], ss:[], sss:[] },
-            'jujutsu': { f:[], e:[], d:[], c:[], b:[], a:[], s:[], ss:[], sss:[] }
+            'elite':   { sss:[], ss:[], s:[], a:[], b:[], c:[], d:[] },
+            'jujutsu': { sss:[], ss:[], s:[], a:[], b:[], c:[], d:[] }
         };
 
         const chances = [
-            { r: 'f', p: 0.20 }, { r: 'e', p: 0.25 }, { r: 'd', p: 0.205 },
-            { r: 'c', p: 0.17 }, { r: 'b', p: 0.13 }, { r: 'a', p: 0.025 },
-            { r: 's', p: 0.015 }, { r: 'ss', p: 0.005 }, { r: 'sss', p: 0 }
+            { r: 'd', p: 0.40 },  
+            { r: 'c', p: 0.30 },  
+            { r: 'b', p: 0.18 },  
+            { r: 'a', p: 0.08 },  
+            { r: 's', p: 0.03 },  
+            { r: 'ss', p: 0.008 },
+            { r: 'sss', p: 0.002 }
         ];
 
-        const rankWeights = { 'f':1, 'e':2, 'd':3, 'c':4, 'b':5, 'a':6, 's':7, 'ss':8, 'sss':9 };
+        const rankOrder = ['sss', 'ss', 's', 'a', 'b', 'c', 'd'];
+        const rankWeights = { 'd':1, 'c':2, 'b':3, 'a':4, 's':5, 'ss':6, 'sss':7 };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -268,9 +294,8 @@
         });
 
         function generateCardId(pId) {
-            let rand = Math.random(), cum = 0, rank = 'f';
+            let rand = Math.random(), cum = 0, rank = 'd';
             for (let c of chances) { cum += c.p; if (rand <= cum) { rank = c.r; break; } }
-            
             const imgArray = poolSettings[pId][rank];
             const maxCount = imgArray.length;
             const index = maxCount > 0 ? Math.floor(Math.random() * maxCount) : 0;
@@ -279,22 +304,29 @@
 
         function createCardHTML(fullId, count = 1, isReveal = false, delayDelay = 0) {
             const [pool, rank, index] = fullId.split('_');
-            const countBadge = count > 1 ? `<div class="card-count">x${count}</div>` : '';
+            const isLocked = count === 0;
             const animClass = isReveal ? 'reveal-card' : '';
+            const lockClass = isLocked ? 'locked' : '';
             const styleDelay = isReveal ? `style="animation-delay: ${delayDelay}s;"` : '';
             
+            const countBadge = count > 1 ? `<div class="card-count">x${count}</div>` : '';
+            
+            const lockOverlay = isLocked ? `
+                <div class="lock-overlay">
+                    <div class="lock-icon">⛓️</div>
+                    <div class="lock-text">[ 未解鎖 ]</div>
+                </div>` : '';
+
             let realFileName = 'locked.png';
-            if (poolSettings[pool] && poolSettings[pool][rank] && poolSettings[pool][rank][index] !== undefined) {
-                let picId = poolSettings[pool][rank][index];
-                if (PIC[picId]) {
-                    realFileName = PIC[picId];
-                }
+            if (poolSettings[pool] && poolSettings[pool][rank] && poolSettings[pool][rank][index]) {
+                realFileName = poolSettings[pool][rank][index];
             }
 
             return `
-            <div class="card rank-${rank} ${animClass}" ${styleDelay}>
+            <div class="card rank-${rank} ${animClass} ${lockClass}" ${styleDelay}>
                 ${countBadge}
-                <img src="images/${pool}/${realFileName}" onerror="this.src='https://via.placeholder.com/150x170/111/00ffcc?text=DATA_LOCKED'">
+                ${lockOverlay}
+                <img src="images/${pool}/${realFileName}" onerror="this.src='https://via.placeholder.com/150x220/050505/00ffcc?text=DATA_MISSING'">
                 <div class="card-rank">${rank.toUpperCase()} 級</div>
             </div>`;
         }
@@ -313,7 +345,7 @@
             sysMessage.innerText = "警告：正在干涉空間因果律...";
 
             let results = [];
-            let highestRank = 'f';
+            let highestRank = 'd';
 
             for(let i=0; i<times; i++) {
                 const id = generateCardId(currentPoolId);
@@ -354,23 +386,19 @@
                 btnClose.style.animationDelay = `${(times * 0.15) + 0.5}s`;
             }, explosionDelay);
 
-            // ==========================================
-            // 🐛 [終極修復] 開除夜店保鑣，全部塞進背包！
-            // ==========================================
             try {
                 const docSnap = await getDoc(currentUserDocRef);
                 let currentInv = [];
                 if (docSnap.exists() && docSnap.data().inventory) {
                     currentInv = docSnap.data().inventory;
                 }
-                // 把新抽到的卡全部串接到舊背包後面，保留所有重複卡片！
                 const newInv = currentInv.concat(results);
                 
                 await setDoc(currentUserDocRef, { inventory: newInv }, { merge: true });
                 sysMessage.innerText = `[成功] 召喚完畢。戰力已就位。`;
-            } catch (error) { sysMessage.innerText = `[錯誤] 資料庫同步失敗：${error.message}`; }
+            } catch (error) { sysMessage.innerText = `[錯誤] 資料庫同步失敗。`; }
 
-            drawArea.innerHTML = results.map(id => createCardHTML(id)).join('');
+            drawArea.innerHTML = results.map(id => createCardHTML(id, 1)).join('');
         }
 
         async function loadBackpack() {
@@ -378,54 +406,73 @@
             const statArea = document.getElementById('army-stats');
             const sysMessage = document.getElementById('sys-message');
             invArea.innerHTML = '';
-            sysMessage.innerText = "正在解密全球軍團檔案...";
+            sysMessage.innerText = "正在載入全息圖鑑...";
 
             try {
                 const docSnap = await getDoc(currentUserDocRef);
-                if (docSnap.exists()) {
-                    const inv = docSnap.data().inventory || [];
-                    const stackedInv = {}; 
-                    const rankCounts = { f:0, e:0, d:0, c:0, b:0, a:0, s:0, ss:0, sss:0 };
-                    
-                    inv.forEach(id => {
-                        stackedInv[id] = (stackedInv[id] || 0) + 1;
-                        const rank = id.split('_')[1];
-                        if (rankCounts.hasOwnProperty(rank)) rankCounts[rank]++;
-                    });
+                const inv = (docSnap.exists() && docSnap.data().inventory) ? docSnap.data().inventory : [];
+                
+                const stackedInv = {}; 
+                const unlockedRanks = { sss:0, ss:0, s:0, a:0, b:0, c:0, d:0 };
+                
+                inv.forEach(id => {
+                    stackedInv[id] = (stackedInv[id] || 0) + 1;
+                    const rank = id.split('_')[1];
+                    if (stackedInv[id] === 1) {
+                        if(unlockedRanks.hasOwnProperty(rank)) unlockedRanks[rank]++;
+                    }
+                });
 
-                    const sortedIds = Object.keys(stackedInv).sort((a, b) => {
-                        const rankA = a.split('_')[1];
-                        const rankB = b.split('_')[1];
-                        return rankWeights[rankB] - rankWeights[rankA];
-                    });
+                let htmlContent = '';
+                rankOrder.forEach(r => {
+                    const poolArr = poolSettings[currentPoolId][r];
+                    if (!poolArr || poolArr.length === 0) return;
 
-                    sortedIds.forEach(id => {
-                        invArea.innerHTML += createCardHTML(id, stackedInv[id]);
-                    });
+                    const totalInRank = poolArr.length;
+                    const unlockedInRank = unlockedRanks[r];
+                    const isComplete = unlockedInRank === totalInRank ? "🏆 COMPLETE" : "";
 
-                    statArea.innerHTML = Object.keys(rankCounts).map(rankKey => {
-                        if (rankKey === 'sss' && rankCounts[rankKey] === 0) return '';
-                        return `
-                        <div class="stat-item">
-                            <span class="stat-label">${rankKey} 級</span>
-                            <span class="stat-val">${rankCounts[rankKey]}</span>
-                        </div>`;
-                    }).join('');
+                    htmlContent += `
+                        <div class="rank-section-title">
+                            ${r.toUpperCase()} 級軍團圖鑑 
+                            <span>[ 收集進度: ${unlockedInRank} / ${totalInRank} ] ${isComplete}</span>
+                        </div>
+                        <div class="display-area">
+                    `;
 
-                    sysMessage.innerText = `[成功] 軍團資料讀取完成。全軍總人數：${inv.length} 人。`;
-                } else {
-                    sysMessage.innerText = "[提示] 您的背包目前是空的。";
-                }
+                    for (let i = 0; i < totalInRank; i++) {
+                        const id = `${currentPoolId}_${r}_${i}`;
+                        const count = stackedInv[id] || 0;
+                        htmlContent += createCardHTML(id, count);
+                    }
+                    htmlContent += `</div>`;
+                });
+
+                invArea.innerHTML = htmlContent;
+
+                const totalCards = Object.values(poolSettings[currentPoolId]).reduce((acc, arr) => acc + arr.length, 0);
+                const totalUnlocked = Object.values(unlockedRanks).reduce((acc, val) => acc + val, 0);
+                
+                statArea.innerHTML = `
+                    <div class="stat-item" style="width:100%; text-align:center;">
+                        <span class="stat-label" style="font-size:14px;">GLOBAL UNLOCK PROGRESS</span>
+                        <span class="stat-val" style="font-size:36px; text-shadow: 0 0 20px #00ffcc;">
+                            ${totalUnlocked} <span style="font-size:20px; color:#666;">/ ${totalCards}</span>
+                        </span>
+                    </div>`;
+
+                sysMessage.innerText = `[成功] 圖鑑讀取完成。收集進度：${Math.floor((totalUnlocked/totalCards)*100)}%。`;
+
             } catch (error) {
                 sysMessage.innerText = "[系統] 無法連結暗影空間。";
             }
         }
 
         document.getElementById('btn-clear-backpack').addEventListener('click', async () => {
-            if(confirm("警告：這將會清空你所有的抽卡紀錄與背包資料！確定要刪除嗎？")) {
+            if(confirm("警告：這將會清空你所有的圖鑑紀錄！確定要重置嗎？")) {
                 try {
                     await setDoc(currentUserDocRef, { inventory: [] }, { merge: true });
-                    document.getElementById('sys-message').innerText = "[成功] 所有測試資料已清空。";
+                    document.getElementById('sys-message').innerText = "[成功] 所有圖鑑已重置。";
                     loadBackpack(); 
                 } catch (error) {
                     document.getElementById('sys-message').innerText = "[錯誤] 刪除失敗。";
@@ -450,7 +497,7 @@
         document.getElementById('btn-go-backpack').addEventListener('click', () => {
             document.getElementById('gacha-view').classList.add('hidden');
             document.getElementById('backpack-view').classList.remove('hidden');
-            document.getElementById('system-title').innerText = ">_ GLOBAL_INVENTORY_DATABASE";
+            document.getElementById('system-title').innerText = ">_ GLOBAL_INDEX_DATABASE";
             loadBackpack();
         });
         document.getElementById('btn-go-gacha').addEventListener('click', () => {
