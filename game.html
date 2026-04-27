@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo_Leveling_System_V16_Restored</title>
+    <title>Solo_Leveling_System_V16.1_Perfect_Images</title>
     <style>
         /* ==========================================================================
            [1] 系統全域 UI
@@ -95,7 +95,7 @@
     </div>
 
     <div class="sidebar">
-        <div class="sidebar-title">TERMINAL_V16</div>
+        <div class="sidebar-title">TERMINAL_V16.1</div>
         <button class="pool-btn active" data-pool="freren">葬送的芙莉蓮</button>
         <button class="pool-btn" data-pool="elite">實力至上教室</button>
         <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
@@ -159,11 +159,12 @@
         let currentUserDocRef = null;
         let currentPoolId = 'freren';
 
+        // ⚠️ 已經精準修正為你截圖裡實際存在的檔案，包含 s3.webp 還有跳號的 A 級
         const poolSettings = {
             'freren': { 
                 sss: ['sss1.jpg'], ss:  ['ss1.jpg'], 
-                s: ['s1.jpg', 's2.jpg', 's3.jpg', 's4.jpg', 's5.jpg'],
-                a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a4.jpg', 'a5.jpg', 'a6.jpg', 'a7.jpg', 'a8.jpg', 'a9.jpg'],
+                s: ['s1.jpg', 's2.jpg', 's3.webp', 's4.jpg', 's5.jpg'],
+                a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a5.jpg', 'a6.jpg'],
                 b: ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg', 'b7.jpg', 'b8.jpg', 'b9.jpg'],
                 c: ['c1.jpg', 'c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg', 'c7.jpg', 'c8.jpg', 'c9.jpg', 'c10.jpg'],
                 d: ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg', 'd8.jpg']
@@ -180,8 +181,7 @@
         const rankOrder = ['sss', 'ss', 's', 'a', 'b', 'c', 'd'];
         const rankWeights = { 'd':1, 'c':2, 'b':3, 'a':4, 's':5, 'ss':6, 'sss':7 };
 
-        // 🚨 最重要的修復：如果你沒登入，強制踢回大門 (index.html)
-        // 這樣就不會有幽靈帳號去撞資料庫導致「無法連結暗影空間」了！
+        // 登入驗證，沒登入強制回首頁
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const id = user.email.split('@')[0];
@@ -349,7 +349,6 @@
                 sysMessage.innerText = `[成功] 圖鑑讀取完成。收集進度：${Math.floor((totalUnlocked/totalCards)*100)}%。`;
 
             } catch (error) {
-                // 這裡就是你截圖裡面的報錯！現在你有正確登入，它再也不會出現了！
                 sysMessage.innerText = "[系統] 無法連結暗影空間。";
             }
         }
@@ -394,7 +393,6 @@
             document.getElementById('system-title').innerText = `>_ DUNGEON: ${currentPoolId.toUpperCase()}`;
         });
 
-        // 登出後踢回大門
         document.getElementById('btn-logout').addEventListener('click', () => { 
             if(confirm("確定中斷神經連結？")) {
                 signOut(auth).then(() => { window.location.href = "index.html"; });
