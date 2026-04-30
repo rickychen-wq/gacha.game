@@ -2,138 +2,203 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo_Leveling_System_V16.1_Perfect_Images</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Solo Leveling: TCG Mobile V18</title>
     <style>
         /* ==========================================================================
-           [1] 系統全域 UI
+           [1] 手遊版面核心設定
            ========================================================================== */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; -webkit-tap-highlight-color: transparent; }
         body { 
-            background-color: #050505; 
-            background-image: linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px; color: #00ffcc; font-family: 'Courier New', Courier, monospace; 
-            display: flex; flex-direction: row; height: 100vh; width: 100vw; overflow: hidden; user-select: none;
+            background-color: #000; display: flex; justify-content: center; align-items: center; 
+            height: 100vh; width: 100vw; overflow: hidden; user-select: none;
         }
-        .sidebar { width: 240px; min-width: 240px; background: linear-gradient(180deg, rgba(15,15,15,0.95) 0%, rgba(0,0,0,1) 100%); border-right: 2px solid #222; display: flex; flex-direction: column; padding: 30px 20px; gap: 15px; box-shadow: 10px 0 20px rgba(0,0,0,0.8); z-index: 10; }
-        .sidebar-title { font-size: 15px; color: #00ffcc; margin-bottom: 25px; padding-left: 12px; letter-spacing: 4px; border-left: 4px solid #ff0055; font-weight: bold; }
-        .pool-btn { background: rgba(255, 255, 255, 0.02); color: #777; border: 1px solid #333; padding: 18px 15px; text-align: left; cursor: pointer; transition: all 0.3s ease; font-weight: bold; text-transform: uppercase; }
-        .pool-btn:hover { border-color: #00ffcc; color: #fff; background: rgba(0, 255, 204, 0.05); transform: translateX(5px); }
-        .pool-btn.active { border-color: #00ffcc; color: #00ffcc; background: rgba(0, 255, 204, 0.15); box-shadow: inset 0 0 15px rgba(0, 255, 204, 0.2); transform: translateX(5px); }
-        .main-content { flex: 1; height: 100vh; overflow-y: auto; overflow-x: hidden; padding: 40px; background: radial-gradient(circle at center, rgba(20,20,20,0.8) 0%, rgba(0,0,0,0.9) 100%); display: flex; justify-content: center; align-items: flex-start; }
-        .container { width: 100%; max-width: 1200px; background: rgba(5, 5, 5, 0.95); padding: 35px; border: 2px solid #333; box-shadow: 0 0 40px rgba(0, 0, 0, 1); position: relative; animation: rgb-glow 8s linear infinite; }
-        @keyframes rgb-glow { 0% { border-color: #ff0055; } 33% { border-color: #00ffcc; } 66% { border-color: #aa00ff; } 100% { border-color: #ff0055; } }
-        h2 { border-bottom: 2px solid #222; padding-bottom: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 24px; }
-        .header-right { display: flex; align-items: center; gap: 20px; }
-        .user-info { color: #ff0055; font-size: 14px; font-weight: bold; background: rgba(255,0,85,0.1); padding: 8px 15px; border-radius: 4px; }
-        .logout-link { color: #666; font-size: 12px; cursor: pointer; transition: 0.3s; border-bottom: 1px dashed #666; }
-        .logout-link:hover { color: #ff0055; border-bottom-color: #ff0055; }
-        #sys-message { color: #00ffcc; margin-bottom: 25px; font-size: 15px; font-weight: bold; height: 20px; }
+        
+        #app-container {
+            width: 100%; max-width: 450px; height: 100%; max-height: 900px;
+            background: radial-gradient(circle at top, #1a1a1a 0%, #050505 100%);
+            position: relative; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 255, 204, 0.1); border-left: 1px solid #222; border-right: 1px solid #222;
+        }
+
+        .top-bar {
+            height: 60px; background: rgba(0,0,0,0.8); border-bottom: 2px solid #00ffcc;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 10;
+        }
+        .top-bar h1 { font-size: 16px; color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.5); }
+        .user-tag { background: rgba(255,0,85,0.2); color: #ff0055; padding: 4px 10px; font-size: 12px; font-weight: bold; border-radius: 4px; border: 1px solid #ff0055; }
+
+        .main-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px; position: relative; scroll-behavior: smooth; }
+        
+        .pool-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; }
+        .tab-btn { 
+            flex: 1; min-width: 120px; background: #111; color: #666; border: 1px solid #333; 
+            padding: 10px; text-align: center; font-weight: bold; border-radius: 8px; transition: 0.3s; 
+        }
+        .tab-btn.active { background: rgba(0,255,204,0.1); color: #00ffcc; border-color: #00ffcc; box-shadow: 0 0 15px rgba(0,255,204,0.2); }
+
+        .bottom-nav {
+            height: 70px; background: #0a0a0a; border-top: 1px solid #222;
+            display: flex; justify-content: space-around; align-items: center; z-index: 10;
+        }
+        .nav-btn { color: #888; display: flex; flex-direction: column; align-items: center; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .nav-btn.active { color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,204,0.5); transform: translateY(-3px); }
+        .nav-icon { font-size: 24px; margin-bottom: 4px; }
 
         /* ==========================================================================
-           [2] 動畫與卡片展示
+           [2] 抽卡大廳與按鈕
            ========================================================================== */
-        #gacha-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
-        #gacha-overlay.active { opacity: 1; pointer-events: auto; }
-        #anim-layer { position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; overflow: hidden; pointer-events: none; }
-        .meteor { position: absolute; width: 6px; height: 150px; top: -200px; border-radius: 50%; transform: rotate(15deg); animation: meteor-fall 0.6s ease-in forwards; }
-        .meteor-blue { background: linear-gradient(to bottom, transparent, #00ffcc); box-shadow: 0 50px 30px #00ffcc; }
-        .meteor-purple { background: linear-gradient(to bottom, transparent, #aa00ff); box-shadow: 0 50px 30px #aa00ff; }
-        .meteor-gold { background: linear-gradient(to bottom, transparent, #ffd700); box-shadow: 0 50px 30px #ffd700; width: 8px; }
-        @keyframes meteor-fall { 0% { transform: translateY(-10vh) translateX(-5vw) rotate(15deg); opacity: 1; } 100% { transform: translateY(80vh) translateX(20vw) rotate(15deg); opacity: 0; } }
-        .explosion { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; border-radius: 50%; transform: translate(-50%, -50%); animation: explode 0.8s forwards; }
-        .flash-blue { background: rgba(0,255,204,0.8); box-shadow: 0 0 100px 100px rgba(0,255,204,0.5); }
-        .flash-purple { background: rgba(170,0,255,0.8); box-shadow: 0 0 100px 100px rgba(170,0,255,0.5); }
-        .flash-gold { background: rgba(255,215,0,0.9); box-shadow: 0 0 100px 100px rgba(255,215,0,0.6); }
-        @keyframes explode { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(250); opacity: 0; } }
-
-        .display-area { display: flex; justify-content: flex-start; align-content: flex-start; flex-wrap: wrap; gap: 20px; background: rgba(0,0,0,0.6); padding: 30px; border: 1px solid #1a1a1a; border-radius: 8px; margin-bottom: 30px; }
-        .card { width: 150px; height: 220px; background: #000; border: 2px solid #333; position: relative; overflow: hidden; display: flex; flex-direction: column; transition: all 0.4s; box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
-        .reveal-card { transform: scale(0); opacity: 0; animation: card-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-        @keyframes card-pop { to { transform: scale(1); opacity: 1; } }
-        .card:not(.locked):hover { transform: scale(1.08) translateY(-10px); z-index: 10; border-color: #fff; box-shadow: 0 15px 30px rgba(0,0,0,1); }
-        .card img { width: 100%; height: 170px; object-fit: cover; filter: brightness(0.8); transition: 0.3s; }
-        .card:not(.locked):hover img { filter: brightness(1.1); }
-        .card .card-rank { width: 100%; height: 50px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 15px; background: #0a0a0a; text-transform: uppercase; letter-spacing: 2px; }
+        .banner-area { width: 100%; height: 250px; background: #000; border: 2px solid #333; border-radius: 12px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
+        .banner-area img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        .banner-text { position: absolute; bottom: 10px; left: 15px; font-size: 20px; font-weight: bold; color: #fff; text-shadow: 2px 2px 5px #000; }
         
-        .card.locked { border-color: #111 !important; box-shadow: none !important; opacity: 0.8; }
-        .card.locked img { filter: brightness(0.2) grayscale(1) blur(2px); }
-        .card.locked .card-rank { color: #444; background: #050505; }
-        .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(45deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 10px, rgba(10,10,10,0.8) 10px, rgba(10,10,10,0.8) 15px); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; }
-        .lock-text { color: #ff0055; font-weight: bold; border: 2px solid #ff0055; padding: 4px 10px; transform: rotate(-15deg); letter-spacing: 3px; background: rgba(0,0,0,0.9); box-shadow: 0 0 15px rgba(255,0,85,0.6); font-size: 14px; }
-        .card-count { position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg, #ff0055 0%, #aa00ff 100%); color: white; padding: 4px 12px; font-size: 13px; font-weight: bold; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.8); z-index: 5; border: 1px solid rgba(255,255,255,0.4); }
+        .gacha-actions { display: flex; gap: 15px; justify-content: center; }
+        .action-btn { 
+            flex: 1; background: linear-gradient(135deg, rgba(0,0,0,0.8), #111); border: 2px solid #00ffcc; 
+            color: #00ffcc; font-size: 16px; font-weight: bold; padding: 18px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,255,204,0.2); transition: 0.2s; 
+        }
+        .action-btn:active { transform: scale(0.95); }
+        .btn-purple { border-color: #aa00ff; color: #aa00ff; box-shadow: 0 5px 15px rgba(170,0,255,0.2); }
 
-        .rank-d, .rank-c { border-color: #555; color: #999; }
-        .rank-b, .rank-a { border-color: #aa00ff; color: #d480ff; }
-        .rank-s { border-color: #ff0055; color: #ff80aa; box-shadow: 0 0 25px rgba(255, 0, 85, 0.5); }
-        .rank-ss { border-color: #ffd700; color: #ffe680; box-shadow: 0 0 35px rgba(255, 215, 0, 0.7); }
-        .rank-sss { border-color: #fff; color: #fff; box-shadow: 0 0 45px #fff, inset 0 0 20px #fff; }
-        .rank-section-title { width: 100%; border-left: 5px solid #00ffcc; padding-left: 15px; font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 15px; letter-spacing: 3px; display: flex; align-items: center; }
-        .rank-section-title span { color: #00ffcc; margin-left: 10px; font-size: 16px; font-family: monospace; }
+        /* ==========================================================================
+           [3] 寶可夢 TCG 拆卡包特效 (包含史詩全息雷射與光暈)
+           ========================================================================== */
+        #tcg-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.95); z-index: 100; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; 
+            perspective: 1200px;
+        }
+        #tcg-overlay.active { opacity: 1; pointer-events: auto; }
+        .tcg-hint { color: #888; margin-top: 50px; font-size: 14px; letter-spacing: 2px; animation: pulse 1.5s infinite; }
+        
+        #card-stack-container { position: relative; width: 220px; height: 320px; margin-top: -50px;}
+        
+        .tcg-card-wrapper { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer;
+        }
+        .tcg-card-inner { 
+            width: 100%; height: 100%; position: relative; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+            transform-style: preserve-3d; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border-radius: 12px;
+        }
+        
+        /* 一般翻牌狀態 */
+        .tcg-card-inner.is-flipped { transform: rotateY(180deg) scale(1.1); box-shadow: 0 0 30px rgba(0,255,204,0.3); }
+        
+        /* 飛走(滑掉)狀態 */
+        .tcg-card-inner.is-dismissed { transform: rotateY(180deg) translate(-200px, -600px) rotate(-45deg); opacity: 0; }
 
-        .stats-panel { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; padding: 25px; background: rgba(0, 255, 204, 0.03); border: 1px solid #222; border-radius: 8px; }
-        .stat-item { text-align: center; min-width: 80px; position: relative; }
-        .stat-label { color: #666; font-size: 11px; display: block; margin-bottom: 8px; letter-spacing: 1px; }
-        .stat-val { font-size: 26px; font-weight: bold; color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.3); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; border: 3px solid #333; overflow: hidden; }
+        
+        .card-back { 
+            background: repeating-linear-gradient(45deg, #0a0a0a, #0a0a0a 10px, #1a1a1a 10px, #1a1a1a 20px); 
+            display: flex; justify-content: center; align-items: center; border-color: #00ffcc;
+        }
+        .card-back::after { content: 'SECRET'; color: #00ffcc; font-weight: bold; font-size: 24px; letter-spacing: 5px; transform: rotate(-45deg); border: 2px solid #00ffcc; padding: 5px 10px; }
+        
+        .card-front { transform: rotateY(180deg); background: #000; display: flex; flex-direction: column; position: relative; }
+        .card-front img { width: 100%; height: 260px; object-fit: cover; position: relative; z-index: 1; }
+        .card-front .rank-banner { flex: 1; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; position: relative; z-index: 1; background: #000; }
 
-        .button-group { display: flex; gap: 20px; justify-content: center; margin-top: 30px; z-index: 100; position: relative; }
-        .btn { background: rgba(0,0,0,0.5); color: #00ffcc; border: 1px solid #00ffcc; padding: 16px 40px; cursor: pointer; font-size: 15px; font-weight: bold; transition: all 0.3s; letter-spacing: 2px; }
-        .btn:hover { background: #00ffcc; color: #000; box-shadow: 0 0 25px rgba(0,255,204,0.6); transform: translateY(-2px); }
-        .btn-purple { border-color: #aa00ff; color: #aa00ff; }
-        .btn-purple:hover { background: #aa00ff; color: #fff; box-shadow: 0 0 25px rgba(170,0,255,0.6); }
-        .btn-danger { border-color: #ff0055; color: #ff0055; }
-        .btn-danger:hover { background: #ff0055; color: #fff; box-shadow: 0 0 25px rgba(255,0,85,0.6); }
+        /* ✨ 史詩級卡片專屬視覺特效 ✨ */
+        .tcg-card-inner.is-flipped.legendary { 
+            /* 超強懸浮發光效果 */
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 0, 85, 0.5); 
+            animation: legendary-float 2s infinite ease-in-out;
+        }
+
+        /* 雷射全息箔膜 (Holo Foil) 掃射特效 */
+        .tcg-card-inner.is-flipped.legendary .card-front::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.7) 25%, transparent 30%, rgba(255,215,0,0.6) 50%, transparent 55%);
+            background-size: 300% 300%;
+            animation: holo-sweep 3s infinite linear;
+            mix-blend-mode: color-dodge;
+            z-index: 5; pointer-events: none;
+        }
+
+        @keyframes legendary-float {
+            0%, 100% { transform: rotateY(180deg) scale(1.1) translateY(0); }
+            50% { transform: rotateY(180deg) scale(1.1) translateY(-10px); }
+        }
+
+        @keyframes holo-sweep {
+            0% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        /* ==========================================================================
+           [4] 手遊版 3 排網格圖鑑背包
+           ========================================================================== */
+        .backpack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
+        .mini-card { width: 100%; aspect-ratio: 2/3; background: #000; border: 2px solid #333; position: relative; border-radius: 6px; overflow: hidden; }
+        .mini-card img { width: 100%; height: 75%; object-fit: cover; filter: brightness(0.9); }
+        .mini-card.locked img { filter: brightness(0.2) grayscale(1) blur(1px); }
+        .mini-card .mini-rank { height: 25%; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; background: #111; }
+        
+        .mini-card.locked .mini-rank { color: #444; }
+        .mini-lock-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff0055; font-size: 20px; text-shadow: 0 0 5px #000; }
+        .mini-count { position: absolute; top: 4px; right: 4px; background: #ff0055; color: white; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 10px; }
+
+        .rank-title { font-size: 16px; border-left: 4px solid #00ffcc; padding-left: 10px; margin-bottom: 15px; color: #fff; display: flex; justify-content: space-between; }
+        .rank-title span { font-size: 12px; color: #00ffcc; align-self: flex-end; }
+        
         .hidden { display: none !important; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
     </style>
 </head>
 <body>
 
-    <div id="gacha-overlay">
-        <div id="anim-layer"></div>
-        <div id="reveal-area" style="display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; width: 80%; max-width: 1000px; z-index: 10;"></div>
-        <button class="btn btn-purple" id="btn-close-reveal" style="margin-top: 60px; opacity: 0; z-index: 10;">[ 點擊確認戰力 ]</button>
-    </div>
-
-    <div class="sidebar">
-        <div class="sidebar-title">TERMINAL_V16.1</div>
-        <button class="pool-btn active" data-pool="freren">葬送的芙莉蓮</button>
-        <button class="pool-btn" data-pool="elite">實力至上教室</button>
-        <button class="pool-btn" data-pool="jujutsu">咒術迴戰</button>
-        
-        <div style="margin-top: auto;">
-            <button class="btn btn-purple" id="btn-go-backpack" style="width: 100%; padding: 15px 0;">軍團圖鑑 (INDEX)</button>
+    <div id="app-container">
+        <div class="top-bar">
+            <h1>TERMINAL V18</h1>
+            <span class="user-tag" id="player-name">CHECKING...</span>
         </div>
-    </div>
 
-    <div class="main-content">
-        <div class="container" id="main-view">
-            <h2>
-                <span id="system-title">>_ DUNGEON: FRIEREN</span>
-                <span class="header-right">
-                    <span class="user-info" id="player-name">USER: CHECKING...</span>
-                    <span class="logout-link" id="btn-logout">[LOGOUT]</span>
-                </span>
-            </h2>
-            
-            <div id="sys-message">系統連線穩定。等待召喚指令...</div>
-            
+        <!-- 3D 拆卡包遮罩 -->
+        <div id="tcg-overlay">
+            <div id="card-stack-container"></div>
+            <div class="tcg-hint">[ 點擊翻開卡片，再點擊收下卡片 ]</div>
+        </div>
+
+        <div class="main-scroll" id="main-view">
             <div id="gacha-view">
-                <div class="display-area" id="draw-area" style="min-height: 450px; justify-content: center;">
-                    <p style="color: #333; font-size: 18px; letter-spacing: 2px; align-self: center;">[ 系統待命中 ]</p>
+                <div class="pool-tabs">
+                    <div class="tab-btn active" data-pool="freren">葬送的芙莉蓮</div>
+                    <div class="tab-btn" data-pool="elite">實力至上教室</div>
                 </div>
-                <div class="button-group">
-                    <button class="btn" id="btn-draw-1">單次召喚 (1x)</button>
-                    <button class="btn" id="btn-draw-5">連續召喚 (5x)</button>
+                <div class="banner-area">
+                    <div class="banner-text">>_ DUNGEON STANDBY</div>
+                </div>
+                <div id="sys-message" style="color: #00ffcc; font-size: 12px; text-align: center; margin-bottom: 20px;">資料庫連線穩定，等待指令。</div>
+                <div class="gacha-actions">
+                    <button class="action-btn" id="btn-draw-1">單抽 (1x)</button>
+                    <button class="action-btn btn-purple" id="btn-draw-5">連抽 (5x)</button>
                 </div>
             </div>
 
             <div id="backpack-view" class="hidden">
-                <div class="stats-panel" id="army-stats"></div>
-                <div id="inventory-area"></div> 
-                <div class="button-group">
-                    <button class="btn" id="btn-go-gacha"><< 返回終端大廳</button>
-                    <button class="btn btn-danger" id="btn-clear-backpack">[ 重置圖鑑資料 ]</button>
+                <div style="display:flex; justify-content:space-between; margin-bottom: 20px; align-items:center;">
+                    <h2 style="color:#00ffcc; font-size:18px;">軍團圖鑑</h2>
+                    <button id="btn-clear-backpack" style="background:transparent; border:1px solid #ff0055; color:#ff0055; padding:5px 10px; border-radius:4px; font-size:12px;">重置進度</button>
                 </div>
+                <div id="inventory-area"></div> 
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-btn active" id="nav-gacha">
+                <div class="nav-icon">🔮</div>
+                <div>召喚大廳</div>
+            </div>
+            <div class="nav-btn" id="nav-backpack">
+                <div class="nav-icon">🎒</div>
+                <div>圖鑑背包</div>
+            </div>
+            <div class="nav-btn" id="btn-logout">
+                <div class="nav-icon">🔌</div>
+                <div>中斷連結</div>
             </div>
         </div>
     </div>
@@ -149,8 +214,7 @@
             projectId: "my-gacha-game-f7663",
             storageBucket: "my-gacha-game-f7663.firebasestorage.app",
             messagingSenderId: "1035192644413",
-            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54",
-            measurementId: "G-XV7XQ3RMXW"
+            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -159,7 +223,6 @@
         let currentUserDocRef = null;
         let currentPoolId = 'freren';
 
-        // ⚠️ 已經精準修正為你截圖裡實際存在的檔案，包含 s3.webp 還有跳號的 A 級
         const poolSettings = {
             'freren': { 
                 sss: ['sss1.jpg'], ss:  ['ss1.jpg'], 
@@ -169,24 +232,20 @@
                 c: ['c1.jpg', 'c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg', 'c7.jpg', 'c8.jpg', 'c9.jpg', 'c10.jpg'],
                 d: ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg', 'd8.jpg']
             },
-            'elite':   { sss:[], ss:[], s:[], a:[], b:[], c:[], d:[] },
-            'jujutsu': { sss:[], ss:[], s:[], a:[], b:[], c:[], d:[] }
+            'elite': { sss:[], ss:[], s:[], a:[], b:[], c:[], d:[] }
         };
 
         const chances = [
             { r: 'd', p: 0.40 }, { r: 'c', p: 0.30 }, { r: 'b', p: 0.18 },  
             { r: 'a', p: 0.08 }, { r: 's', p: 0.03 }, { r: 'ss', p: 0.008 }, { r: 'sss', p: 0.002 }
         ];
-
         const rankOrder = ['sss', 'ss', 's', 'a', 'b', 'c', 'd'];
-        const rankWeights = { 'd':1, 'c':2, 'b':3, 'a':4, 's':5, 'ss':6, 'sss':7 };
 
-        // 登入驗證，沒登入強制回首頁
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const id = user.email.split('@')[0];
                 currentUserDocRef = doc(db, "users", id);
-                document.getElementById('player-name').innerText = `USER: ${id}`;
+                document.getElementById('player-name').innerText = `ID: ${id}`;
             } else { 
                 window.location.href = "index.html"; 
             }
@@ -200,203 +259,187 @@
             return `${pId}_${rank}_${index}`;
         }
 
-        function createCardHTML(fullId, count = 1, isReveal = false, delayDelay = 0) {
+        function getCardDetails(fullId) {
             const [pool, rank, index] = fullId.split('_');
-            const isLocked = count === 0;
-            const animClass = isReveal ? 'reveal-card' : '';
-            const lockClass = isLocked ? 'locked' : '';
-            const styleDelay = isReveal ? `style="animation-delay: ${delayDelay}s;"` : '';
-            const countBadge = count > 1 ? `<div class="card-count">x${count}</div>` : '';
-            const lockOverlay = isLocked ? `<div class="lock-overlay"><div class="lock-icon">⛓️</div><div class="lock-text">[ 未解鎖 ]</div></div>` : '';
-            
-            let realFileName = 'locked.png';
+            let fileName = 'locked.png';
             if (poolSettings[pool] && poolSettings[pool][rank] && poolSettings[pool][rank][index]) {
-                realFileName = poolSettings[pool][rank][index];
+                fileName = poolSettings[pool][rank][index];
             }
-
-            return `
-            <div class="card rank-${rank} ${animClass} ${lockClass}" ${styleDelay}>
-                ${countBadge} ${lockOverlay}
-                <img src="images/${pool}/${realFileName}" onerror="this.src='https://via.placeholder.com/150x220/050505/00ffcc?text=DATA_MISSING'">
-                <div class="card-rank">${rank.toUpperCase()} 級</div>
-            </div>`;
+            return { pool, rank, src: `images/${pool}/${fileName}` };
         }
 
-        async function performGacha(times) {
-            const overlay = document.getElementById('gacha-overlay');
-            const revealArea = document.getElementById('reveal-area');
-            const animLayer = document.getElementById('anim-layer');
-            const drawArea = document.getElementById('draw-area');
-            const btnClose = document.getElementById('btn-close-reveal');
+        // ==========================================
+        // 🎴 寶可夢 TCG 拆卡包邏輯 (含震動回饋)
+        // ==========================================
+        async function performTCGGacha(times) {
+            const overlay = document.getElementById('tcg-overlay');
+            const stackContainer = document.getElementById('card-stack-container');
             const sysMessage = document.getElementById('sys-message');
-
-            revealArea.innerHTML = ''; animLayer.innerHTML = '';
-            btnClose.style.animation = 'none'; btnClose.style.opacity = '0';
+            
             overlay.classList.add('active');
-            sysMessage.innerText = "警告：正在干涉空間因果律...";
+            stackContainer.innerHTML = '';
+            sysMessage.innerText = "正在拆開密封卡包...";
 
-            let results = [];
-            let highestRank = 'd';
-
+            let generatedIds = [];
             for(let i=0; i<times; i++) {
-                const id = generateCardId(currentPoolId);
-                results.push(id);
-                const rank = id.split('_')[1];
-                if(rankWeights[rank] > rankWeights[highestRank]) highestRank = rank;
-
-                const meteor = document.createElement('div');
-                let mClass = 'meteor-blue';
-                if(['s','ss','sss'].includes(rank)) mClass = 'meteor-gold';
-                else if(['a','b'].includes(rank)) mClass = 'meteor-purple';
-                meteor.className = `meteor ${mClass}`;
-                meteor.style.left = `${40 + (Math.random() * 20)}vw`;
-                meteor.style.animationDelay = `${i * 0.1}s`;
-                animLayer.appendChild(meteor);
-
-                revealArea.innerHTML += createCardHTML(id, 1, true, 0.8 + (i * 0.15));
+                generatedIds.push(generateCardId(currentPoolId));
             }
 
-            setTimeout(() => {
-                const explosion = document.createElement('div');
-                let eClass = 'flash-blue';
-                if(['s','ss','sss'].includes(highestRank)) eClass = 'flash-gold';
-                else if(['a','b'].includes(highestRank)) eClass = 'flash-purple';
-                explosion.className = `explosion ${eClass}`;
-                animLayer.appendChild(explosion);
+            let activeCardIndex = 0; 
 
-                if(['s','ss','sss'].includes(highestRank)) {
-                    document.getElementById('gacha-overlay').classList.add('shake-effect');
-                    setTimeout(() => document.getElementById('gacha-overlay').classList.remove('shake-effect'), 600);
-                }
-                btnClose.style.animation = `card-pop 0.5s forwards`;
-                btnClose.style.animationDelay = `${(times * 0.15) + 0.5}s`;
-            }, 600 + (times * 100));
+            for(let i = times - 1; i >= 0; i--) {
+                const details = getCardDetails(generatedIds[i]);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'tcg-card-wrapper';
+                const offset = i * 4; 
+                wrapper.style.transform = `translate(${offset}px, ${offset}px)`;
+                wrapper.style.zIndex = times - i; 
 
+                let rankColor = '#555';
+                if(details.rank==='a'||details.rank==='b') rankColor = '#aa00ff';
+                if(details.rank==='s') rankColor = '#ff0055';
+                if(['ss','sss'].includes(details.rank)) rankColor = '#ffd700';
+
+                wrapper.innerHTML = `
+                    <div class="tcg-card-inner">
+                        <div class="card-face card-back"></div>
+                        <div class="card-face card-front" style="border-color: ${rankColor}; box-shadow: inset 0 0 20px ${rankColor};">
+                            <img src="${details.src}" onerror="this.src='https://via.placeholder.com/200x300/111/00ffcc?text=MISSING'">
+                            <div class="rank-banner" style="color: ${rankColor};">${details.rank} 級</div>
+                        </div>
+                    </div>
+                `;
+
+                let isFlipped = false;
+                
+                wrapper.onclick = () => {
+                    if (i !== activeCardIndex) return;
+
+                    const inner = wrapper.querySelector('.tcg-card-inner');
+                    
+                    if (!isFlipped) {
+                        inner.classList.add('is-flipped');
+                        isFlipped = true;
+
+                        // 判斷是否為傳說級別，觸發全息雷射與手機震動
+                        if(['s', 'ss', 'sss'].includes(details.rank)) {
+                            inner.classList.add('legendary');
+                            // 呼叫手機震動 API (支援的設備才會觸發：長短相間的心跳爆發感)
+                            if (navigator.vibrate) {
+                                navigator.vibrate([100, 50, 100, 50, 300]); 
+                            }
+                        } else {
+                            // 普通卡片輕微震動一下
+                            if (navigator.vibrate) {
+                                navigator.vibrate(50);
+                            }
+                        }
+                    } else {
+                        inner.classList.add('is-dismissed');
+                        activeCardIndex++;
+                        if (activeCardIndex >= times) {
+                            setTimeout(() => finishGachaProcess(generatedIds), 600);
+                        }
+                    }
+                };
+                stackContainer.appendChild(wrapper);
+            }
+        }
+
+        async function finishGachaProcess(results) {
+            document.getElementById('tcg-overlay').classList.remove('active');
+            const sysMessage = document.getElementById('sys-message');
             try {
                 const docSnap = await getDoc(currentUserDocRef);
-                let currentInv = [];
-                if (docSnap.exists() && docSnap.data().inventory) {
-                    currentInv = docSnap.data().inventory;
-                }
-                const newInv = currentInv.concat(results);
-                await setDoc(currentUserDocRef, { inventory: newInv }, { merge: true });
-                sysMessage.innerText = `[成功] 召喚完畢。戰力已就位。`;
-            } catch (error) { sysMessage.innerText = `[錯誤] 資料庫同步失敗。`; }
-
-            drawArea.innerHTML = results.map(id => createCardHTML(id, 1)).join('');
+                const currentInv = (docSnap.exists() && docSnap.data().inventory) ? docSnap.data().inventory : [];
+                await setDoc(currentUserDocRef, { inventory: currentInv.concat(results) }, { merge: true });
+                sysMessage.innerText = `[成功] 獲得 ${results.length} 名新戰力！`;
+            } catch (error) { sysMessage.innerText = "[錯誤] 資料庫無法同步。"; }
         }
 
+        // ==========================================
+        // 🎒 手機版 3排網格圖鑑
+        // ==========================================
         async function loadBackpack() {
             const invArea = document.getElementById('inventory-area');
-            const statArea = document.getElementById('army-stats');
-            const sysMessage = document.getElementById('sys-message');
-            invArea.innerHTML = '';
-            sysMessage.innerText = "正在載入全息圖鑑...";
+            invArea.innerHTML = '<p style="text-align:center; color:#666;">載入資料中...</p>';
 
             try {
                 const docSnap = await getDoc(currentUserDocRef);
                 const inv = (docSnap.exists() && docSnap.data().inventory) ? docSnap.data().inventory : [];
-                
                 const stackedInv = {}; 
                 const unlockedRanks = { sss:0, ss:0, s:0, a:0, b:0, c:0, d:0 };
                 
                 inv.forEach(id => {
                     stackedInv[id] = (stackedInv[id] || 0) + 1;
-                    const rank = id.split('_')[1];
-                    if (stackedInv[id] === 1) {
-                        if(unlockedRanks.hasOwnProperty(rank)) unlockedRanks[rank]++;
-                    }
+                    if (stackedInv[id] === 1) unlockedRanks[id.split('_')[1]]++;
                 });
 
                 let htmlContent = '';
                 rankOrder.forEach(r => {
                     const poolArr = poolSettings[currentPoolId][r];
                     if (!poolArr || poolArr.length === 0) return;
+                    const total = poolArr.length;
+                    const unlocked = unlockedRanks[r];
 
-                    const totalInRank = poolArr.length;
-                    const unlockedInRank = unlockedRanks[r];
-                    const isComplete = unlockedInRank === totalInRank ? "🏆 COMPLETE" : "";
+                    htmlContent += `<div class="rank-title">${r.toUpperCase()} 級 <span>[ ${unlocked} / ${total} ]</span></div><div class="backpack-grid">`;
 
-                    htmlContent += `
-                        <div class="rank-section-title">
-                            ${r.toUpperCase()} 級軍團圖鑑 
-                            <span>[ 收集進度: ${unlockedInRank} / ${totalInRank} ] ${isComplete}</span>
-                        </div>
-                        <div class="display-area">
-                    `;
-
-                    for (let i = 0; i < totalInRank; i++) {
+                    for (let i = 0; i < total; i++) {
                         const id = `${currentPoolId}_${r}_${i}`;
                         const count = stackedInv[id] || 0;
-                        htmlContent += createCardHTML(id, count);
+                        const isLocked = count === 0;
+                        const details = getCardDetails(id);
+                        
+                        htmlContent += `
+                        <div class="mini-card ${isLocked ? 'locked' : ''}">
+                            ${count > 1 ? `<div class="mini-count">x${count}</div>` : ''}
+                            ${isLocked ? `<div class="mini-lock-icon">🔒</div>` : ''}
+                            <img src="${details.src}" onerror="this.src='https://via.placeholder.com/150x220/111/00ffcc?text=X'">
+                            <div class="mini-rank">${r.toUpperCase()}</div>
+                        </div>`;
                     }
                     htmlContent += `</div>`;
                 });
-
                 invArea.innerHTML = htmlContent;
-
-                const totalCards = Object.values(poolSettings[currentPoolId]).reduce((acc, arr) => acc + arr.length, 0);
-                const totalUnlocked = Object.values(unlockedRanks).reduce((acc, val) => acc + val, 0);
-                
-                statArea.innerHTML = `
-                    <div class="stat-item" style="width:100%; text-align:center;">
-                        <span class="stat-label" style="font-size:14px;">GLOBAL UNLOCK PROGRESS</span>
-                        <span class="stat-val" style="font-size:36px; text-shadow: 0 0 20px #00ffcc;">
-                            ${totalUnlocked} <span style="font-size:20px; color:#666;">/ ${totalCards}</span>
-                        </span>
-                    </div>`;
-
-                sysMessage.innerText = `[成功] 圖鑑讀取完成。收集進度：${Math.floor((totalUnlocked/totalCards)*100)}%。`;
-
-            } catch (error) {
-                sysMessage.innerText = "[系統] 無法連結暗影空間。";
-            }
+            } catch (error) { invArea.innerHTML = '<p style="color:#ff0055;">無法連結圖鑑庫。</p>'; }
         }
 
-        document.getElementById('btn-clear-backpack').addEventListener('click', async () => {
-            if(confirm("警告：這將會清空你所有的圖鑑紀錄！確定要重置嗎？")) {
-                try {
-                    await setDoc(currentUserDocRef, { inventory: [] }, { merge: true });
-                    document.getElementById('sys-message').innerText = "[成功] 所有圖鑑已重置。";
-                    loadBackpack(); 
-                } catch (error) { document.getElementById('sys-message').innerText = "[錯誤] 刪除失敗。"; }
-            }
+        // UI 互動綁定
+        document.getElementById('btn-draw-1').addEventListener('click', () => performTCGGacha(1));
+        document.getElementById('btn-draw-5').addEventListener('click', () => performTCGGacha(5));
+
+        document.getElementById('nav-gacha').addEventListener('click', () => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('nav-gacha').classList.add('active');
+            document.getElementById('backpack-view').classList.add('hidden');
+            document.getElementById('gacha-view').classList.remove('hidden');
         });
 
-        document.getElementById('btn-close-reveal').addEventListener('click', () => document.getElementById('gacha-overlay').classList.remove('active'));
-        
-        document.querySelectorAll('.pool-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.pool-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentPoolId = btn.dataset.pool;
-                document.getElementById('system-title').innerText = `>_ DUNGEON: ${currentPoolId.toUpperCase()}`;
-                document.getElementById('draw-area').innerHTML = `<p style="color: #333; font-size: 18px; letter-spacing: 2px; align-self: center;">[ 系統切換至 ${btn.innerText} ]</p>`;
-                document.getElementById('backpack-view').classList.add('hidden');
-                document.getElementById('gacha-view').classList.remove('hidden');
-            });
-        });
-
-        document.getElementById('btn-draw-1').addEventListener('click', () => performGacha(1));
-        document.getElementById('btn-draw-5').addEventListener('click', () => performGacha(5));
-        
-        document.getElementById('btn-go-backpack').addEventListener('click', () => {
+        document.getElementById('nav-backpack').addEventListener('click', () => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('nav-backpack').classList.add('active');
             document.getElementById('gacha-view').classList.add('hidden');
             document.getElementById('backpack-view').classList.remove('hidden');
-            document.getElementById('system-title').innerText = ">_ GLOBAL_INDEX_DATABASE";
             loadBackpack();
         });
 
-        document.getElementById('btn-go-gacha').addEventListener('click', () => {
-            document.getElementById('backpack-view').classList.add('hidden');
-            document.getElementById('gacha-view').classList.remove('hidden');
-            document.getElementById('system-title').innerText = `>_ DUNGEON: ${currentPoolId.toUpperCase()}`;
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentPoolId = btn.dataset.pool;
+            });
+        });
+
+        document.getElementById('btn-clear-backpack').addEventListener('click', async () => {
+            if(confirm("確定要清空所有圖鑑嗎？")) {
+                await setDoc(currentUserDocRef, { inventory: [] }, { merge: true });
+                loadBackpack(); 
+            }
         });
 
         document.getElementById('btn-logout').addEventListener('click', () => { 
-            if(confirm("確定中斷神經連結？")) {
-                signOut(auth).then(() => { window.location.href = "index.html"; });
-            }
+            if(confirm("確定登出？")) signOut(auth).then(() => window.location.href = "index.html");
         });
     </script>
 </body>
