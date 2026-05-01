@@ -3,76 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo Leveling - 管理者終端</title>
+    <title>Solo Leveling - Admin Hub</title>
     <style>
         * { box-sizing: border-box; }
-        body { background: #000; color: #ff0055; font-family: 'Courier New', monospace; height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; }
+        body { background: #000; color: #ff0055; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
         
-        /* 密碼鎖畫面 */
-        #pass-gate { text-align: center; border: 2px solid #ff0055; padding: 40px; box-shadow: 0 0 20px #ff0055; background: #0a0a0a; border-radius: 10px; }
-        #pass-gate h2 { letter-spacing: 5px; margin-bottom: 20px; font-size: 18px; }
-        .pass-input { background: #000; border: 1px solid #ff0055; color: #00ffcc; padding: 10px; text-align: center; font-size: 20px; outline: none; width: 200px; letter-spacing: 5px; }
-        .pass-btn { display: block; width: 100%; margin-top: 20px; padding: 10px; background: #ff0055; color: #fff; border: none; font-weight: bold; cursor: pointer; }
-
-        /* 後台主體 */
-        #admin-box { 
-            width: 95%; max-width: 600px; border: 2px solid #ff0055; padding: 25px;
-            box-shadow: 0 0 30px rgba(255, 0, 85, 0.2); background: rgba(10,10,10,0.9);
-            max-height: 90vh; overflow-y: auto;
-        }
-        h2 { text-align: center; letter-spacing: 5px; margin-bottom: 25px; border-bottom: 1px solid #ff0055; padding-bottom: 10px; }
+        .box { width: 100%; max-width: 500px; border: 2px solid #ff0055; padding: 25px; background: rgba(10,10,10,0.95); box-shadow: 0 0 20px rgba(255,0,85,0.2); border-radius: 8px; }
+        h2 { text-align: center; letter-spacing: 3px; margin-bottom: 25px; border-bottom: 1px solid #ff0055; padding-bottom: 10px; font-size: 18px; }
+        h3 { font-size: 14px; color: #fff; margin-bottom: 15px; border-left: 3px solid #ff0055; padding-left: 10px; }
         
-        .section { margin-bottom: 30px; }
-        h3 { font-size: 14px; color: #fff; margin-bottom: 15px; text-transform: uppercase; border-left: 3px solid #ff0055; padding-left: 10px; }
+        input, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: #fff; margin-bottom: 15px; border-radius: 4px; outline: none; font-family: inherit; }
+        input:focus, textarea:focus { border-color: #ff0055; }
         
-        input, textarea {
-            width: 100%; padding: 12px; background: #000; border: 1px solid #333;
-            color: #fff; margin-bottom: 10px; border-radius: 4px; outline: none;
-        }
+        .btn-main { width: 100%; padding: 15px; background: #ff0055; color: #fff; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px; transition: 0.2s; }
+        .btn-main:active { transform: scale(0.98); }
         
-        .btn-post {
-            width: 100%; padding: 15px; background: #ff0055; color: #fff;
-            border: none; font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s;
-        }
-        
-        .report-item {
-            background: #111; border: 1px solid #333; padding: 15px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ff0055;
-        }
-        .btn-approve { background: #00ffcc; color: #000; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .report-item { background: #111; border: 1px solid #333; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ff0055; border-radius: 4px; }
+        .btn-approve { background: #00ffcc; color: #000; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
         
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- 密碼輸入層 -->
-    <div id="pass-gate">
-        <h2>ACCESS_DENIED</h2>
-        <p style="color: #666; font-size: 12px; margin-bottom: 15px;">請輸入管理員授權碼</p>
-        <input type="password" id="gate-pass" class="pass-input" maxlength="4" placeholder="****">
-        <button class="pass-btn" onclick="verifyGate()">執行解鎖</button>
+    <!-- 門禁系統 -->
+    <div class="box" id="gate-view">
+        <h2>『系統後台加密鎖』</h2>
+        <p style="color: #666; font-size: 12px; text-align: center; margin-bottom: 20px;">請輸入 4 位數授權碼存取終端機</p>
+        <input type="password" id="admin-pw" placeholder="****" maxlength="4" style="text-align: center; font-size: 20px; letter-spacing: 10px;">
+        <button class="btn-main" onclick="verifyEntry()">執行解鎖</button>
     </div>
 
-    <!-- 後台內容層 -->
-    <div id="admin-box" class="hidden">
-        <h2>ADMIN_TERMINAL</h2>
-        <div id="admin-content">
-            <div class="section">
-                <h3>發布新任務指令</h3>
-                <input type="text" id="m-title" placeholder="任務名稱">
-                <textarea id="m-desc" placeholder="詳細描述"></textarea>
-                <input type="number" id="m-reward" placeholder="獎勵金幣數量">
-                <button class="btn-post" onclick="publishMission()">發布全球任務</button>
-            </div>
+    <!-- 後台主控台 -->
+    <div class="box hidden" id="panel-view">
+        <h2>『系統管理員終端』</h2>
+        
+        <div style="margin-bottom: 30px;">
+            <h3>發布全服委託指令</h3>
+            <input type="text" id="m-title" placeholder="任務標題 (例: 突破地下城)">
+            <textarea id="m-desc" placeholder="詳細描述與達成條件" rows="3"></textarea>
+            <input type="number" id="m-reward" placeholder="核發金幣數量 (例: 500)">
+            <button class="btn-main" onclick="publishMission()">發布全球任務</button>
+        </div>
 
-            <hr style="border:0; border-top:1px solid #222; margin:30px 0;">
+        <hr style="border:0; border-top:1px solid #333; margin: 20px 0;">
 
-            <div class="section">
-                <h3>玩家回報審核</h3>
-                <div id="report-list">
-                    <p style="color:#444; font-size:12px; text-align:center;">掃描中... 暫無回報紀錄</p>
-                </div>
+        <div>
+            <h3>玩家回報審核清單</h3>
+            <div id="report-list">
+                <p style="color:#444; font-size:12px; text-align:center;">掃描中... 暫無待處理紀錄</p>
             </div>
         </div>
     </div>
@@ -81,58 +60,47 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getFirestore, doc, getDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // Firebase Config (繼承自你的設定)
-        const firebaseConfig = { 
-            apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo", 
-            authDomain: "my-gacha-game-f7663.firebaseapp.com", 
-            projectId: "my-gacha-game-f7663", 
-            storageBucket: "my-gacha-game-f7663.firebasestorage.app", 
-            messagingSenderId: "1035192644413", 
-            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54" 
-        };
-
-        const app = initializeApp(firebaseConfig);
+        const config = { apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo", authDomain: "my-gacha-game-f7663.firebaseapp.com", projectId: "my-gacha-game-f7663", storageBucket: "my-gacha-game-f7663.firebasestorage.app", messagingSenderId: "1035192644413", appId: "1:1035192644413:web:1ad5337b9760a154cf8b54" };
+        const app = initializeApp(config);
         const db = getFirestore(app);
 
-        // 🔓 密碼驗證邏輯
-        window.verifyGate = () => {
-            const input = document.getElementById('gate-pass').value;
-            if (input === "0414") {
-                document.getElementById('pass-gate').classList.add('hidden');
-                document.getElementById('admin-box').classList.remove('hidden');
-                listenToReports();
+        // 密碼解鎖 (指定 0414)
+        window.verifyEntry = () => {
+            if (document.getElementById('admin-pw').value === "0414") {
+                document.getElementById('gate-view').classList.add('hidden');
+                document.getElementById('panel-view').classList.remove('hidden');
+                startListening();
             } else {
-                alert("授權錯誤：拒絕存取！");
-                document.getElementById('gate-pass').value = '';
+                alert("❌ 授權碼錯誤：拒絕存取！");
+                document.getElementById('admin-pw').value = '';
             }
         };
 
-        // 1. 發布任務
+        // 發布任務
         window.publishMission = async () => {
             const title = document.getElementById('m-title').value.trim();
             const desc = document.getElementById('m-desc').value.trim();
             const reward = parseInt(document.getElementById('m-reward').value);
 
-            if (!title || !reward) { alert("標題與獎勵不能為空！"); return; }
+            if (!title || !reward) return alert("標題與獎勵金額不可為空！");
 
-            const missionData = { id: "m" + Date.now(), title, desc, reward };
-            await updateDoc(doc(db, "config", "game_data"), { missions: arrayUnion(missionData) });
+            const mData = { id: "m_" + Date.now(), title, desc, reward };
+            await updateDoc(doc(db, "config", "game_data"), { missions: arrayUnion(mData) });
 
-            alert("任務已成功發送！");
-            document.getElementById('m-title').value = '';
-            document.getElementById('m-desc').value = '';
-            document.getElementById('m-reward').value = '';
+            alert("✅ 任務已成功推播至全伺服器！");
+            document.getElementById('m-title').value = ''; document.getElementById('m-desc').value = ''; document.getElementById('m-reward').value = '';
         };
 
-        // 2. 監聽玩家回報
-        function listenToReports() {
+        // 監聽回報
+        function startListening() {
             onSnapshot(doc(db, "config", "game_data"), (snap) => {
                 const list = document.getElementById('report-list');
-                const reports = snap.data()?.reports || [];
-                const missions = snap.data()?.missions || [];
+                const data = snap.data();
+                const reports = data?.reports || [];
+                const missions = data?.missions || [];
 
                 if (reports.length === 0) {
-                    list.innerHTML = '<p style="color:#444; font-size:12px; text-align:center;">掃描中... 暫無回報紀錄</p>';
+                    list.innerHTML = '<p style="color:#444; font-size:12px; text-align:center;">暫無待處理紀錄</p>';
                     return;
                 }
 
@@ -142,37 +110,40 @@
                     const div = document.createElement('div');
                     div.className = 'report-item';
                     div.innerHTML = `
-                        <div style="font-size:13px; color:#ccc;">
-                            玩家: <b style="color:#ff0055">${rep.uid}</b><br>
-                            任務: ${mInfo ? mInfo.title : "未知"}<br>
-                            金額: +${mInfo ? mInfo.reward : 0} G
+                        <div style="font-size:12px; color:#ccc; line-height:1.5;">
+                            申請人 ID: <b style="color:#ff0055">${rep.uid}</b><br>
+                            任務: ${mInfo ? mInfo.title : "已刪除任務"}<br>
+                            獎勵: <b style="color:#ffd700">+${mInfo ? mInfo.reward : 0} G</b>
                         </div>
-                        <button class="btn-approve" onclick="approveGold('${rep.uid}', '${rep.mid}', ${mInfo ? mInfo.reward : 0})">確認發放</button>
+                        <button class="btn-approve" onclick="approveTask('${rep.uid}', '${rep.mid}', ${mInfo ? mInfo.reward : 0})">核准發放</button>
                     `;
                     list.appendChild(div);
                 });
             });
         }
 
-        // 3. 發放金幣
-        window.approveGold = async (uid, mid, reward) => {
-            if (!confirm(`確定要給玩家 ${uid} 發放 ${reward} 金幣嗎？`)) return;
+        // 審核發錢
+        window.approveTask = async (uid, mid, rewardAmount) => {
+            if (!confirm(`確定核發 ${rewardAmount} G 給玩家 ${uid} 嗎？`)) return;
 
             const userRef = doc(db, "users", uid);
             const configRef = doc(db, "config", "game_data");
 
             try {
+                // 發錢給玩家並移除他的 pending 狀態
                 const userSnap = await getDoc(userRef);
                 const currentGold = userSnap.data().gold || 0;
-                
-                await updateDoc(userRef, { gold: currentGold + reward, pendingMissions: arrayRemove(mid) });
-                const snap = await getDoc(configRef);
-                const targetReport = snap.data().reports.find(r => r.uid === uid && r.mid === mid);
+                await updateDoc(userRef, { gold: currentGold + rewardAmount, pending: arrayRemove(mid) });
+
+                // 移除後台報表
+                const configSnap = await getDoc(configRef);
+                const targetReport = configSnap.data().reports.find(r => r.uid === uid && r.mid === mid);
                 await updateDoc(configRef, { reports: arrayRemove(targetReport) });
 
-                alert("發放完成！");
+                alert("✅ 金幣已匯入該玩家帳戶！");
             } catch (err) {
-                alert("發放失敗，請檢查網路連線。");
+                console.error(err);
+                alert("❌ 發放失敗，請檢查資料庫連線。");
             }
         };
     </script>
