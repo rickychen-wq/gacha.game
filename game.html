@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V29 - 毛玻璃科技與完美比例</title>
+    <title>Solo Leveling: TCG V30 - 滿版圖鑑與完美吸收動畫</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; -webkit-tap-highlight-color: transparent; }
         
-        /* 💎 背景改為深海藍灰科技感，不再是死黑 */
         body { background-color: #020617; display: flex; justify-content: center; align-items: center; height: 100dvh; width: 100vw; overflow: hidden; color: #e2e8f0; }
         #app { width: 100%; max-width: 400px; height: 100%; background: radial-gradient(circle at top, #1e293b 0%, #020617 100%); position: relative; display: flex; flex-direction: column; border: 1px solid #334155; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
         
-        /* 登入閘門 - 半透明毛玻璃 */
+        /* 登入閘門 */
         #login-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
         .sys-title { color: #38bdf8; font-size: 26px; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 15px rgba(56,189,248,0.5); letter-spacing: 3px; }
         .sys-sub { color: #94a3b8; font-size: 11px; margin-bottom: 40px; letter-spacing: 4px; }
@@ -44,7 +43,7 @@
         .m-btn:disabled { background: rgba(15, 23, 42, 0.5); color: #475569; border-color: #334155; cursor: not-allowed; }
 
         /* ========================================= */
-        /* 💎 抽卡特效層 (比例修復版) */
+        /* 💎 抽卡特效層 (修復飛天動畫與圖片滿版) */
         /* ========================================= */
         #overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(2,6,23,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index:100; display:none; flex-direction:column; justify-content:center; align-items:center; perspective: 1200px; }
         .stack { position: relative; width: 220px; height: 320px; }
@@ -57,12 +56,17 @@
         .back { background: linear-gradient(135deg, #1e293b 0%, #020617 100%); display: flex; justify-content: center; align-items: center; border: 1px solid rgba(56,189,248,0.3); box-shadow: inset 0 0 30px rgba(0,0,0,0.8); position: relative;}
         .back::after { content: 'SL'; color: rgba(255, 255, 255, 0.05); font-size: 50px; font-weight: 900; letter-spacing: 8px; }
         
-        .front { transform: rotateY(180deg); background: #0f172a; display: flex; flex-direction: column; padding-bottom: 40px; }
-        /* 🚨 關鍵修復：改用 contain 確保圖片完整顯示不被切掉 */
-        .front img { width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1; padding: 5px; }
+        .front { transform: rotateY(180deg); background: #0f172a; display: flex; flex-direction: column; }
+        /* 🚨 關鍵修復：cover + center top 確保長橫圖片都完美滿版 */
+        .front img { width: 100%; height: 100%; object-fit: cover; object-position: center top; position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.9; }
         .r-banner { position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; z-index: 2; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 15px; letter-spacing: 3px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; }
         
-        @keyframes fly { 0% { opacity: 1; transform: rotateY(180deg) scale(1.08); } 15% { transform: rotateY(180deg) translateY(10px) scale(1.1); } 100% { transform: rotateY(180deg) translateY(-1000px) scale(0.6) rotate(10deg); opacity: 0; filter: blur(5px); } }
+        /* 🚨 關鍵修復：改為原地縮小吸收的科技感動畫，解決手機版飛走破圖的問題 */
+        @keyframes fly { 
+            0% { opacity: 1; transform: rotateY(180deg) scale(1.08); filter: blur(0px); } 
+            30% { opacity: 1; transform: rotateY(180deg) scale(1.15) translateY(-10px); filter: blur(0px); } 
+            100% { opacity: 0; transform: rotateY(180deg) scale(0.2) translateY(-50px); filter: blur(10px); } 
+        }
         .dismissed { animation: fly 0.6s forwards; pointer-events: none; }
         
         .hidden { display: none !important; }
@@ -79,12 +83,12 @@
         #pity-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #a855f7); transition: width 0.5s ease; box-shadow: 0 0 10px rgba(168,85,247,0.5);}
 
         /* ========================================= */
-        /* 🎒 圖鑑暗色科技感 + 比例防彈修復 */
+        /* 🎒 圖鑑完美滿版修復 */
         /* ========================================= */
         #bag-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 5px; }
-        .bag-card { position: relative; border-radius: 6px; overflow: hidden; border: 1px solid #334155; background: rgba(15, 23, 42, 0.7); aspect-ratio: 3/4; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-bottom: 22px; backdrop-filter: blur(4px); }
-        /* 🚨 關鍵修復：contain 保證圖片不被切斷，而且比例自然 */
-        .bag-card img { width: 100%; height: 100%; object-fit: contain; padding: 4px; transition: 0.3s; z-index: 1;}
+        .bag-card { position: relative; border-radius: 6px; overflow: hidden; border: 1px solid #334155; background: rgba(15, 23, 42, 0.7); aspect-ratio: 2/3; display: flex; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        /* 🚨 關鍵修復：cover + center top 確保圖鑑每一張卡都是滿版的完美長方形！ */
+        .bag-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: 0.3s; z-index: 1;}
         .bag-card .rarity-label { position: absolute; bottom: 0; left: 0; right: 0; height: 22px; line-height: 22px; text-align: center; font-size: 10px; font-weight: bold; background: rgba(15,23,42,0.9); letter-spacing: 1px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2;}
         .bag-card .count-badge { position: absolute; top: 4px; right: 4px; background: rgba(15,23,42,0.9); border: 1px solid rgba(250,204,21,0.5); color: #facc15; font-size: 9px; border-radius: 4px; padding: 2px 5px; z-index: 3;}
         
@@ -92,7 +96,7 @@
         .bag-header h2 { color: #38bdf8; font-size: 14px; letter-spacing: 1px;}
         .bag-header span { font-size: 11px; color: #94a3b8; }
 
-        /* 未解鎖的深邃黑影 (無鎖頭) */
+        /* 未解鎖的深邃黑影 */
         .bag-card.locked { border-color: #1e293b !important; box-shadow: none !important; background: rgba(2,6,23,0.5); }
         .bag-card.locked img { filter: brightness(0.1) grayscale(100%); opacity: 0.3; }
         .bag-card.locked .rarity-label { color: #475569 !important; background: transparent; border-top-color: transparent;}
