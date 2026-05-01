@@ -2,358 +2,281 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V24 - 終極修復版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Leveling - Admin Panel V24</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #000; display: flex; justify-content: center; align-items: center; height: 100dvh; width: 100vw; overflow: hidden; }
-        #app { width: 100%; max-width: 400px; height: 100%; background: #050505; position: relative; display: flex; flex-direction: column; border: 1px solid #222; }
-        .top-bar { height: 60px; border-bottom: 2px solid #00ffcc; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; background: rgba(0,0,0,0.9); z-index: 10; }
-        .gold-ui { background: rgba(255,215,0,0.1); border: 1px solid #ffd700; padding: 5px 12px; border-radius: 20px; color: #fff; font-weight: bold; font-size: 14px; }
-        .main-view { flex: 1; overflow-y: auto; padding: 15px; position: relative; }
-        
-        .pool-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; background: #111; color: #666; border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold; border-radius: 8px; font-size: 12px; cursor: pointer; }
-        .tab-btn.active { background: rgba(0,255,204,0.1); color: #00ffcc; border-color: #00ffcc; }
-        
-        .banner { width: 100%; height: 180px; border-radius: 12px; margin-bottom: 20px; position: relative; overflow: hidden; border: 1px solid #333; }
-        .banner img { width: 100%; height: 100%; object-fit: cover; }
-        .gacha-btns { display: flex; gap: 10px; }
-        .g-btn { flex: 1; padding: 15px; background: #000; border: 2px solid #00ffcc; color: #00ffcc; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .g-btn span { display: block; font-size: 10px; opacity: 0.7; }
-        .m-card { background: #111; border: 1px solid #333; border-left: 4px solid #00ffcc; padding: 15px; margin-bottom: 12px; border-radius: 6px; }
-        .m-btn { width: 100%; margin-top: 10px; padding: 10px; background: #00ffcc; color: #000; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; }
-        .m-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+        body { background: #000; color: #ff0055; font-family: monospace; padding: 20px; display: flex; justify-content: center; margin: 0; }
+        .box { width: 100%; max-width: 500px; border: 2px solid #ff0055; padding: 20px; background: #0a0a0a; box-shadow: 0 0 15px rgba(255,0,85,0.2); }
+        input, textarea, button { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #ff0055; color: #fff; outline: none; font-family: monospace; box-sizing: border-box; }
+        button { cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { background: #ff0055; color: #000; }
+        .hidden { display: none; }
+        .item { border: 1px solid #333; padding: 10px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #111; }
+        .item span { font-size: 13px; flex: 1; }
+        .item button { width: auto; padding: 6px 14px; margin: 0; font-size: 12px; background: #1a0000; border-color: #ff0055; color: #ff0055; }
+        .item button.btn-ok { border-color: #00ffcc; color: #00ffcc; }
+        .item button.btn-ok:hover { background: #00ffcc; color: #000; }
+        hr { border-color: #330011; margin: 20px 0; }
+        h2 { margin-bottom: 12px; text-align: center; border-bottom: 1px solid #ff0055; padding-bottom: 10px; }
+        h3 { margin: 12px 0 4px; color: #ff4488; font-size: 14px; border-left: 3px solid #ff0055; padding-left: 8px; }
 
-        #overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100; display:none; flex-direction:column; justify-content:center; align-items:center; perspective: 1200px; }
-        .stack { position: relative; width: 220px; height: 320px; }
-        .card-w { position: absolute; top:0; left:0; width:100%; height:100%; transition: 0.6s; cursor: pointer; }
-        .card-i { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: 0.8s; }
-        .card-i.flipped { transform: rotateY(180deg) scale(1.05); }
-        .face { position: absolute; width:100%; height:100%; backface-visibility: hidden; border-radius: 12px; border: 3px solid #333; overflow: hidden; }
-        .back { background: #111; display: flex; justify-content: center; align-items: center; border-color: #00ffcc; }
-        .front { transform: rotateY(180deg); background: #000; display: flex; flex-direction: column; }
-        .front img { width: 100%; height: 260px; object-fit: cover; }
-        .r-banner { flex: 1; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #fff; }
-        @keyframes fly { 0% { opacity: 1; } 20% { transform: rotateY(180deg) translateY(20px); } 100% { transform: rotateY(180deg) translateY(-1200px) scale(0.5); opacity: 0; } }
-        .dismissed { animation: fly 0.7s forwards; pointer-events: none; }
-        .hidden { display: none !important; }
-        .nav { height: 70px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; background: #0a0a0a; }
-        .nav-i { color: #555; font-size: 11px; text-align: center; cursor: pointer; }
-        .nav-i.active { color: #00ffcc; }
+        /* 任務列表管理 */
+        #mission-list-admin { margin-top: 10px; }
+        .m-admin-item { border: 1px solid #330011; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; background: #0a0005; }
+        .m-admin-item .m-info { flex: 1; }
+        .m-admin-item .m-info b { color: #ff4488; font-size: 15px; }
+        .m-admin-item .m-info span { color: #888; font-size: 11px; display: block; margin-top: 4px; }
+        .m-admin-item button { width: auto; padding: 5px 10px; margin: 0; font-size: 11px; color: #ff0055; border-color: #330011; }
+        .m-admin-item button:hover { background: #ff0055; color: #fff; }
 
-        #sign-toast { position: absolute; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px); background: linear-gradient(135deg, rgba(0,255,204,0.15), rgba(255,215,0,0.15)); border: 1px solid #ffd700; border-radius: 12px; padding: 14px 24px; color: #ffd700; font-weight: bold; font-size: 15px; z-index: 200; text-align: center; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.5s, transform 0.5s; }
-        #sign-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        #sign-toast .sign-sub { font-size: 11px; color: #00ffcc; margin-top: 4px; }
-
-        #pity-bar-wrap { margin-top: 14px; }
-        #pity-bar-wrap label { font-size: 11px; color: #555; display: flex; justify-content: space-between; margin-bottom: 4px; }
-        #pity-bar-track { width: 100%; height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; border: 1px solid #222; }
-        #pity-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #00ffcc, #aa00ff); transition: width 0.5s ease; }
-
-        #bag-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 5px; }
-        .bag-card { position: relative; border-radius: 10px; overflow: hidden; border: 2px solid #222; background: #111; aspect-ratio: 2/3; cursor: pointer; }
-        .bag-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .bag-card .rarity-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background: rgba(0,0,0,0.7); }
-        .bag-card .count-badge { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.85); border: 1px solid #ffd700; color: #ffd700; font-size: 10px; font-weight: bold; border-radius: 10px; padding: 2px 6px; }
-        .bag-empty { grid-column: 1/-1; text-align: center; color: #333; padding: 40px 0; font-size: 13px; }
-        .bag-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .bag-header h2 { color: #00ffcc; font-size: 14px; }
-        .bag-header span { font-size: 11px; color: #555; }
-
-        .rarity-SSS { border-color: #ff0000 !important; box-shadow: 0 0 15px rgba(255,0,0,0.6); }
-        .rarity-SSS .rarity-label { color: #ff0000; }
-        .rarity-SS { border-color: #ff8800 !important; box-shadow: 0 0 10px rgba(255,136,0,0.5); }
-        .rarity-SS .rarity-label { color: #ff8800; }
-        .rarity-S { border-color: #aa00ff !important; box-shadow: 0 0 8px rgba(170,0,255,0.4); }
-        .rarity-S .rarity-label { color: #aa00ff; }
-        .rarity-A { border-color: #ffd700 !important; }
-        .rarity-A .rarity-label { color: #ffd700; }
-        .rarity-B { border-color: #00ffcc !important; }
-        .rarity-B .rarity-label { color: #00ffcc; }
-        .rarity-C { border-color: #555 !important; }
-        .rarity-C .rarity-label { color: #888; }
-        .rarity-D { border-color: #333 !important; filter: grayscale(50%);}
-        .rarity-D .rarity-label { color: #666; }
-
-        .card-guaranteed .back { border-color: #ffd700 !important; box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+        /* 玩家資訊查詢 */
+        #player-info { background: #0a0a0a; border: 1px solid #330011; padding: 14px; margin-top: 10px; font-size: 13px; line-height: 1.8; }
+        #player-info .pi-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #222; padding: 4px 0; }
+        #player-info .pi-label { color: #888; }
+        #player-info .pi-val { color: #fff; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="top-bar">
-            <h1 id="p-id" style="color:#00ffcc; font-size:12px;">ID: ...</h1>
-            <div class="gold-ui">G: <span id="p-gold">0</span></div>
+    <div class="box" id="gate">
+        <h2>『後台加密鎖』</h2>
+        <p style="text-align:center; color:#666; font-size:12px;">請輸入 4 位數管理員授權碼</p>
+        <input type="password" id="pw" placeholder="****" maxlength="4" style="text-align:center; font-size:24px; letter-spacing:10px;" onkeydown="if(event.key==='Enter')unlock()">
+        <button onclick="unlock()">執行解鎖</button>
+    </div>
+
+    <div class="box hidden" id="panel">
+        <h2>『管理員終端 V24』</h2>
+
+        <!-- 發布任務 -->
+        <h3>▶ 發布新委託任務 (單次性)</h3>
+        <input type="text" id="t" placeholder="任務標題 (例: 突破 C 級傳送門)">
+        <input type="text" id="d" placeholder="任務說明與條件">
+        <input type="number" id="r" placeholder="獎勵金額 (G)">
+        <button onclick="addM()" style="background:#ff0055; color:#000;">✚ 推播至全伺服器</button>
+
+        <!-- 現有任務管理 -->
+        <hr>
+        <h3>▶ 全服未接取任務清單</h3>
+        <div id="mission-list-admin"><span style="color:#333;font-size:12px;">載入中...</span></div>
+
+        <!-- 待審核回報 -->
+        <hr>
+        <h3>▶ 玩家回報審核 (核准後任務將永久銷毀)</h3>
+        <div id="reps"><span style="color:#333;font-size:12px;">暫無回報</span></div>
+
+        <!-- 玩家查詢 -->
+        <hr>
+        <h3>▶ 玩家資料庫調閱</h3>
+        <div style="display:flex;gap:8px;">
+            <input type="text" id="query-uid" placeholder="輸入玩家 ID" style="margin:0;flex:1;">
+            <button onclick="queryPlayer()" style="width:auto;margin:0;padding:12px 16px;">查詢</button>
         </div>
+        <div id="player-info" class="hidden"></div>
 
-        <div id="sign-toast">
-            🎉 每日簽到成功！
-            <div class="sign-sub">+50 G 已自動存入錢包</div>
-        </div>
-
-        <div id="overlay">
-            <div class="stack" id="stack"></div>
-            <div id="hint" style="color:#888;margin-top:30px;">[ 點擊翻開卡包 ]</div>
-        </div>
-
-        <div class="main-view">
-            <div id="page-gacha">
-                <div class="pool-tabs">
-                    <div class="tab-btn active" onclick="switchPool('freren', this)">芙莉蓮</div>
-                    <div class="tab-btn" onclick="switchPool('elite', this)">實力至上</div>
-                </div>
-                <div class="banner">
-                    <img id="b-img" src="images/freren/banner.jpg" onerror="this.src='https://via.placeholder.com/400x180/111/444?text=BANNER'">
-                    <div style="position:absolute; bottom:10px; left:10px; color:#fff; font-weight:bold;" id="b-txt">>_ 葬送的芙莉蓮</div>
-                </div>
-                <div class="gacha-btns">
-                    <button class="g-btn" onclick="draw(1, 70)">單抽<span>70 G</span></button>
-                    <button class="g-btn" style="border-color:#aa00ff; color:#aa00ff;" onclick="draw(5, 300)">五連<span>300 G</span></button>
-                </div>
-                <div id="pity-bar-wrap">
-                    <label><span>🛡 保底進度 (滿50必中S以上)</span><span id="pity-text">0 / 50</span></label>
-                    <div id="pity-bar-track"><div id="pity-bar-fill" style="width:0%"></div></div>
-                </div>
-            </div>
-
-            <div id="page-mission" class="hidden">
-                <div id="m-list"></div>
-            </div>
-
-            <div id="page-bag" class="hidden">
-                <div class="bag-header">
-                    <h2>🎒 我的圖鑑</h2>
-                    <span id="bag-count">0 種卡片</span>
-                </div>
-                <div id="bag-list"></div>
-            </div>
-        </div>
-
-        <div class="nav">
-            <div class="nav-i active" onclick="tab('page-gacha', this)">🔮召喚</div>
-            <div class="nav-i" onclick="tab('page-mission', this)">📜任務</div>
-            <div class="nav-i" onclick="tab('page-bag', this)">🎒圖鑑</div>
+        <!-- 手動發金 -->
+        <hr>
+        <h3>▶ 系統金幣直匯</h3>
+        <div style="display:flex;gap:8px;">
+            <input type="text" id="manual-uid" placeholder="玩家 ID" style="margin:0;flex:1;">
+            <input type="number" id="manual-gold" placeholder="金額" style="margin:0;width:100px;">
+            <button onclick="manualGold()" style="width:auto;margin:0;padding:12px 16px;">發放</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const config = { apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo", authDomain: "my-gacha-game-f7663.firebaseapp.com", projectId: "my-gacha-game-f7663", storageBucket: "my-gacha-game-f7663.firebasestorage.app", messagingSenderId: "1035192644413", appId: "1:1035192644413:web:1ad5337b9760a154cf8b54" };
-        const app = initializeApp(config);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const db = getFirestore(initializeApp(config));
 
-        let userRef = null;
-        let uData = { gold: 0, inventory: [], pending: [], pity_count: 0, lastSignIn: '' };
-        let currentPool = 'freren';
+        let currentGameData = null;
 
-        const pools = {
-            'freren': { 
-                sss: ['sss1.jpg'], 
-                ss: ['ss1.jpg'], 
-                s: ['s1.jpg', 's2.jpg', 's3.webp', 's4.jpg', 's5.jpg'], 
-                a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a5.jpg', 'a6.jpg'], 
-                b: ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg', 'b7.jpg', 'b8.jpg', 'b9.jpg'], 
-                c: ['c1.jpg', 'c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg', 'c7.jpg', 'c8.jpg', 'c9.jpg', 'c10.jpg'], 
-                d: ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg', 'd8.jpg'] 
-            },
-            'elite': { 
-                sss: ['sss1.jpg'], ss: ['ss1.jpg'], s: ['s1.jpg'], 
-                a: ['a1.jpg'], b: ['b1.jpg'], c: ['c1.jpg'], d: ['d1.jpg'] 
+        // 解鎖後台
+        window.unlock = () => {
+            if (document.getElementById('pw').value === "0414") {
+                document.getElementById('gate').classList.add('hidden');
+                document.getElementById('panel').classList.remove('hidden');
+                loadData();
+            } else {
+                alert("授權碼錯誤！");
+                document.getElementById('pw').value = '';
             }
         };
-        const rates = [ 
-            {r:'d', p:0.4}, {r:'c', p:0.3}, {r:'b', p:0.18}, 
-            {r:'a', p:0.08}, {r:'s', p:0.03}, {r:'ss', p:0.008}, {r:'sss', p:0.002} 
-        ];
 
-        function todayStr() {
-            const d = new Date();
-            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        }
-
-        async function checkDailySignIn() {
-            const today = todayStr();
-            if (uData.lastSignIn === today) return; 
-            const newGold = (uData.gold || 0) + 50;
-            await updateDoc(userRef, { gold: newGold, lastSignIn: today });
-            const t = document.getElementById('sign-toast');
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3500);
-        }
-
-        function updatePityBar(count) {
-            const pity = Math.min(count, 50);
-            document.getElementById('pity-text').innerText = `${pity} / 50`;
-            document.getElementById('pity-bar-fill').style.width = `${(pity / 50) * 100}%`;
-        }
-
-        onAuthStateChanged(auth, async (u) => {
-            if (u) {
-                const id = u.email.split('@')[0];
-                document.getElementById('p-id').innerText = `ID: ${id}`;
-                userRef = doc(db, "users", id);
-
-                const snap = await getDoc(userRef);
-                if (!snap.exists()) await setDoc(userRef, { gold: 500, inventory: [], pending: [], pity_count: 0, lastSignIn: '' });
-
-                onSnapshot(userRef, (s) => {
-                    if (s.exists()) {
-                        uData = s.data();
-                        uData.pity_count = uData.pity_count || 0;
-                        
-                        // 【關鍵修復】自動過濾掉舊版字串壞檔，防止圖鑑崩潰！
-                        uData.inventory = (uData.inventory || []).filter(item => typeof item === 'object' && item.rarity);
-                        
-                        document.getElementById('p-gold').innerText = uData.gold;
-                        updatePityBar(uData.pity_count);
-                        renderBag();
-                    }
-                });
-
-                setTimeout(async () => await checkDailySignIn(), 800);
-                syncMissions();
-            } else { window.location.href = "index.html"; }
-        });
-
-        function syncMissions() {
+        // 即時監聽 game_data
+        function loadData() {
             onSnapshot(doc(db, "config", "game_data"), (s) => {
-                const list = document.getElementById('m-list');
-                list.innerHTML = '<h2 style="color:#00ffcc;margin-bottom:15px">當前委託任務</h2>';
-                
-                const missions = s.exists() ? (s.data().missions || []) : [];
-                if (missions.length === 0) {
-                    list.innerHTML += '<div style="color:#666; font-size:12px;">目前沒有可接取的任務。</div>';
-                    return;
-                }
-
-                missions.forEach(m => {
-                    const isP = uData.pending?.includes(m.id);
-                    list.innerHTML += `<div class="m-card"><b>${m.title}</b><span style="float:right;color:#ffd700">+${m.reward} G</span><p style="font-size:12px;color:#666;margin-top:4px;">${m.desc}</p><button class="m-btn" onclick="rep('${m.id}')" ${isP ? 'disabled style="background:#333;cursor:not-allowed"' : ''}>${isP ? '審核中...' : '回報完成'}</button></div>`;
-                });
+                currentGameData = s.exists() ? s.data() : { missions: [], reports: [] };
+                renderMissions(currentGameData.missions || []);
+                renderReports(currentGameData.reports || []);
             });
         }
 
-        window.rep = async (id) => {
-            await updateDoc(userRef, { pending: arrayUnion(id) });
-            // 如果 game_data 不存在就建立，有就合併
-            await setDoc(doc(db, "config", "game_data"), { reports: arrayUnion({ uid: auth.currentUser.email.split('@')[0], mid: id }) }, { merge: true });
-            alert("回報成功！");
-        };
-
-        window.draw = async (n, p) => {
-            if (uData.gold < p) return alert("金幣不足！");
-            let pityCount = uData.pity_count || 0;
-            let results = [];
-            let newPityCount = pityCount;
-
-            for (let i = 0; i < n; i++) {
-                let rank = 'd';
-                let isGuaranteed = false;
-
-                if (newPityCount >= 49) {
-                    rank = 's';
-                    isGuaranteed = true;
-                    newPityCount = 0;
-                } else {
-                    let rand = Math.random(), cum = 0;
-                    for (let c of rates) { cum += c.p; if (rand <= cum) { rank = c.r; break; } }
-                    if (['s', 'ss', 'sss'].includes(rank)) newPityCount = 0;
-                    else newPityCount++;
-                }
-
-                const files = pools[currentPool][rank];
-                const file = files.length > 0 ? files[Math.floor(Math.random() * files.length)] : 'default.jpg';
-                results.push({ rank, file, isGuaranteed, id: `${currentPool}_${rank}_${file}` });
-            }
-
-            // 更新背包
-            const invMap = {};
-            (uData.inventory || []).forEach(c => { invMap[c.id] = { ...c }; });
-            results.forEach(card => {
-                if (invMap[card.id]) {
-                    invMap[card.id].count = (invMap[card.id].count || 1) + 1;
-                } else {
-                    invMap[card.id] = { id: card.id, pool: currentPool, rarity: card.rank, img: `images/${currentPool}/${card.file}`, count: 1 };
-                }
-            });
-
-            await updateDoc(userRef, { gold: uData.gold - p, pity_count: newPityCount, inventory: Object.values(invMap) });
-            startGacha(results);
-        };
-
-        function startGacha(cards) {
-            const overlay = document.getElementById('overlay');
-            const stack = document.getElementById('stack');
-            overlay.style.display = 'flex';
-            stack.innerHTML = '';
-            let active = 0, rev = false;
-
-            cards.reverse().forEach((card, i) => {
-                const color = card.rank === 's' ? '#aa00ff' : (['ss', 'sss'].includes(card.rank) ? '#ff0000' : '#00ffcc');
-                const w = document.createElement('div');
-                w.className = 'card-w' + (card.isGuaranteed ? ' card-guaranteed' : '');
-                w.style.zIndex = cards.length - i;
-                w.style.transform = `translate(${i * 4}px, ${i * 4}px)`;
-                w.innerHTML = `
-                    <div class="card-i">
-                        <div class="face back"><span style="color:#00ffcc;font-size:30px;">✦</span></div>
-                        <div class="face front" style="border-color:${color}">
-                            <img src="images/${currentPool}/${card.file}" onerror="this.src='https://via.placeholder.com/200x260/111/444'">
-                            <div class="r-banner" style="background:${color}">${card.rank.toUpperCase()} ${card.isGuaranteed ? '<span style="color:#ffd700;font-size:10px;margin-left:5px;">⚡保底</span>' : ''}</div>
-                        </div>
-                    </div>`;
-
-                w.onclick = () => {
-                    if (i !== active) return;
-                    if (!rev) {
-                        rev = true;
-                        document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped'));
-                        document.getElementById('hint').innerText = '[ 點擊逐張收取 ]';
-                    } else {
-                        w.firstChild.classList.add('dismissed');
-                        active++;
-                        if (active >= cards.length) setTimeout(() => { overlay.style.display = 'none'; document.getElementById('hint').innerText = '[ 點擊全翻 ]'; }, 750);
-                    }
-                };
-                stack.appendChild(w);
-            });
-        }
-
-        function renderBag() {
-            const inv = uData.inventory || [];
-            const list = document.getElementById('bag-list');
-            document.getElementById('bag-count').innerText = `${inv.length} 種卡片`;
-            if (inv.length === 0) return list.innerHTML = '<div class="bag-empty">尚無收藏卡片</div>';
-
-            const order = { sss: 0, ss: 1, s: 2, a: 3, b: 4, c: 5, d: 6 };
-            const sorted = [...inv].sort((a, b) => (order[a.rarity] || 9) - (order[b.rarity] || 9));
+        // 發布任務 (使用 setDoc + merge 確保即使資料庫空了也能成功建立)
+        window.addM = async () => {
+            const title = document.getElementById('t').value.trim();
+            const desc = document.getElementById('d').value.trim();
+            const reward = parseInt(document.getElementById('r').value);
+            if (!title || !desc || isNaN(reward)) return alert("請填寫完整任務資訊！");
             
-            list.innerHTML = sorted.map(c => `
-                <div class="bag-card rarity-${c.rarity.toUpperCase()}">
-                    <img src="${c.img}" onerror="this.src='https://via.placeholder.com/100x150/111/444'">
-                    <div class="rarity-label">${c.rarity.toUpperCase()} 級</div>
-                    ${c.count > 1 ? `<div class="count-badge">x${c.count}</div>` : ''}
+            const m = { id: "m" + Date.now(), title, desc, reward };
+            
+            try {
+                await setDoc(doc(db, "config", "game_data"), { missions: arrayUnion(m) }, { merge: true });
+                document.getElementById('t').value = '';
+                document.getElementById('d').value = '';
+                document.getElementById('r').value = '';
+                alert(`✓ 任務「${title}」已成功推播至前端！`);
+            } catch (error) {
+                console.error(error);
+                alert("發布失敗，請檢查權限與連線！");
+            }
+        };
+
+        // 渲染任務管理列表
+        function renderMissions(missions) {
+            const area = document.getElementById('mission-list-admin');
+            if (missions.length === 0) {
+                area.innerHTML = '<span style="color:#666;font-size:12px;">目前全服無未接取任務。</span>';
+                return;
+            }
+            area.innerHTML = missions.map(m => `
+                <div class="m-admin-item">
+                    <div class="m-info">
+                        <b>${m.title}</b>
+                        <span>${m.desc} | 💰 ${m.reward}G</span>
+                    </div>
+                    <button onclick="removeM('${m.id}')">強制刪除</button>
                 </div>
             `).join('');
         }
 
-        window.switchPool = (pId, btn) => {
-            currentPool = pId;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('b-img').src = `images/${pId}/banner.jpg`;
-            document.getElementById('b-txt').innerText = `>_ ${pId === 'freren' ? '葬送的芙莉蓮' : '實力至上教室'}`;
+        // 強制刪除未被完成的任務
+        window.removeM = async (mid) => {
+            if (!confirm("確定要將此任務從全服下架？")) return;
+            const m = (currentGameData?.missions || []).find(x => x.id === mid);
+            if (!m) return alert("找不到任務！");
+            await updateDoc(doc(db, "config", "game_data"), { missions: arrayRemove(m) });
         };
 
-        window.tab = (id, b) => {
-            ['page-gacha', 'page-mission', 'page-bag'].forEach(p => document.getElementById(p).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
-            b.classList.add('active');
+        // 渲染待審核回報
+        function renderReports(reports) {
+            const area = document.getElementById('reps');
+            if (reports.length === 0) {
+                area.innerHTML = '<span style="color:#666;font-size:12px;">全服玩家都在摸魚，暫無回報。</span>';
+                return;
+            }
+            area.innerHTML = reports.map(rep => {
+                const mInfo = (currentGameData?.missions || []).find(x => x.id === rep.mid);
+                const mTitle = mInfo ? mInfo.title : "已失效的未知任務";
+                return `
+                <div class="item">
+                    <span style="line-height:1.5;">
+                        <b style="color:#ff4488">${rep.uid}</b> 回報完成<br>
+                        <b style="color:#fff">${mTitle}</b>
+                    </span>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <button class="btn-ok" onclick="ok('${rep.uid}', '${rep.mid}')">✓ 核准並銷毀任務</button>
+                        <button onclick="reject('${rep.uid}', '${rep.mid}')">✗ 駁回退件</button>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // 審核通過：發放獎勵 + 永久銷毀全服任務
+        window.ok = async (uid, mid) => {
+            const m = (currentGameData?.missions || []).find(x => x.id === mid);
+            if (!m) return alert("該任務已不存在，無法核准！");
+            
+            if (!confirm(`確認核准 ${uid} 的回報？\n發放 ${m.reward}G 後，該任務將從全伺服器永久下架！`)) return;
+
+            const uRef = doc(db, "users", uid);
+            const configRef = doc(db, "config", "game_data");
+
+            try {
+                const uSnap = await getDoc(uRef);
+                if (!uSnap.exists()) return alert("找不到該玩家資料！");
+                
+                const curGold = uSnap.data().gold || 0;
+
+                // 1. 給玩家加錢、解除他的等待審核狀態
+                await updateDoc(uRef, { gold: curGold + m.reward, pending: arrayRemove(mid) });
+
+                // 2. 從全局資料庫中徹底銷毀這個任務，並清除這筆報表
+                await updateDoc(configRef, { 
+                    missions: arrayRemove(m),
+                    reports: arrayRemove({ uid: uid, mid: mid }) 
+                });
+
+                alert(`✓ 獎勵已發放！任務「${m.title}」已正式結案並銷毀。`);
+            } catch (err) {
+                console.error(err);
+                alert("執行失敗，請檢查主控台報錯。");
+            }
+        };
+
+        // 審核拒絕：不發錢，解除玩家等待狀態，任務仍留在全服
+        window.reject = async (uid, mid) => {
+            if (!confirm(`確定駁回 ${uid} 的回報？（不發放金幣，退回給玩家重解）`)) return;
+            try {
+                await updateDoc(doc(db, "users", uid), { pending: arrayRemove(mid) });
+                await updateDoc(doc(db, "config", "game_data"), { reports: arrayRemove({ uid: uid, mid: mid }) });
+                alert(`✗ 已駁回該筆回報。`);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        // 玩家資訊查詢
+        window.queryPlayer = async () => {
+            const uid = document.getElementById('query-uid').value.trim();
+            if (!uid) return alert("請輸入玩家 ID！");
+            const snap = await getDoc(doc(db, "users", uid));
+            const infoBox = document.getElementById('player-info');
+            if (!snap.exists()) {
+                infoBox.classList.remove('hidden');
+                infoBox.innerHTML = '<span style="color:#ff0055">資料庫無此玩家紀錄！</span>';
+                return;
+            }
+            const d = snap.data();
+            const inv = d.inventory || [];
+            
+            // 防呆計算：確保只計算正常的卡片物件
+            const validCards = inv.filter(c => typeof c === 'object' && c.rarity);
+            const totalCards = validCards.reduce((acc, c) => acc + (c.count || 1), 0);
+            
+            infoBox.classList.remove('hidden');
+            infoBox.innerHTML = `
+                <div class="pi-row"><span class="pi-label">玩家識別 ID</span><span class="pi-val" style="color:#00ffcc">${uid}</span></div>
+                <div class="pi-row"><span class="pi-label">持有多金幣</span><span class="pi-val" style="color:#ffd700">${d.gold || 0} G</span></div>
+                <div class="pi-row"><span class="pi-label">保底墊刀數</span><span class="pi-val">${d.pity_count || 0} / 50</span></div>
+                <div class="pi-row"><span class="pi-label">最後簽到日</span><span class="pi-val">${d.lastSignIn || '從未簽到'}</span></div>
+                <div class="pi-row"><span class="pi-label">卡牌總數量</span><span class="pi-val">${totalCards} 張</span></div>
+                <div class="pi-row"><span class="pi-label">圖鑑解鎖率</span><span class="pi-val">${validCards.length} 種</span></div>
+                <div class="pi-row"><span class="pi-label">待審核任務</span><span class="pi-val">${(d.pending || []).length > 0 ? (d.pending || []).join(', ') : '無'}</span></div>
+            `;
+        };
+
+        // 手動發放金幣
+        window.manualGold = async () => {
+            const uid = document.getElementById('manual-uid').value.trim();
+            const amount = parseInt(document.getElementById('manual-gold').value);
+            if (!uid || isNaN(amount) || amount <= 0) return alert("請填寫正確的玩家 ID 與匯款金額！");
+            
+            const uRef = doc(db, "users", uid);
+            try {
+                const snap = await getDoc(uRef);
+                if (!snap.exists()) return alert("找不到該玩家！請確認 ID 是否正確。");
+                const curGold = snap.data().gold || 0;
+                await updateDoc(uRef, { gold: curGold + amount });
+                alert(`✓ 金幣空投成功！已匯入 ${amount}G 至 ${uid} 帳戶。\n目前餘額：${curGold + amount}G`);
+                document.getElementById('manual-uid').value = '';
+                document.getElementById('manual-gold').value = '';
+            } catch (err) {
+                console.error(err);
+                alert("發放失敗！");
+            }
         };
     </script>
 </body>
