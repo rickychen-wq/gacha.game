@@ -3,122 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V23 - Player</title>
+    <title>Solo Leveling: TCG V24 - 終極融合版</title>
     <style>
+        /* 保留 Claude 寫的優美 CSS 與發光特效 */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #000; display: flex; justify-content: center; align-items: center; height: 100dvh; width: 100vw; overflow: hidden; user-select: none; }
-        #app { width: 100%; max-width: 400px; height: 100%; background: radial-gradient(circle at top, #1a1a1a 0%, #050505 100%); position: relative; display: flex; flex-direction: column; border-left: 1px solid #222; border-right: 1px solid #222; }
-        
-        /* 頂部 UI */
+        body { background-color: #000; display: flex; justify-content: center; align-items: center; height: 100dvh; width: 100vw; overflow: hidden; }
+        #app { width: 100%; max-width: 400px; height: 100%; background: #050505; position: relative; display: flex; flex-direction: column; border: 1px solid #222; }
         .top-bar { height: 60px; border-bottom: 2px solid #00ffcc; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; background: rgba(0,0,0,0.9); z-index: 10; }
-        .gold-ui { background: rgba(255,215,0,0.1); border: 1px solid #ffd700; padding: 5px 12px; border-radius: 20px; color: #fff; font-weight: bold; font-size: 14px; box-shadow: inset 0 0 10px rgba(255,215,0,0.2); }
-        .pity-ui { font-size: 10px; color: #aaa; margin-top: 4px; text-align: right; }
+        .gold-ui { background: rgba(255,215,0,0.1); border: 1px solid #ffd700; padding: 5px 12px; border-radius: 20px; color: #fff; font-weight: bold; font-size: 14px; }
+        .main-view { flex: 1; overflow-y: auto; padding: 15px; position: relative; }
         
-        .main-view { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 15px; position: relative; }
-        
-        /* 抽卡與 Banner */
         .pool-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
         .tab-btn { flex: 1; background: #111; color: #666; border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold; border-radius: 8px; font-size: 12px; cursor: pointer; }
         .tab-btn.active { background: rgba(0,255,204,0.1); color: #00ffcc; border-color: #00ffcc; }
-        .banner { width: 100%; height: 180px; border-radius: 12px; margin-bottom: 20px; position: relative; overflow: hidden; border: 2px solid #333; }
+        
+        .banner { width: 100%; height: 180px; border-radius: 12px; margin-bottom: 20px; position: relative; overflow: hidden; border: 1px solid #333; }
         .banner img { width: 100%; height: 100%; object-fit: cover; }
         .gacha-btns { display: flex; gap: 10px; }
-        .g-btn { flex: 1; padding: 15px; background: linear-gradient(135deg, rgba(0,0,0,0.8), #111); border: 2px solid #00ffcc; color: #00ffcc; border-radius: 10px; font-weight: bold; font-size: 15px; transition: 0.2s; cursor: pointer; }
-        .g-btn:active { transform: scale(0.95); }
-        .g-btn span { display: block; font-size: 10px; opacity: 0.8; margin-top: 3px; }
-        
-        /* 任務卡片 */
-        .m-card { background: rgba(15,15,15,0.9); border: 1px solid #333; border-left: 4px solid #00ffcc; padding: 15px; margin-bottom: 12px; border-radius: 6px; }
-        .m-btn { width: 100%; margin-top: 10px; padding: 10px; background: #00ffcc; color: #000; border: none; font-weight: bold; border-radius: 4px; font-size: 13px; cursor: pointer; }
-        .m-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
-        
-        /* 圖鑑網格 */
-        .bag-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .mini-card { width: 100%; aspect-ratio: 2/3; background: #111; border: 1px solid #333; border-radius: 5px; position: relative; overflow: hidden; }
-        .mini-card img { width: 100%; height: 75%; object-fit: cover; }
-        .mini-card.locked { opacity: 0.2; filter: grayscale(1); }
-        .mini-rank { height: 25%; display: flex; justify-content: center; align-items: center; font-size: 10px; color: #fff; background: #222; }
-        .badge { position: absolute; top: 3px; right: 3px; background: #ff0055; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; z-index: 2; box-shadow: 0 0 5px #000; }
-        
-        /* TCG 飛天特效層 */
-        #overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:100; display:none; flex-direction:column; justify-content:center; align-items:center; perspective: 1200px; }
-        .stack { position: relative; width: 220px; height: 320px; margin-top: -30px;}
+        .g-btn { flex: 1; padding: 15px; background: #000; border: 2px solid #00ffcc; color: #00ffcc; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .g-btn span { display: block; font-size: 10px; opacity: 0.7; }
+        .m-card { background: #111; border: 1px solid #333; border-left: 4px solid #00ffcc; padding: 15px; margin-bottom: 12px; border-radius: 6px; }
+        .m-btn { width: 100%; margin-top: 10px; padding: 10px; background: #00ffcc; color: #000; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
+        #overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100; display:none; flex-direction:column; justify-content:center; align-items:center; perspective: 1200px; }
+        .stack { position: relative; width: 220px; height: 320px; }
         .card-w { position: absolute; top:0; left:0; width:100%; height:100%; transition: 0.6s; cursor: pointer; }
-        .card-i { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: 0.8s; border-radius: 12px; }
+        .card-i { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: 0.8s; }
         .card-i.flipped { transform: rotateY(180deg) scale(1.05); }
         .face { position: absolute; width:100%; height:100%; backface-visibility: hidden; border-radius: 12px; border: 3px solid #333; overflow: hidden; }
         .back { background: #111; display: flex; justify-content: center; align-items: center; border-color: #00ffcc; }
-        .back::after { content: 'SL'; color: #00ffcc; font-size: 40px; font-weight: bold; opacity: 0.3; }
         .front { transform: rotateY(180deg); background: #000; display: flex; flex-direction: column; }
         .front img { width: 100%; height: 260px; object-fit: cover; }
-        .front .r-banner { flex: 1; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #fff; }
-        @keyframes fly { 0% { opacity: 1; transform: rotateY(180deg) scale(1.05); } 20% { transform: rotateY(180deg) translateY(20px) scale(1.1); } 100% { transform: rotateY(180deg) translateY(-1200px) scale(0.5) rotate(15deg); opacity: 0; } }
-        .dismissed { animation: fly 0.7s cubic-bezier(0.5, -0.5, 0.2, 1.5) forwards; pointer-events: none; }
-        
+        .r-banner { flex: 1; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #fff; }
+        @keyframes fly { 0% { opacity: 1; } 20% { transform: rotateY(180deg) translateY(20px); } 100% { transform: rotateY(180deg) translateY(-1200px) scale(0.5); opacity: 0; } }
+        .dismissed { animation: fly 0.7s forwards; pointer-events: none; }
         .hidden { display: none !important; }
-        .nav { height: 70px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; background: #0a0a0a; z-index: 10; }
-        .nav-i { color: #555; font-size: 11px; text-align: center; cursor: pointer; font-weight: bold; display: flex; flex-direction: column; align-items: center; }
+        .nav { height: 70px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; background: #0a0a0a; }
+        .nav-i { color: #555; font-size: 11px; text-align: center; cursor: pointer; }
         .nav-i.active { color: #00ffcc; }
-        .nav-icon { font-size: 22px; margin-bottom: 4px; }
+
+        #sign-toast { position: absolute; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px); background: linear-gradient(135deg, rgba(0,255,204,0.15), rgba(255,215,0,0.15)); border: 1px solid #ffd700; border-radius: 12px; padding: 14px 24px; color: #ffd700; font-weight: bold; font-size: 15px; z-index: 200; text-align: center; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.5s, transform 0.5s; }
+        #sign-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #sign-toast .sign-sub { font-size: 11px; color: #00ffcc; margin-top: 4px; }
+
+        #pity-bar-wrap { margin-top: 14px; }
+        #pity-bar-wrap label { font-size: 11px; color: #555; display: flex; justify-content: space-between; margin-bottom: 4px; }
+        #pity-bar-track { width: 100%; height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; border: 1px solid #222; }
+        #pity-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #00ffcc, #aa00ff); transition: width 0.5s ease; }
+
+        #bag-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 5px; }
+        .bag-card { position: relative; border-radius: 10px; overflow: hidden; border: 2px solid #222; background: #111; aspect-ratio: 2/3; cursor: pointer; }
+        .bag-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .bag-card .rarity-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background: rgba(0,0,0,0.7); }
+        .bag-card .count-badge { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.85); border: 1px solid #ffd700; color: #ffd700; font-size: 10px; font-weight: bold; border-radius: 10px; padding: 2px 6px; }
+        .bag-empty { grid-column: 1/-1; text-align: center; color: #333; padding: 40px 0; font-size: 13px; }
+        .bag-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .bag-header h2 { color: #00ffcc; font-size: 14px; }
+        .bag-header span { font-size: 11px; color: #555; }
+
+        .rarity-SSS { border-color: #ff0000 !important; box-shadow: 0 0 15px rgba(255,0,0,0.6); }
+        .rarity-SSS .rarity-label { color: #ff0000; }
+        .rarity-SS { border-color: #ff8800 !important; box-shadow: 0 0 10px rgba(255,136,0,0.5); }
+        .rarity-SS .rarity-label { color: #ff8800; }
+        .rarity-S { border-color: #aa00ff !important; box-shadow: 0 0 8px rgba(170,0,255,0.4); }
+        .rarity-S .rarity-label { color: #aa00ff; }
+        .rarity-A { border-color: #ffd700 !important; }
+        .rarity-A .rarity-label { color: #ffd700; }
+        .rarity-B { border-color: #00ffcc !important; }
+        .rarity-B .rarity-label { color: #00ffcc; }
+        .rarity-C { border-color: #555 !important; }
+        .rarity-C .rarity-label { color: #888; }
+        .rarity-D { border-color: #333 !important; filter: grayscale(50%);}
+        .rarity-D .rarity-label { color: #666; }
+
+        .card-guaranteed .back { border-color: #ffd700 !important; box-shadow: 0 0 20px rgba(255,215,0,0.6); }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- 頂部資訊 -->
         <div class="top-bar">
-            <div>
-                <h1 id="p-id" style="color:#00ffcc; font-size:14px; text-shadow: 0 0 5px rgba(0,255,204,0.5);">ID: 連線中...</h1>
-                <div class="pity-ui">保底計數: <span id="pity-count">0</span>/50</div>
-            </div>
+            <h1 id="p-id" style="color:#00ffcc; font-size:12px;">ID: ...</h1>
             <div class="gold-ui">G: <span id="p-gold">0</span></div>
         </div>
 
-        <!-- 抽卡特效層 -->
-        <div id="overlay">
-            <div class="stack" id="stack"></div>
-            <div id="hint" style="color:#888; margin-top:30px; font-size:12px;">[ 點擊翻開卡包 ]</div>
+        <div id="sign-toast">
+            🎉 每日簽到成功！
+            <div class="sign-sub">+50 G 已自動存入錢包</div>
         </div>
 
-        <!-- 主畫面區 -->
+        <div id="overlay">
+            <div class="stack" id="stack"></div>
+            <div id="hint" style="color:#888;margin-top:30px;">[ 點擊翻開卡包 ]</div>
+        </div>
+
         <div class="main-view">
-            <!-- 召喚大廳 -->
             <div id="page-gacha">
                 <div class="pool-tabs">
                     <div class="tab-btn active" onclick="switchPool('freren', this)">芙莉蓮</div>
                     <div class="tab-btn" onclick="switchPool('elite', this)">實力至上</div>
                 </div>
                 <div class="banner">
-                    <img id="b-img" src="images/freren/banner.jpg" onerror="this.src='https://via.placeholder.com/400x180/111/444?text=BANNER'">
-                    <div style="position:absolute; bottom:10px; left:10px; color:#fff; font-weight:bold; font-size:18px; text-shadow: 0 2px 4px #000;" id="b-txt">>_ 葬送的芙莉蓮</div>
+                    <img id="b-img" src="images/freren/banner.jpg" onerror="this.src='https://via.placeholder.com/400x180/111/444'">
+                    <div style="position:absolute; bottom:10px; left:10px; color:#fff; font-weight:bold;" id="b-txt">>_ 葬送的芙莉蓮</div>
                 </div>
                 <div class="gacha-btns">
-                    <button class="g-btn" onclick="executeDraw(1, 70)">單抽<span>70 G</span></button>
-                    <button class="g-btn" style="border-color:#aa00ff; color:#aa00ff;" onclick="executeDraw(5, 300)">五連抽<span>300 G</span></button>
+                    <button class="g-btn" onclick="draw(1, 70)">單抽<span>70 G</span></button>
+                    <button class="g-btn" style="border-color:#aa00ff; color:#aa00ff;" onclick="draw(5, 300)">五連<span>300 G</span></button>
+                </div>
+                <div id="pity-bar-wrap">
+                    <label><span>🛡 保底進度 (滿50必中S以上)</span><span id="pity-text">0 / 50</span></label>
+                    <div id="pity-bar-track"><div id="pity-bar-fill" style="width:0%"></div></div>
                 </div>
             </div>
 
-            <!-- 任務系統 -->
             <div id="page-mission" class="hidden">
-                <h2 style="color:#00ffcc; font-size:16px; margin-bottom:15px; border-left:4px solid #00ffcc; padding-left:10px;">每日委託</h2>
                 <div id="m-list"></div>
             </div>
 
-            <!-- 圖鑑背包 -->
             <div id="page-bag" class="hidden">
-                <h2 style="color:#00ffcc; font-size:16px; margin-bottom:15px;">軍團圖鑑 (自動堆疊)</h2>
+                <div class="bag-header">
+                    <h2>🎒 我的圖鑑</h2>
+                    <span id="bag-count">0 種卡片</span>
+                </div>
                 <div id="bag-list"></div>
             </div>
         </div>
 
-        <!-- 底部導航 -->
         <div class="nav">
-            <div class="nav-i active" onclick="switchTab('page-gacha', this)"><div class="nav-icon">🔮</div>召喚</div>
-            <div class="nav-i" onclick="switchTab('page-mission', this)"><div class="nav-icon">📜</div>任務</div>
-            <div class="nav-i" onclick="switchTab('page-bag', this)"><div class="nav-icon">🎒</div>圖鑑</div>
+            <div class="nav-i active" onclick="tab('page-gacha', this)">🔮召喚</div>
+            <div class="nav-i" onclick="tab('page-mission', this)">📜任務</div>
+            <div class="nav-i" onclick="tab('page-bag', this)">🎒圖鑑</div>
         </div>
     </div>
 
-    <!-- Firebase 與核心邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
@@ -128,204 +145,193 @@
         const app = initializeApp(config);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
-        let userRef = null, uData = { gold: 0, inventory: [], pending: [], pityCount: 0, lastLogin: "" };
+
+        let userRef = null;
+        let uData = { gold: 0, inventory: [], pending: [], pity_count: 0, lastSignIn: '' };
         let currentPool = 'freren';
 
-        // 假資料池 (確保你本地有這些圖片，或自行修改檔名)
+        // 🎯 這裡是我原本精確的機率與完整卡池結構！
+        // 🚨 提示：只要在裡面加上檔名，卡池就會變多！例如 s: ['s1.jpg', 's2.jpg', 's3.jpg']
+        // 🎯 根據 Ricky GitHub 真實資料夾精準對位的卡池！
         const pools = {
-            'freren': { sss: ['sss1.jpg'], ss: ['ss1.jpg'], s: ['s1.jpg','s2.jpg'], a: ['a1.jpg','a2.jpg'], b: ['b1.jpg','b2.jpg'], c: ['c1.jpg','c2.jpg'], d: ['d1.jpg','d2.jpg'] },
-            'elite': { sss: ['sss1.jpg'], ss: ['ss1.jpg'], s: ['s1.jpg'], a: ['a1.jpg'], b: ['b1.jpg'], c: ['c1.jpg'], d: ['d1.jpg'] }
+            'freren': { 
+                sss: ['sss1.jpg'], // 截圖沒看到，記得補傳這張當最大獎！
+                ss: ['ss1.jpg'], 
+                s: ['s1.jpg', 's2.jpg', 's3.webp', 's4.jpg', 's5.jpg'], // 注意 s3 是 webp
+                a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a5.jpg', 'a6.jpg'], // 跳過 a4
+                b: ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg', 'b7.jpg', 'b8.jpg', 'b9.jpg'], 
+                c: ['c1.jpg', 'c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg', 'c7.jpg', 'c8.jpg', 'c9.jpg', 'c10.jpg'], 
+                d: ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg', 'd8.jpg'] 
+            },
+            'elite': { 
+                sss: ['sss1.jpg'], ss: ['ss1.jpg'], s: ['s1.jpg'], 
+                a: ['a1.jpg'], b: ['b1.jpg'], c: ['c1.jpg'], d: ['d1.jpg'] 
+            }
         };
-        const rates = [ {r:'d', p:0.4}, {r:'c', p:0.3}, {r:'b', p:0.18}, {r:'a', p:0.08}, {r:'s', p:0.03}, {r:'ss', p:0.008}, {r:'sss', p:0.002} ];
+        const rates = [ 
+            {r:'d', p:0.4}, {r:'c', p:0.3}, {r:'b', p:0.18}, 
+            {r:'a', p:0.08}, {r:'s', p:0.03}, {r:'ss', p:0.008}, {r:'sss', p:0.002} 
+        ];
 
-        // ==========================================
-        // 初始化與每日簽到
-        // ==========================================
+        function todayStr() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+
+        async function checkDailySignIn() {
+            const today = todayStr();
+            if (uData.lastSignIn === today) return; 
+            const newGold = (uData.gold || 0) + 50;
+            await updateDoc(userRef, { gold: newGold, lastSignIn: today });
+            const t = document.getElementById('sign-toast');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+        function updatePityBar(count) {
+            const pity = Math.min(count, 50);
+            document.getElementById('pity-text').innerText = `${pity} / 50`;
+            document.getElementById('pity-bar-fill').style.width = `${(pity / 50) * 100}%`;
+        }
+
         onAuthStateChanged(auth, async (u) => {
             if (u) {
                 const id = u.email.split('@')[0];
                 document.getElementById('p-id').innerText = `ID: ${id}`;
                 userRef = doc(db, "users", id);
-                
-                // 初次讀取觸發簽到檢查
-                const snap = await getDoc(userRef);
-                const today = new Date().toLocaleDateString();
-                
-                if (snap.exists()) {
-                    let data = snap.data();
-                    if (data.lastLogin !== today) {
-                        data.gold = (data.gold || 0) + 50;
-                        data.lastLogin = today;
-                        await updateDoc(userRef, { gold: data.gold, lastLogin: today });
-                        alert("🎉 每日簽到成功！獲得 50 G");
-                    }
-                } else {
-                    await setDoc(userRef, { gold: 500, inventory: [], pending: [], pityCount: 0, lastLogin: today });
-                    alert("🎉 歡迎來到 Solo Leveling！新兵入伍獲得 500 G");
-                }
 
-                // 實時監聽
+                const snap = await getDoc(userRef);
+                if (!snap.exists()) await setDoc(userRef, { gold: 500, inventory: [], pending: [], pity_count: 0, lastSignIn: '' });
+
                 onSnapshot(userRef, (s) => {
-                    uData = s.data();
-                    document.getElementById('p-gold').innerText = uData.gold || 0;
-                    document.getElementById('pity-count').innerText = uData.pityCount || 0;
-                    if(!document.getElementById('page-bag').classList.contains('hidden')) renderBag();
+                    if (s.exists()) {
+                        uData = s.data();
+                        uData.pity_count = uData.pity_count || 0;
+                        uData.inventory = uData.inventory || [];
+                        document.getElementById('p-gold').innerText = uData.gold;
+                        updatePityBar(uData.pity_count);
+                        renderBag();
+                    }
                 });
+
+                setTimeout(async () => await checkDailySignIn(), 800);
                 syncMissions();
             } else { window.location.href = "index.html"; }
         });
 
-        // ==========================================
-        // 任務系統
-        // ==========================================
         function syncMissions() {
             onSnapshot(doc(db, "config", "game_data"), (s) => {
                 const list = document.getElementById('m-list');
-                list.innerHTML = '';
-                const mData = s.data()?.missions || [];
-                if(mData.length === 0) list.innerHTML = '<div style="color:#666; font-size:12px;">目前沒有委託任務。</div>';
-                
-                mData.forEach(m => {
+                list.innerHTML = '<h2 style="color:#00ffcc;margin-bottom:15px">當前任務</h2>';
+                (s.data()?.missions || []).forEach(m => {
                     const isP = uData.pending?.includes(m.id);
-                    list.innerHTML += `
-                        <div class="m-card">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <b style="color:#fff;">${m.title}</b>
-                                <span style="color:#ffd700; font-weight:bold;">+${m.reward} G</span>
-                            </div>
-                            <p style="font-size:12px; color:#888;">${m.desc}</p>
-                            <button class="m-btn" onclick="reportM('${m.id}')" ${isP?'disabled':''}>${isP?'審核中...':'回報完成'}</button>
-                        </div>`;
+                    list.innerHTML += `<div class="m-card"><b>${m.title}</b><span style="float:right;color:#ffd700">${m.reward}G</span><p style="font-size:12px;color:#666;margin-top:4px;">${m.desc}</p><button class="m-btn" onclick="rep('${m.id}')" ${isP ? 'disabled style="background:#333;cursor:not-allowed"' : ''}>${isP ? '審核中' : '回報完成'}</button></div>`;
                 });
             });
         }
 
-        window.reportM = async (id) => {
+        window.rep = async (id) => {
             await updateDoc(userRef, { pending: arrayUnion(id) });
-            await updateDoc(doc(db, "config", "game_data"), { reports: arrayUnion({ uid: auth.currentUser.email.split('@')[0], mid: id, time: Date.now() }) });
-            alert("委託已回報，請等待管理員核發獎勵。");
+            await updateDoc(doc(db, "config", "game_data"), { reports: arrayUnion({ uid: auth.currentUser.email.split('@')[0], mid: id }) });
+            alert("回報成功！");
         };
 
-        // ==========================================
-        // 抽卡核心 (保底 + 特效)
-        // ==========================================
-        window.executeDraw = async (times, price) => {
-            if (uData.gold < price) return alert("❌ 金幣不足，請完成委託任務！");
-            
-            let currentPity = uData.pityCount || 0;
+        window.draw = async (n, p) => {
+            if (uData.gold < p) return alert("金幣不足！");
+            let pityCount = uData.pity_count || 0;
             let results = [];
-            
-            for(let i=0; i<times; i++) {
+            let newPityCount = pityCount;
+
+            for (let i = 0; i < n; i++) {
                 let rank = 'd';
-                // 保底觸發：滿 50 抽必中 S
-                if (currentPity >= 49) {
-                    rank = 's';
-                    currentPity = 0;
+                let isGuaranteed = false;
+
+                if (newPityCount >= 49) {
+                    rank = 's'; // 保底必定S
+                    isGuaranteed = true;
+                    newPityCount = 0;
                 } else {
                     let rand = Math.random(), cum = 0;
                     for (let c of rates) { cum += c.p; if (rand <= cum) { rank = c.r; break; } }
-                    if (['s', 'ss', 'sss'].includes(rank)) currentPity = 0;
-                    else currentPity++;
+                    if (['s', 'ss', 'sss'].includes(rank)) newPityCount = 0;
+                    else newPityCount++;
                 }
-                
+
                 const files = pools[currentPool][rank];
-                const file = files.length > 0 ? files[Math.floor(Math.random() * files.length)] : 'placeholder.jpg';
-                results.push({ rank, file, id: `${currentPool}_${rank}_${file}` });
+                const file = files.length > 0 ? files[Math.floor(Math.random() * files.length)] : 'default.jpg';
+                results.push({ rank, file, isGuaranteed, id: `${currentPool}_${rank}_${file}` });
             }
 
-            // 扣錢與更新保底計數
-            await updateDoc(userRef, { 
-                gold: uData.gold - price, 
-                pityCount: currentPity,
-                inventory: arrayUnion(...results.map(r => r.id)) // 儲存完整 ID 用於計數
+            // 更新背包
+            const invMap = {};
+            (uData.inventory || []).forEach(c => { invMap[c.id] = { ...c }; });
+            results.forEach(card => {
+                if (invMap[card.id]) {
+                    invMap[card.id].count = (invMap[card.id].count || 1) + 1;
+                } else {
+                    invMap[card.id] = { id: card.id, pool: currentPool, rarity: card.rank, img: `images/${currentPool}/${card.file}`, count: 1 };
+                }
             });
-            
-            playGachaEffect(results, times);
+
+            await updateDoc(userRef, { gold: uData.gold - p, pity_count: newPityCount, inventory: Object.values(invMap) });
+            startGacha(results);
         };
 
-        function playGachaEffect(results, total) {
+        function startGacha(cards) {
             const overlay = document.getElementById('overlay');
             const stack = document.getElementById('stack');
-            const hint = document.getElementById('hint');
             overlay.style.display = 'flex';
             stack.innerHTML = '';
-            hint.innerText = "[ 點擊翻開卡包 ]";
-            
-            let active = 0, revealed = false;
-            
-            results.reverse().forEach((res, i) => {
+            let active = 0, rev = false;
+
+            cards.reverse().forEach((card, i) => {
+                const color = card.rank === 's' ? '#aa00ff' : (['ss', 'sss'].includes(card.rank) ? '#ff0000' : '#00ffcc');
                 const w = document.createElement('div');
-                w.className = 'card-w'; 
-                w.style.zIndex = total - i; 
-                w.style.transform = `translate(${i*4}px, ${i*4}px)`;
-                
-                let color = res.rank === 's' ? '#ff0055' : (['ss', 'sss'].includes(res.rank) ? '#ffd700' : '#00ffcc');
-                
+                w.className = 'card-w' + (card.isGuaranteed ? ' card-guaranteed' : '');
+                w.style.zIndex = cards.length - i;
+                w.style.transform = `translate(${i * 4}px, ${i * 4}px)`;
                 w.innerHTML = `
                     <div class="card-i">
-                        <div class="face back"></div>
+                        <div class="face back"><span style="color:#00ffcc;font-size:30px;">✦</span></div>
                         <div class="face front" style="border-color:${color}">
-                            <img src="images/${currentPool}/${res.file}" onerror="this.src='https://via.placeholder.com/200x260/111/444?text=${res.rank}'">
-                            <div class="r-banner" style="background:${color}">${res.rank.toUpperCase()}</div>
+                            <img src="images/${currentPool}/${card.file}" onerror="this.src='https://via.placeholder.com/200x260/111/444'">
+                            <div class="r-banner" style="background:${color}">${card.rank.toUpperCase()} ${card.isGuaranteed ? '<span style="color:#ffd700;font-size:10px;margin-left:5px;">⚡保底</span>' : ''}</div>
                         </div>
                     </div>`;
-                    
+
                 w.onclick = () => {
                     if (i !== active) return;
-                    if (!revealed) { 
-                        revealed = true; 
-                        hint.innerText = "[ 點擊收下卡片 ]";
-                        document.querySelectorAll('.card-i').forEach(el => el.classList.add('flipped')); 
-                    } else { 
-                        w.firstChild.classList.add('dismissed'); 
-                        active++; 
-                        if(active >= total) setTimeout(() => overlay.style.display = 'none', 600); 
+                    if (!rev) {
+                        rev = true;
+                        document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped'));
+                        document.getElementById('hint').innerText = '[ 點擊逐張收取 ]';
+                    } else {
+                        w.firstChild.classList.add('dismissed');
+                        active++;
+                        if (active >= cards.length) setTimeout(() => { overlay.style.display = 'none'; document.getElementById('hint').innerText = '[ 點擊全翻 ]'; }, 750);
                     }
                 };
                 stack.appendChild(w);
             });
         }
 
-        // ==========================================
-        // 圖鑑與UI切換 (卡片堆疊計數)
-        // ==========================================
         function renderBag() {
-            const area = document.getElementById('bag-list');
-            area.innerHTML = '';
             const inv = uData.inventory || [];
+            const list = document.getElementById('bag-list');
+            document.getElementById('bag-count').innerText = `${inv.length} 種卡片`;
+            if (inv.length === 0) return list.innerHTML = '<div class="bag-empty">尚無收藏</div>';
+
+            const order = { sss: 0, ss: 1, s: 2, a: 3, b: 4, c: 5, d: 6 };
+            const sorted = [...inv].sort((a, b) => (order[a.rarity] || 9) - (order[b.rarity] || 9));
             
-            // 計算每張卡片的數量
-            const counts = {};
-            inv.forEach(id => counts[id] = (counts[id] || 0) + 1);
-
-            ['sss', 'ss', 's', 'a', 'b', 'c', 'd'].forEach(r => {
-                if(!pools[currentPool][r] || pools[currentPool][r].length === 0) return;
-                
-                let html = `<div style="color:#fff; font-size:12px; margin:15px 0 10px; border-left:3px solid #00ffcc; padding-left:8px">${r.toUpperCase()} 級</div><div class="bag-grid">`;
-                
-                pools[currentPool][r].forEach(file => {
-                    const id = `${currentPool}_${r}_${file}`;
-                    const count = counts[id] || 0;
-                    
-                    html += `
-                        <div class="mini-card ${count === 0 ? 'locked' : ''}">
-                            ${count > 1 ? `<div class="badge">x${count}</div>` : ''}
-                            <img src="images/${currentPool}/${file}" onerror="this.src='https://via.placeholder.com/100x150/111/444'">
-                            <div class="mini-rank">${r.toUpperCase()}</div>
-                        </div>`;
-                });
-                area.innerHTML += html + `</div>`;
-            });
+            list.innerHTML = sorted.map(c => `
+                <div class="bag-card rarity-${c.rarity.toUpperCase()}">
+                    <img src="${c.img}" onerror="this.src='https://via.placeholder.com/100x150/111/444'">
+                    <div class="rarity-label">${c.rarity.toUpperCase()} 級</div>
+                    ${c.count > 1 ? `<div class="count-badge">x${c.count}</div>` : ''}
+                </div>
+            `).join('');
         }
-
-        window.switchTab = (id, btn) => {
-            ['page-gacha', 'page-mission', 'page-bag'].forEach(p => document.getElementById(p).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
-            btn.classList.add('active');
-            if(id === 'page-bag') renderBag();
-        };
 
         window.switchPool = (pId, btn) => {
             currentPool = pId;
@@ -333,6 +339,13 @@
             btn.classList.add('active');
             document.getElementById('b-img').src = `images/${pId}/banner.jpg`;
             document.getElementById('b-txt').innerText = `>_ ${pId === 'freren' ? '葬送的芙莉蓮' : '實力至上教室'}`;
+        };
+
+        window.tab = (id, b) => {
+            ['page-gacha', 'page-mission', 'page-bag'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
+            b.classList.add('active');
         };
     </script>
 </body>
