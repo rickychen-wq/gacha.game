@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V30 - 滿版圖鑑與完美吸收動畫</title>
+    <title>Solo Leveling: TCG V31 - 絕對鎖定置中版</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; -webkit-tap-highlight-color: transparent; }
         
@@ -43,10 +43,34 @@
         .m-btn:disabled { background: rgba(15, 23, 42, 0.5); color: #475569; border-color: #334155; cursor: not-allowed; }
 
         /* ========================================= */
-        /* 💎 抽卡特效層 (修復飛天動畫與圖片滿版) */
+        /* 💎 抽卡特效層 (V31 絕對座標物理鎖死版) */
         /* ========================================= */
-        #overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(2,6,23,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index:100; display:none; flex-direction:column; justify-content:center; align-items:center; perspective: 1200px; }
-        .stack { position: relative; width: 220px; height: 320px; }
+        #overlay { 
+            position: fixed; /* 🚨 關鍵：不再依賴容器，直接霸佔整個視窗 */
+            top: 0; left: 0; width: 100vw; height: 100dvh; 
+            background: rgba(2,6,23,0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
+            z-index: 10000; display: none; 
+        }
+        /* 🚨 關鍵：透過 50% 座標將卡包死死釘在螢幕正中央 */
+        .stack-wrap {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px; height: 320px;
+            perspective: 1200px;
+        }
+        .stack { position: relative; width: 100%; height: 100%; }
+
+        /* 提示文字也絕對鎖定在正下方 */
+        #hint { 
+            position: absolute; bottom: 15%; left: 50%; 
+            transform: translateX(-50%); 
+            color: #94a3b8; font-size: 13px; letter-spacing: 2px; 
+            background: rgba(15,23,42,0.85); padding: 10px 25px; 
+            border-radius: 20px; border: 1px solid #334155; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.6);
+            white-space: nowrap;
+        }
+        
         .card-w { position: absolute; top:0; left:0; width:100%; height:100%; transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; }
         .card-i { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .card-i.flipped { transform: rotateY(180deg) scale(1.08); }
@@ -57,15 +81,14 @@
         .back::after { content: 'SL'; color: rgba(255, 255, 255, 0.05); font-size: 50px; font-weight: 900; letter-spacing: 8px; }
         
         .front { transform: rotateY(180deg); background: #0f172a; display: flex; flex-direction: column; }
-        /* 🚨 關鍵修復：cover + center top 確保長橫圖片都完美滿版 */
         .front img { width: 100%; height: 100%; object-fit: cover; object-position: center top; position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.9; }
         .r-banner { position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; z-index: 2; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 15px; letter-spacing: 3px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; }
         
-        /* 🚨 關鍵修復：改為原地縮小吸收的科技感動畫，解決手機版飛走破圖的問題 */
+        /* 🚨 關鍵：動畫改為往上飛升消失 (-300px) */
         @keyframes fly { 
             0% { opacity: 1; transform: rotateY(180deg) scale(1.08); filter: blur(0px); } 
-            30% { opacity: 1; transform: rotateY(180deg) scale(1.15) translateY(-10px); filter: blur(0px); } 
-            100% { opacity: 0; transform: rotateY(180deg) scale(0.2) translateY(-50px); filter: blur(10px); } 
+            20% { opacity: 1; transform: rotateY(180deg) scale(1.15) translateY(-15px); filter: blur(0px); } 
+            100% { opacity: 0; transform: rotateY(180deg) scale(0.3) translateY(-300px); filter: blur(15px); } 
         }
         .dismissed { animation: fly 0.6s forwards; pointer-events: none; }
         
@@ -82,12 +105,9 @@
         #pity-bar-track { width: 100%; height: 6px; background: #0f172a; overflow: hidden; border-radius: 3px; border: 1px solid #334155;}
         #pity-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #a855f7); transition: width 0.5s ease; box-shadow: 0 0 10px rgba(168,85,247,0.5);}
 
-        /* ========================================= */
-        /* 🎒 圖鑑完美滿版修復 */
-        /* ========================================= */
+        /* 圖鑑完美滿版修復 */
         #bag-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 5px; }
         .bag-card { position: relative; border-radius: 6px; overflow: hidden; border: 1px solid #334155; background: rgba(15, 23, 42, 0.7); aspect-ratio: 2/3; display: flex; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        /* 🚨 關鍵修復：cover + center top 確保圖鑑每一張卡都是滿版的完美長方形！ */
         .bag-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: 0.3s; z-index: 1;}
         .bag-card .rarity-label { position: absolute; bottom: 0; left: 0; right: 0; height: 22px; line-height: 22px; text-align: center; font-size: 10px; font-weight: bold; background: rgba(15,23,42,0.9); letter-spacing: 1px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2;}
         .bag-card .count-badge { position: absolute; top: 4px; right: 4px; background: rgba(15,23,42,0.9); border: 1px solid rgba(250,204,21,0.5); color: #facc15; font-size: 9px; border-radius: 4px; padding: 2px 5px; z-index: 3;}
@@ -101,11 +121,8 @@
         .bag-card.locked img { filter: brightness(0.1) grayscale(100%); opacity: 0.3; }
         .bag-card.locked .rarity-label { color: #475569 !important; background: transparent; border-top-color: transparent;}
 
-        /* ========================================= */
-        /* 🎨 稀有度顏色重構：低調科技呼吸光 */
-        /* ========================================= */
+        /* 稀有度顏色重構 */
         @keyframes breathSSS { 0% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } 50% { box-shadow: inset 0 0 25px rgba(225,29,72,0.5); } 100% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } }
-        
         .rarity-SSS { border-color: rgba(225,29,72,0.6) !important; animation: breathSSS 3s infinite ease-in-out; }
         .rarity-SSS .r-banner { color: #fb7185; text-shadow: 0 0 8px rgba(251,113,133,0.5); border-top-color: rgba(225,29,72,0.4); }
         .rarity-SSS .rarity-label { color: #fb7185; }
@@ -147,9 +164,12 @@
             系統配給已發放<div style="font-size:11px;color:#38bdf8;margin-top:4px;">+50 G</div>
         </div>
 
+        <!-- 🚨 V31 抽卡圖層結構更新 -->
         <div id="overlay">
-            <div class="stack" id="stack"></div>
-            <div id="hint" style="color:#94a3b8;margin-top:40px; font-size:12px; letter-spacing:2px; background:rgba(15,23,42,0.8); padding:5px 15px; border-radius:15px; border:1px solid #334155;">[ 點擊解析資料庫 ]</div>
+            <div class="stack-wrap">
+                <div class="stack" id="stack"></div>
+            </div>
+            <div id="hint">[ 點擊進行數據回收 ]</div>
         </div>
 
         <div class="main-view">
@@ -309,7 +329,8 @@
         function startGacha(cards) {
             const overlay = document.getElementById('overlay');
             const stack = document.getElementById('stack');
-            overlay.style.display = 'flex';
+            overlay.style.display = 'block'; // 🚨 關鍵：改為 block 顯示，因為裡面已經絕對定位了
+            document.getElementById('hint').innerText = '[ 點擊進行數據回收 ]'; // 重置提示文字
             stack.innerHTML = '';
             let active = 0, rev = false;
 
@@ -333,12 +354,12 @@
                     if (!rev) {
                         rev = true;
                         document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped'));
-                        document.getElementById('hint').innerText = '[ 點擊進行數據回收 ]';
+                        document.getElementById('hint').innerText = '[ 點擊吸收資料庫 ]';
                     } else {
                         w.style.pointerEvents = 'none'; 
                         w.firstElementChild.classList.add('dismissed'); 
                         active++;
-                        if (active >= cards.length) setTimeout(() => { overlay.style.display = 'none'; document.getElementById('hint').innerText = '[ 點擊解析資料庫 ]'; }, 750);
+                        if (active >= cards.length) setTimeout(() => { overlay.style.display = 'none'; }, 700);
                     }
                 };
                 stack.appendChild(w);
