@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V27 - 終極圖鑑與登入閘門</title>
+    <title>Solo Leveling: TCG V28 - 完美除錯質感版</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; -webkit-tap-highlight-color: transparent; }
         body { background-color: #000; display: flex; justify-content: center; align-items: center; height: 100dvh; width: 100vw; overflow: hidden; }
         #app { width: 100%; max-width: 400px; height: 100%; background: #050505; position: relative; display: flex; flex-direction: column; border: 1px solid #222; }
         
-        /* === 獵人公會登入閘門 === */
+        /* 登入閘門 */
         #login-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #111 0%, #000 100%); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
         .sys-title { color: #00ffcc; font-size: 24px; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 10px rgba(0,255,204,0.5); letter-spacing: 2px; }
         .sys-sub { color: #555; font-size: 12px; margin-bottom: 40px; letter-spacing: 5px; }
@@ -18,7 +18,7 @@
         .log-btn { width: 100%; padding: 15px; background: #00ffcc; color: #000; font-weight: bold; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .log-btn:active { transform: scale(0.95); }
 
-        /* === 遊戲主體 UI === */
+        /* 遊戲主體 UI */
         .top-bar { height: 60px; border-bottom: 2px solid #00ffcc; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; background: rgba(0,0,0,0.9); z-index: 10; }
         .p-info { display: flex; flex-direction: column; }
         .logout-btn { color: #ff0055; font-size: 10px; background: none; border: 1px solid #ff0055; border-radius: 4px; padding: 2px 6px; margin-top: 4px; cursor: pointer; width: fit-content; }
@@ -39,18 +39,19 @@
         .m-btn { width: 100%; margin-top: 10px; padding: 10px; background: #00ffcc; color: #000; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; }
         .m-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-        /* === 抽卡特效層 === */
+        /* 抽卡特效層與修復飛天動畫 */
         #overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100; display:none; flex-direction:column; justify-content:center; align-items:center; perspective: 1200px; }
         .stack { position: relative; width: 220px; height: 320px; }
         .card-w { position: absolute; top:0; left:0; width:100%; height:100%; transition: 0.6s; cursor: pointer; }
         .card-i { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: 0.8s; }
         .card-i.flipped { transform: rotateY(180deg) scale(1.05); }
-        .face { position: absolute; width:100%; height:100%; backface-visibility: hidden; border-radius: 12px; overflow: hidden; border: 3px solid #333; }
+        .face { position: absolute; width:100%; height:100%; backface-visibility: hidden; border-radius: 12px; overflow: hidden; border: 2px solid #333; }
         .back { background: radial-gradient(circle at center, #222 0%, #050505 100%); display: flex; justify-content: center; align-items: center; border-color: #00ffcc; box-shadow: inset 0 0 15px rgba(0,255,204,0.3); }
-        .back::after { content: 'SL'; color: rgba(0, 255, 204, 0.4); font-size: 50px; font-weight: 900; font-family: sans-serif; letter-spacing: 5px; }
+        .back::after { content: 'SL'; color: rgba(0, 255, 204, 0.3); font-size: 50px; font-weight: 900; letter-spacing: 5px; }
         .front { transform: rotateY(180deg); background: #000; display: flex; flex-direction: column; }
         .front img { width: 100%; height: 260px; object-fit: cover; }
-        .r-banner { flex: 1; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #fff; }
+        .r-banner { flex: 1; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; color: #fff; letter-spacing: 2px;}
+        
         @keyframes fly { 0% { opacity: 1; transform: rotateY(180deg) scale(1.05); } 20% { transform: rotateY(180deg) translateY(20px) scale(1.1); } 100% { transform: rotateY(180deg) translateY(-1200px) scale(0.5) rotate(15deg); opacity: 0; } }
         .dismissed { animation: fly 0.7s forwards; pointer-events: none; }
         
@@ -59,44 +60,52 @@
         .nav-i { color: #555; font-size: 11px; text-align: center; cursor: pointer; }
         .nav-i.active { color: #00ffcc; }
 
+        #sign-toast { position: absolute; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px); background: linear-gradient(135deg, rgba(0,255,204,0.15), rgba(255,215,0,0.15)); border: 1px solid #ffd700; border-radius: 12px; padding: 14px 24px; color: #ffd700; font-weight: bold; font-size: 15px; z-index: 200; text-align: center; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.5s, transform 0.5s; }
+        #sign-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
         #pity-bar-wrap { margin-top: 14px; }
         #pity-bar-wrap label { font-size: 11px; color: #555; display: flex; justify-content: space-between; margin-bottom: 4px; }
         #pity-bar-track { width: 100%; height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; border: 1px solid #222; }
         #pity-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #00ffcc, #aa00ff); transition: width 0.5s ease; }
 
-        /* === 終極圖鑑 (含未解鎖黑影特效) === */
+        /* 圖鑑與卡片發光特效優化 */
         #bag-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 5px; }
-        .bag-card { position: relative; border-radius: 10px; overflow: hidden; border: 2px solid #222; background: #111; aspect-ratio: 2/3; }
+        .bag-card { position: relative; border-radius: 8px; overflow: hidden; border: 2px solid #222; background: #111; aspect-ratio: 2/3; }
         .bag-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: 0.3s; }
-        .bag-card .rarity-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background: rgba(0,0,0,0.8); transition: 0.3s; }
-        .bag-card .count-badge { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.85); border: 1px solid #ffd700; color: #ffd700; font-size: 10px; font-weight: bold; border-radius: 10px; padding: 2px 6px; }
+        .bag-card .rarity-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 4px; text-align: center; font-size: 10px; font-weight: bold; background: rgba(0,0,0,0.85); transition: 0.3s; letter-spacing: 1px; }
+        .bag-card .count-badge { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.9); border: 1px solid #ffd700; color: #ffd700; font-size: 10px; font-weight: bold; border-radius: 6px; padding: 2px 5px; }
         
         .bag-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
         .bag-header h2 { color: #00ffcc; font-size: 14px; }
         .bag-header span { font-size: 11px; color: #555; }
 
-        /* 未解鎖的灰暗鎖定狀態 */
+        /* 拔掉鎖頭，只留純黑影，神秘感拉滿 */
         .bag-card.locked { border-color: #1a1a1a !important; box-shadow: none !important; }
-        .bag-card.locked img { filter: brightness(0.15) grayscale(100%); }
-        .bag-card.locked .rarity-label { color: #444 !important; }
-        .lock-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; opacity: 0.5; }
+        .bag-card.locked img { filter: brightness(0.1) grayscale(100%); }
+        .bag-card.locked .rarity-label { color: #333 !important; }
 
-        .rarity-SSS { border-color: #ff0000; box-shadow: 0 0 10px rgba(255,0,0,0.4); }
-        .rarity-SSS .rarity-label { color: #ff0000; }
-        .rarity-SS { border-color: #ff8800; box-shadow: 0 0 8px rgba(255,136,0,0.3); }
-        .rarity-SS .rarity-label { color: #ff8800; }
-        .rarity-S { border-color: #aa00ff; box-shadow: 0 0 6px rgba(170,0,255,0.3); }
-        .rarity-S .rarity-label { color: #aa00ff; }
-        .rarity-A { border-color: #ffd700; } .rarity-A .rarity-label { color: #ffd700; }
-        .rarity-B { border-color: #00ffcc; } .rarity-B .rarity-label { color: #00ffcc; }
-        .rarity-C { border-color: #555; } .rarity-C .rarity-label { color: #888; }
-        .rarity-D { border-color: #333; } .rarity-D .rarity-label { color: #666; }
+        /* 優化後的質感發光與邊框 */
+        @keyframes breathSSS { 0% { box-shadow: inset 0 0 10px #ff0055, 0 0 5px #ff0055; } 50% { box-shadow: inset 0 0 20px #ff0055, 0 0 15px #ff0055; } 100% { box-shadow: inset 0 0 10px #ff0055, 0 0 5px #ff0055; } }
+        .rarity-SSS { border-color: #ff0055 !important; animation: breathSSS 2s infinite; }
+        .rarity-SSS .rarity-label { color: #ff0055; }
+        
+        .rarity-SS { border-color: #ff6600 !important; box-shadow: inset 0 0 15px rgba(255,102,0,0.3); }
+        .rarity-SS .rarity-label { color: #ff6600; }
+        
+        .rarity-S { border-color: #9900ff !important; box-shadow: inset 0 0 10px rgba(153,0,255,0.3); }
+        .rarity-S .rarity-label { color: #9900ff; }
+        
+        .rarity-A { border-color: #ffd700 !important; } .rarity-A .rarity-label { color: #ffd700; }
+        .rarity-B { border-color: #00e5ff !important; } .rarity-B .rarity-label { color: #00e5ff; }
+        .rarity-C { border-color: #888888 !important; } .rarity-C .rarity-label { color: #aaaaaa; }
+        .rarity-D { border-color: #333333 !important; filter: grayscale(20%);} .rarity-D .rarity-label { color: #666666; }
+        
         .card-guaranteed .back { border-color: #ffd700 !important; box-shadow: 0 0 20px rgba(255,215,0,0.6); }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- 登入閘門 (預設顯示，擋住遊戲) -->
+        <!-- 登入閘門 -->
         <div id="login-view">
             <div class="sys-title">SYSTEM_LOGIN</div>
             <div class="sys-sub">HUNTER ASSOCIATION TERMINAL</div>
@@ -131,7 +140,7 @@
                 </div>
                 <div class="gacha-btns">
                     <button class="g-btn" onclick="draw(1, 70)">單抽<span>70 G</span></button>
-                    <button class="g-btn" style="border-color:#aa00ff; color:#aa00ff;" onclick="draw(5, 300)">五連<span>300 G</span></button>
+                    <button class="g-btn" style="border-color:#9900ff; color:#9900ff;" onclick="draw(5, 300)">五連<span>300 G</span></button>
                 </div>
                 <div id="pity-bar-wrap">
                     <label><span>🛡 保底進度 (滿50必中S以上)</span><span id="pity-text">0 / 50</span></label>
@@ -155,7 +164,6 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        // 💡 換回正式的 Email 密碼登入與登出模組
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
@@ -178,30 +186,21 @@
         };
         const rates = [ {r:'d', p:0.4}, {r:'c', p:0.3}, {r:'b', p:0.18}, {r:'a', p:0.08}, {r:'s', p:0.03}, {r:'ss', p:0.008}, {r:'sss', p:0.002} ];
 
-        // 💡 登入執行邏輯
         window.executeLogin = () => {
             const email = document.getElementById('log-email').value;
             const pw = document.getElementById('log-pw').value;
             document.getElementById('log-err').style.display = 'none';
             signInWithEmailAndPassword(auth, email, pw).catch(err => {
-                document.getElementById('log-err').innerText = '❌ 登入失敗：請檢查帳號或密碼';
                 document.getElementById('log-err').style.display = 'block';
             });
         };
 
-        // 💡 登出執行邏輯
-        window.executeLogout = () => {
-            if(confirm('確定要登出連線嗎？')) {
-                signOut(auth);
-            }
-        };
+        window.executeLogout = () => { if(confirm('確定要登出連線嗎？')) signOut(auth); };
 
         onAuthStateChanged(auth, async (u) => {
             if (u) {
-                // 登入成功：隱藏閘門，顯示遊戲
                 document.getElementById('login-view').style.display = 'none';
-                
-                const id = u.email ? u.email.split('@')[0] : u.uid.substring(0, 8);
+                const id = u.email.split('@')[0];
                 document.getElementById('p-id').innerText = `ID: ${id}`;
                 userRef = doc(db, "users", id);
 
@@ -212,18 +211,19 @@
                     if (s.exists()) {
                         uData = s.data();
                         uData.pity_count = uData.pity_count || 0;
-                        let rawInv = uData.inventory || [];
-                        uData.inventory = rawInv.filter(item => item && typeof item === 'object' && item.id);
-                        document.getElementById('p-gold').innerText = uData.gold || 0;
+                        uData.inventory = (uData.inventory || []).filter(item => item && typeof item === 'object' && item.id);
+                        
+                        // 強制過濾修正金幣數值，解決 NaN BUG
+                        document.getElementById('p-gold').innerText = Number(uData.gold) || 0; 
+                        
                         updatePityBar(uData.pity_count);
                         renderBag();
                     }
                 });
                 syncMissions();
             } else {
-                // 未登入或登出：顯示閘門擋住畫面
                 document.getElementById('login-view').style.display = 'flex';
-                document.getElementById('log-pw').value = ''; // 清空密碼
+                document.getElementById('log-pw').value = ''; 
             }
         });
 
@@ -252,8 +252,11 @@
             alert("回報成功！請等待後台審核發放。");
         };
 
-        window.draw = async (n, p) => {
-            if (uData.gold < p) return alert("金幣不足！請去接取任務。");
+        window.draw = async (n, cost) => {
+            // 💡 嚴格驗證金幣數量，解決免費抽卡 BUG
+            const currentGold = Number(uData.gold) || 0;
+            if (currentGold < cost) return alert("金幣不足！請去接取任務。");
+            
             let pityCount = uData.pity_count || 0;
             let results = [];
             let newPityCount = pityCount;
@@ -279,7 +282,8 @@
                 else { invMap[card.id] = { id: card.id, pool: currentPool, rarity: card.rank, img: `images/${currentPool}/${card.file}`, count: 1 }; }
             });
 
-            await updateDoc(userRef, { gold: uData.gold - p, pity_count: newPityCount, inventory: Object.values(invMap) });
+            // 扣除金幣並上傳
+            await updateDoc(userRef, { gold: currentGold - cost, pity_count: newPityCount, inventory: Object.values(invMap) });
             startGacha(results);
         };
 
@@ -291,7 +295,15 @@
             let active = 0, rev = false;
 
             cards.reverse().forEach((card, i) => {
-                const color = card.rank === 's' ? '#aa00ff' : (['ss', 'sss'].includes(card.rank) ? '#ff0000' : '#00ffcc');
+                // 💡 質感配色套用
+                let color = '#333';
+                if(card.rank === 'sss') color = '#ff0055';
+                if(card.rank === 'ss') color = '#ff6600';
+                if(card.rank === 's') color = '#9900ff';
+                if(card.rank === 'a') color = '#ffd700';
+                if(card.rank === 'b') color = '#00e5ff';
+                if(card.rank === 'c') color = '#aaaaaa';
+
                 const w = document.createElement('div');
                 w.className = 'card-w' + (card.isGuaranteed ? ' card-guaranteed' : '');
                 w.style.zIndex = cards.length - i;
@@ -300,7 +312,7 @@
                 w.innerHTML = `
                     <div class="card-i">
                         <div class="face back"></div> 
-                        <div class="face front" style="border-color:${color}">
+                        <div class="face front rarity-${card.rank.toUpperCase()}">
                             <img src="images/${currentPool}/${card.file}" onerror="this.src='https://via.placeholder.com/200x260/111/444'">
                             <div class="r-banner" style="background:${color}">${card.rank.toUpperCase()} ${card.isGuaranteed ? '<span style="color:#ffd700;font-size:10px;margin-left:5px;">⚡保底</span>' : ''}</div>
                         </div>
@@ -313,8 +325,9 @@
                         document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped'));
                         document.getElementById('hint').innerText = '[ 點擊逐張收取 ]';
                     } else {
+                        // 💡 真正修復飛天動畫卡彈的關鍵
                         w.style.pointerEvents = 'none'; 
-                        w.firstChild.classList.add('dismissed');
+                        w.firstElementChild.classList.add('dismissed'); // 確保抓到真正的 div 而不是換行符號
                         active++;
                         if (active >= cards.length) setTimeout(() => { overlay.style.display = 'none'; document.getElementById('hint').innerText = '[ 點擊全翻 ]'; }, 750);
                     }
@@ -323,7 +336,7 @@
             });
         }
 
-        // 💡 終極圖鑑邏輯：顯示所有卡片，未解鎖的顯示黑影
+        // 💡 終極圖鑑：無鎖頭黑影，質感拉滿
         function renderBag() {
             const invMap = {};
             (uData.inventory || []).forEach(c => { invMap[c.id] = c; });
@@ -334,7 +347,6 @@
             let unlockedCards = 0;
             const order = ['sss', 'ss', 's', 'a', 'b', 'c', 'd'];
 
-            // 遍歷當前卡池的所有預設卡片
             order.forEach(r => {
                 if(!pools[currentPool][r]) return;
                 pools[currentPool][r].forEach(file => {
@@ -351,7 +363,6 @@
                             <img src="images/${currentPool}/${file}" onerror="this.src='https://via.placeholder.com/100x150/111/444'">
                             <div class="rarity-label">${isLocked ? '??? 級' : r.toUpperCase() + ' 級'}</div>
                             ${count > 1 ? `<div class="count-badge">x${count}</div>` : ''}
-                            ${isLocked ? `<div class="lock-icon">🔒</div>` : ''}
                         </div>
                     `;
                 });
@@ -367,7 +378,6 @@
             btn.classList.add('active');
             document.getElementById('b-img').src = `images/${pId}/banner.jpg`;
             document.getElementById('b-txt').innerText = `>_ ${pId === 'freren' ? '葬送的芙莉蓮' : '實力至上教室'}`;
-            // 切換卡池時重新渲染圖鑑
             if(!document.getElementById('page-bag').classList.contains('hidden')) renderBag();
         };
 
@@ -376,7 +386,6 @@
             document.getElementById(id).classList.remove('hidden');
             document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
             b.classList.add('active');
-            // 切換到圖鑑分頁時確保渲染
             if(id === 'page-bag') renderBag();
         };
     </script>
