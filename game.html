@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V45 - 黑市終極修正版</title>
+    <title>Solo Leveling: TCG V46 - 完美無缺防破版</title>
     <style>
         /* ================= 基礎設定 ================= */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; -webkit-tap-highlight-color: transparent; }
@@ -194,13 +194,18 @@
                     <p style="font-size:11px; color:#94a3b8; margin-bottom:10px;">
                         選擇圖鑑中的卡片掛單，向全服獵人出售換取金幣。
                     </p>
-                    <div style="display:flex; gap:5px;">
-                        <select id="trade-card-sel" style="flex:2; padding:8px; background:#020617; color:#e2e8f0; border:1px solid #475569; border-radius:4px; font-size:11px;"></select>
-                        <input type="number" id="trade-price" placeholder="售價(G)" style="flex:1; padding:8px; background:#020617; color:#facc15; border:1px solid #475569; border-radius:4px; font-size:11px;">
-                        <button onclick="postTrade()" style="background:rgba(168,85,247,0.2); color:#d8b4fe; border:1px solid #a855f7; border-radius:4px; font-weight:bold; cursor:pointer; padding:0 10px;">
-                            掛單
-                        </button>
+                    
+                    <!-- 🚨 V46：防破版的上下兩層輸入區 -->
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <select id="trade-card-sel" style="width:100%; padding:10px; background:#020617; color:#e2e8f0; border:1px solid #475569; border-radius:4px; font-size:11px; outline:none;"></select>
+                        <div style="display:flex; gap:8px;">
+                            <input type="number" id="trade-price" placeholder="請設定售價 (G)" style="flex:1; padding:10px; background:#020617; color:#facc15; border:1px solid #475569; border-radius:4px; font-size:11px; outline:none;">
+                            <button onclick="postTrade()" style="padding:0 20px; background:rgba(168,85,247,0.2); color:#d8b4fe; border:1px solid #a855f7; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px; transition:0.2s;">
+                                掛單
+                            </button>
+                        </div>
                     </div>
+                    
                 </div>
                 <div id="trade-board" style="display:flex; flex-direction:column; gap:10px;"></div>
             </div>
@@ -451,12 +456,11 @@
             document.getElementById('bag-count').innerText = `${unlockedCards} / ${totalCards}`; list.innerHTML = html;
         }
 
-        // ================= V45 黑市交易系統 (修正扣除邏輯) =================
+        // ================= 黑市交易系統 =================
         function updateTradeSelect() {
             const sel = document.getElementById('trade-card-sel'); 
             sel.innerHTML = '<option value="">選擇要出售的卡片...</option>';
             
-            // 🚨 V45：允許顯示所有數量 >= 1 的卡片
             (uData.inventory || []).forEach(c => {
                 if(c.count >= 1) {
                     sel.innerHTML += `<option value="${c.id}">[${c.rarity.toUpperCase()}] ${c.id.split('_')[2]} (可賣: ${c.count}張)</option>`;
@@ -473,23 +477,17 @@
             let inv = [...uData.inventory];
             let cardIndex = inv.findIndex(c => c.id === cId);
             
-            // 🚨 V45：只要擁有這張卡 (count >= 1)，就可以賣！
             if(cardIndex > -1 && inv[cardIndex].count >= 1) {
                 let cardData = {...inv[cardIndex]};
                 
-                // 真實扣除卡片邏輯
                 if (inv[cardIndex].count === 1) {
-                    // 如果只剩最後一張，直接把卡片從背包資料中拔除 (splice)
                     inv.splice(cardIndex, 1);
                 } else {
-                    // 如果有多張，單純扣除數量
                     inv[cardIndex].count -= 1;
                 }
                 
-                // 更新自己背包到資料庫
                 await updateDoc(userRef, { inventory: inv });
                 
-                // 將資料掛單到黑市
                 await addDoc(collection(db, "market"), { 
                     seller: currentUserId, 
                     cardId: cardData.id, 
@@ -541,7 +539,6 @@
             });
         }
 
-        // 🚨 V45：撤銷時如果原本賣光了，會重新生出卡片還給你
         window.cancelTrade = async (docId, cardId, rarity, img) => {
             if(!confirm("確定要撤銷掛單嗎？卡片將退回圖鑑。")) return;
             
@@ -553,7 +550,6 @@
             if(idx > -1) {
                 inv[idx].count += 1;
             } else {
-                // 如果當初賣掉最後一張導致背包沒有這個物件，這裡幫你重生回來
                 inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 });
             }
             
