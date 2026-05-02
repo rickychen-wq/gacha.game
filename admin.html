@@ -3,279 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo Leveling - Admin Panel V24</title>
+    <title>Solo Leveling: TCG - 創世神後台</title>
     <style>
-        body { background: #000; color: #ff0055; font-family: monospace; padding: 20px; display: flex; justify-content: center; margin: 0; }
-        .box { width: 100%; max-width: 500px; border: 2px solid #ff0055; padding: 20px; background: #0a0a0a; box-shadow: 0 0 15px rgba(255,0,85,0.2); }
-        input, textarea, button { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #ff0055; color: #fff; outline: none; font-family: monospace; box-sizing: border-box; }
-        button { cursor: pointer; font-weight: bold; transition: 0.2s; }
-        button:hover { background: #ff0055; color: #000; }
-        .hidden { display: none; }
-        .item { border: 1px solid #333; padding: 10px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #111; }
-        .item span { font-size: 13px; flex: 1; }
-        .item button { width: auto; padding: 6px 14px; margin: 0; font-size: 12px; background: #1a0000; border-color: #ff0055; color: #ff0055; }
-        .item button.btn-ok { border-color: #00ffcc; color: #00ffcc; }
-        .item button.btn-ok:hover { background: #00ffcc; color: #000; }
-        hr { border-color: #330011; margin: 20px 0; }
-        h2 { margin-bottom: 12px; text-align: center; border-bottom: 1px solid #ff0055; padding-bottom: 10px; }
-        h3 { margin: 12px 0 4px; color: #ff4488; font-size: 14px; border-left: 3px solid #ff0055; padding-left: 8px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+        body { background-color: #020617; color: #e2e8f0; padding: 20px; }
+        
+        /* 登入防護 */
+        #login-view { position: fixed; top:0; left:0; width: 100vw; height: 100vh; background: rgba(2,6,23,0.95); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .log-input { padding: 12px; background: #1e293b; border: 1px solid #38bdf8; color: #fff; border-radius: 6px; margin-bottom: 15px; outline: none; width: 250px;}
+        .log-btn { padding: 12px 30px; background: #38bdf8; color: #020617; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
 
-        /* 任務列表管理 */
-        #mission-list-admin { margin-top: 10px; }
-        .m-admin-item { border: 1px solid #330011; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; background: #0a0005; }
-        .m-admin-item .m-info { flex: 1; }
-        .m-admin-item .m-info b { color: #ff4488; font-size: 15px; }
-        .m-admin-item .m-info span { color: #888; font-size: 11px; display: block; margin-top: 4px; }
-        .m-admin-item button { width: auto; padding: 5px 10px; margin: 0; font-size: 11px; color: #ff0055; border-color: #330011; }
-        .m-admin-item button:hover { background: #ff0055; color: #fff; }
+        /* 主控台版面 */
+        .header { border-bottom: 2px solid #334155; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .header h1 { color: #38bdf8; letter-spacing: 2px; }
+        
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; }
+        
+        .panel { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .panel h2 { color: #facc15; font-size: 16px; margin-bottom: 15px; border-left: 3px solid #facc15; padding-left: 10px; }
+        
+        /* 表單與按鈕 */
+        .form-group { margin-bottom: 15px; display: flex; gap: 10px; align-items: center; }
+        .form-group input, .form-group select { padding: 8px; background: #0f172a; border: 1px solid #475569; color: #e2e8f0; border-radius: 4px; flex: 1; }
+        .btn { padding: 8px 15px; background: rgba(56,189,248,0.1); border: 1px solid #38bdf8; color: #38bdf8; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; white-space: nowrap;}
+        .btn:hover { background: #38bdf8; color: #020617; }
+        .btn-green { border-color: #22c55e; color: #22c55e; } .btn-green:hover { background: #22c55e; color: #020617; }
+        .btn-red { border-color: #ef4444; color: #ef4444; } .btn-red:hover { background: #ef4444; color: #020617; }
 
-        /* 玩家資訊查詢 */
-        #player-info { background: #0a0a0a; border: 1px solid #330011; padding: 14px; margin-top: 10px; font-size: 13px; line-height: 1.8; }
-        #player-info .pi-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #222; padding: 4px 0; }
-        #player-info .pi-label { color: #888; }
-        #player-info .pi-val { color: #fff; font-weight: bold; }
+        /* 玩家資訊顯示 */
+        #u-info { background: #0f172a; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px dashed #475569; display: none; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .highlight { color: #38bdf8; font-weight: bold; }
+
+        /* 任務列表 */
+        .list-item { background: #0f172a; padding: 12px; border: 1px solid #334155; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
     </style>
 </head>
 <body>
-    <div class="box" id="gate">
-        <h2>『後台加密鎖』</h2>
-        <p style="text-align:center; color:#666; font-size:12px;">請輸入 4 位數管理員授權碼</p>
-        <input type="password" id="pw" placeholder="****" maxlength="4" style="text-align:center; font-size:24px; letter-spacing:10px;" onkeydown="if(event.key==='Enter')unlock()">
-        <button onclick="unlock()">執行解鎖</button>
+    <div id="login-view">
+        <h2 style="color:#38bdf8; margin-bottom: 20px;">ADMIN ACCESS</h2>
+        <input type="password" id="admin-pw" class="log-input" placeholder="Enter Admin Password">
+        <button class="log-btn" onclick="checkAdmin()">VERIFY</button>
     </div>
 
-    <div class="box hidden" id="panel">
-        <h2>『管理員終端 V24』</h2>
-
-        <!-- 發布任務 -->
-        <h3>▶ 發布新委託任務 (單次性)</h3>
-        <input type="text" id="t" placeholder="任務標題 (例: 突破 C 級傳送門)">
-        <input type="text" id="d" placeholder="任務說明與條件">
-        <input type="number" id="r" placeholder="獎勵金額 (G)">
-        <button onclick="addM()" style="background:#ff0055; color:#000;">✚ 推播至全伺服器</button>
-
-        <!-- 現有任務管理 -->
-        <hr>
-        <h3>▶ 全服未接取任務清單</h3>
-        <div id="mission-list-admin"><span style="color:#333;font-size:12px;">載入中...</span></div>
-
-        <!-- 待審核回報 -->
-        <hr>
-        <h3>▶ 玩家回報審核 (核准後任務將永久銷毀)</h3>
-        <div id="reps"><span style="color:#333;font-size:12px;">暫無回報</span></div>
-
-        <!-- 玩家查詢 -->
-        <hr>
-        <h3>▶ 玩家資料庫調閱</h3>
-        <div style="display:flex;gap:8px;">
-            <input type="text" id="query-uid" placeholder="輸入玩家 ID" style="margin:0;flex:1;">
-            <button onclick="queryPlayer()" style="width:auto;margin:0;padding:12px 16px;">查詢</button>
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="header">
+            <h1>⚙️ SYSTEM ADMIN PANEL</h1>
+            <span style="color:#64748b; font-size:12px;">Solo Leveling: TCG Server Control</span>
         </div>
-        <div id="player-info" class="hidden"></div>
 
-        <!-- 手動發金 -->
-        <hr>
-        <h3>▶ 系統金幣直匯</h3>
-        <div style="display:flex;gap:8px;">
-            <input type="text" id="manual-uid" placeholder="玩家 ID" style="margin:0;flex:1;">
-            <input type="number" id="manual-gold" placeholder="金額" style="margin:0;width:100px;">
-            <button onclick="manualGold()" style="width:auto;margin:0;padding:12px 16px;">發放</button>
+        <div class="container">
+            <!-- 左側：玩家權限與物資管理 -->
+            <div>
+                <div class="panel" style="margin-bottom: 20px;">
+                    <h2>👤 獵人資料讀取</h2>
+                    <div class="form-group">
+                        <input type="text" id="search-id" placeholder="輸入玩家 ID (不需要打信箱)">
+                        <button class="btn" onclick="searchUser()">搜尋資料</button>
+                    </div>
+                    <div id="u-info">
+                        <div class="info-row"><span>ID:</span> <span id="info-id" class="highlight">...</span></div>
+                        <div class="info-row"><span>持有金幣:</span> <span id="info-gold" style="color:#facc15; font-weight:bold;">0 G</span></div>
+                        <div class="info-row"><span>已解鎖卡片總數:</span> <span id="info-cards" class="highlight">0</span></div>
+                        
+                        <hr style="border-color:#334155; margin:15px 0;">
+                        
+                        <div class="form-group">
+                            <input type="number" id="add-gold-val" placeholder="輸入金幣數量 (可負數)">
+                            <button class="btn btn-green" onclick="addGold()">💰 發放/扣除金幣</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🚨 V40 全新：神之手發卡系統 -->
+                <div class="panel" id="card-panel" style="opacity: 0.5; pointer-events: none;">
+                    <h2 style="color:#a855f7; border-color:#a855f7;">🃏 神之手發放卡片</h2>
+                    <p style="font-size:11px; color:#94a3b8; margin-bottom:15px;">請先在上方搜尋並鎖定玩家後，才能執行發卡操作。</p>
+                    
+                    <div class="form-group">
+                        <select id="g-pool" onchange="updateCardSelect()">
+                            <option value="freren">芙莉蓮卡池</option>
+                            <option value="elite">實力至上卡池</option>
+                        </select>
+                        <select id="g-rarity" onchange="updateCardSelect()">
+                            <option value="sss">SSS 級</option>
+                            <option value="ss">SS 級</option>
+                            <option value="s">S 級</option>
+                            <option value="a">A 級</option>
+                            <option value="b">B 級</option>
+                            <option value="c">C 級</option>
+                            <option value="d">D 級</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="g-file">
+                            <!-- JS 動態生成該稀有度底下的檔案列表 -->
+                        </select>
+                        <button class="btn" style="border-color:#a855f7; color:#a855f7;" onclick="grantCard()">⚡ 直接配發此卡</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：任務系統管理 -->
+            <div>
+                <div class="panel" style="margin-bottom: 20px;">
+                    <h2 style="color:#22c55e; border-color:#22c55e;">📜 任務發布中心</h2>
+                    <div class="form-group"><input type="text" id="m-title" placeholder="任務標題"></div>
+                    <div class="form-group"><input type="text" id="m-desc" placeholder="任務內容描述"></div>
+                    <div class="form-group">
+                        <input type="number" id="m-reward" placeholder="獎勵金幣">
+                        <button class="btn btn-green" onclick="addMission()">發布委託</button>
+                    </div>
+                    <hr style="border-color:#334155; margin:15px 0;">
+                    <div id="mission-list" style="max-height: 200px; overflow-y:auto;"></div>
+                </div>
+
+                <div class="panel">
+                    <h2 style="color:#f43f5e; border-color:#f43f5e;">⚠️ 任務回報審核</h2>
+                    <div id="report-list"></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayRemove, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const config = { apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo", authDomain: "my-gacha-game-f7663.firebaseapp.com", projectId: "my-gacha-game-f7663", storageBucket: "my-gacha-game-f7663.firebasestorage.app", messagingSenderId: "1035192644413", appId: "1:1035192644413:web:1ad5337b9760a154cf8b54" };
-        const db = getFirestore(initializeApp(config));
+        const app = initializeApp(config);
+        const db = getFirestore(app);
 
-        let currentGameData = null;
+        // 🚨 這是後台專用的密碼 (保護網頁不被亂按)
+        const ADMIN_PW = "admin123"; 
 
-        // 解鎖後台
-        window.unlock = () => {
-            if (document.getElementById('pw').value === "0414") {
-                document.getElementById('gate').classList.add('hidden');
-                document.getElementById('panel').classList.remove('hidden');
-                loadData();
+        let targetId = null;
+        let targetData = null;
+
+        // 卡片資料庫 (讓後台知道有哪些卡可以發)
+        const pools = {
+            'freren': { sss:['sss1.jpg'], ss:['ss1.jpg'], s:['s1.jpg','s2.jpg','s3.webp','s4.jpg','s5.jpg'], a:['a1.jpg','a2.jpg','a3.jpg','a5.jpg','a6.jpg'], b:['b1.jpg','b2.jpg','b3.jpg','b4.jpg','b5.jpg','b6.jpg','b7.jpg','b8.jpg','b9.jpg'], c:['c1.jpg','c2.jpg','c3.jpg','c4.jpg','c5.jpg','c6.jpg','c7.jpg','c8.jpg','c9.jpg','c10.jpg'], d:['d1.jpg','d2.jpg','d3.jpg','d4.jpg','d5.jpg','d6.jpg','d7.jpg','d8.jpg'] },
+            'elite': { sss:['sss1.jpg','sss2.jpg','sss3.jpg'], ss:['ss1.jpg'], s:['s1.jpg','s2.jpg','s3.jpg','s4.jpg'], a:['a1.jpg','a2.jpg','a3.jpg','a4.jpg','a5.jpg','a6.jpg'], b:['b1.jpg','b2.jpg','b3.jpg','b4.jpg','b5.jpg','b6.jpg'], c:['c2.jpg','c3.jpg','c4.jpg','c5.jpg','c6.jpg'], d:['d1.jpg'] }
+        };
+
+        window.checkAdmin = () => {
+            if(document.getElementById('admin-pw').value === ADMIN_PW) {
+                document.getElementById('login-view').style.display = 'none';
+                loadConfig();
+            } else { alert("權限不足！"); }
+        };
+
+        // ================= 玩家管理區塊 =================
+        window.searchUser = async () => {
+            const id = document.getElementById('search-id').value.trim();
+            if(!id) return alert("請輸入 ID");
+            
+            const snap = await getDoc(doc(db, "users", id));
+            if(snap.exists()) {
+                targetId = id;
+                targetData = snap.data();
+                
+                document.getElementById('u-info').style.display = 'block';
+                document.getElementById('info-id').innerText = id;
+                document.getElementById('info-gold').innerText = `${targetData.gold || 0} G`;
+                document.getElementById('info-cards').innerText = (targetData.inventory || []).length;
+                
+                // 解鎖發卡面板
+                const cardPanel = document.getElementById('card-panel');
+                cardPanel.style.opacity = '1';
+                cardPanel.style.pointerEvents = 'auto';
+                updateCardSelect(); // 初始化卡片選單
+                
+                alert("鎖定獵人成功！");
             } else {
-                alert("授權碼錯誤！");
-                document.getElementById('pw').value = '';
+                alert("找不到此獵人 ID！");
             }
         };
 
-        // 即時監聽 game_data
-        function loadData() {
+        window.addGold = async () => {
+            if(!targetId) return alert("請先搜尋玩家");
+            const val = parseInt(document.getElementById('add-gold-val').value);
+            if(isNaN(val)) return alert("請輸入有效數字");
+            
+            const newGold = (targetData.gold || 0) + val;
+            await updateDoc(doc(db, "users", targetId), { gold: newGold });
+            
+            document.getElementById('info-gold').innerText = `${newGold} G`;
+            targetData.gold = newGold; // 同步本地數據
+            alert(`已更新玩家金幣，目前為: ${newGold} G`);
+        };
+
+        // ================= 🚨 神之手：發卡系統 =================
+        window.updateCardSelect = () => {
+            const p = document.getElementById('g-pool').value;
+            const r = document.getElementById('g-rarity').value;
+            const fSelect = document.getElementById('g-file');
+            fSelect.innerHTML = ''; // 清空選項
+            
+            if(pools[p] && pools[p][r]) {
+                pools[p][r].forEach(f => {
+                    fSelect.innerHTML += `<option value="${f}">${f}</option>`;
+                });
+            } else {
+                fSelect.innerHTML = `<option value="">無卡片資料</option>`;
+            }
+        };
+
+        window.grantCard = async () => {
+            if(!targetId) return alert("請先搜尋並鎖定玩家！");
+            const pool = document.getElementById('g-pool').value;
+            const rarity = document.getElementById('g-rarity').value;
+            const file = document.getElementById('g-file').value;
+            
+            if(!file) return alert("請選擇一張卡片！");
+
+            const cardId = `${pool}_${rarity}_${file}`;
+            let inv = targetData.inventory || [];
+            
+            // 檢查玩家是不是已經有這張卡了
+            let existingCard = inv.find(c => c.id === cardId);
+            
+            if(existingCard) {
+                existingCard.count = (existingCard.count || 1) + 1; // 有的話數量+1
+            } else {
+                // 沒有的話直接新增這張卡的資料物件
+                inv.push({ id: cardId, pool: pool, rarity: rarity, img: `images/${pool}/${file}`, count: 1 });
+            }
+
+            // 上傳更新到資料庫
+            await updateDoc(doc(db, "users", targetId), { inventory: inv });
+            
+            targetData.inventory = inv; // 同步本地數據
+            document.getElementById('info-cards').innerText = inv.length;
+            alert(`神之手發放成功！\n已將 [${rarity.toUpperCase()}] ${file} 發給玩家 ${targetId}`);
+        };
+
+        // ================= 任務管理區塊 =================
+        let gameConfig = { missions: [], reports: [] };
+
+        function loadConfig() {
             onSnapshot(doc(db, "config", "game_data"), (s) => {
-                currentGameData = s.exists() ? s.data() : { missions: [], reports: [] };
-                renderMissions(currentGameData.missions || []);
-                renderReports(currentGameData.reports || []);
+                if(s.exists()) {
+                    gameConfig = s.data();
+                    gameConfig.missions = gameConfig.missions || [];
+                    gameConfig.reports = gameConfig.reports || [];
+                    renderMissions();
+                    renderReports();
+                } else {
+                    setDoc(doc(db, "config", "game_data"), { missions: [], reports: [] });
+                }
             });
         }
 
-        // 發布任務 (使用 setDoc + merge 確保即使資料庫空了也能成功建立)
-        window.addM = async () => {
-            const title = document.getElementById('t').value.trim();
-            const desc = document.getElementById('d').value.trim();
-            const reward = parseInt(document.getElementById('r').value);
-            if (!title || !desc || isNaN(reward)) return alert("請填寫完整任務資訊！");
-            
-            const m = { id: "m" + Date.now(), title, desc, reward };
-            
-            try {
-                await setDoc(doc(db, "config", "game_data"), { missions: arrayUnion(m) }, { merge: true });
-                document.getElementById('t').value = '';
-                document.getElementById('d').value = '';
-                document.getElementById('r').value = '';
-                alert(`✓ 任務「${title}」已成功推播至前端！`);
-            } catch (error) {
-                console.error(error);
-                alert("發布失敗，請檢查權限與連線！");
-            }
+        window.addMission = async () => {
+            const title = document.getElementById('m-title').value;
+            const desc = document.getElementById('m-desc').value;
+            const reward = parseInt(document.getElementById('m-reward').value);
+            if(!title || !desc || isNaN(reward)) return alert("請填寫完整資訊");
+
+            const newMission = { id: 'm_' + Date.now(), title, desc, reward };
+            await updateDoc(doc(db, "config", "game_data"), { missions: arrayUnion(newMission) });
+            alert("任務已發布！");
         };
 
-        // 渲染任務管理列表
-        function renderMissions(missions) {
-            const area = document.getElementById('mission-list-admin');
-            if (missions.length === 0) {
-                area.innerHTML = '<span style="color:#666;font-size:12px;">目前全服無未接取任務。</span>';
-                return;
-            }
-            area.innerHTML = missions.map(m => `
-                <div class="m-admin-item">
-                    <div class="m-info">
-                        <b>${m.title}</b>
-                        <span>${m.desc} | 💰 ${m.reward}G</span>
-                    </div>
-                    <button onclick="removeM('${m.id}')">強制刪除</button>
-                </div>
-            `).join('');
-        }
-
-        // 強制刪除未被完成的任務
-        window.removeM = async (mid) => {
-            if (!confirm("確定要將此任務從全服下架？")) return;
-            const m = (currentGameData?.missions || []).find(x => x.id === mid);
-            if (!m) return alert("找不到任務！");
+        window.deleteMission = async (id) => {
+            if(!confirm("確定刪除此任務？")) return;
+            const m = gameConfig.missions.find(x => x.id === id);
             await updateDoc(doc(db, "config", "game_data"), { missions: arrayRemove(m) });
         };
 
-        // 渲染待審核回報
-        function renderReports(reports) {
-            const area = document.getElementById('reps');
-            if (reports.length === 0) {
-                area.innerHTML = '<span style="color:#666;font-size:12px;">全服玩家都在摸魚，暫無回報。</span>';
-                return;
-            }
-            area.innerHTML = reports.map(rep => {
-                const mInfo = (currentGameData?.missions || []).find(x => x.id === rep.mid);
-                const mTitle = mInfo ? mInfo.title : "已失效的未知任務";
-                return `
-                <div class="item">
-                    <span style="line-height:1.5;">
-                        <b style="color:#ff4488">${rep.uid}</b> 回報完成<br>
-                        <b style="color:#fff">${mTitle}</b>
-                    </span>
-                    <div style="display:flex; flex-direction:column; gap:5px;">
-                        <button class="btn-ok" onclick="ok('${rep.uid}', '${rep.mid}')">✓ 核准並銷毀任務</button>
-                        <button onclick="reject('${rep.uid}', '${rep.mid}')">✗ 駁回退件</button>
-                    </div>
-                </div>
-            `}).join('');
+        function renderMissions() {
+            const list = document.getElementById('mission-list');
+            list.innerHTML = '';
+            gameConfig.missions.forEach(m => {
+                list.innerHTML += `<div class="list-item"><div><b style="color:#38bdf8">${m.title}</b> <span style="color:#facc15;font-size:12px;">(+${m.reward}G)</span></div><button class="btn btn-red" style="padding:4px 8px;font-size:12px;" onclick="deleteMission('${m.id}')">刪除</button></div>`;
+            });
         }
 
-        // 審核通過：發放獎勵 + 永久銷毀全服任務
-        window.ok = async (uid, mid) => {
-            const m = (currentGameData?.missions || []).find(x => x.id === mid);
-            if (!m) return alert("該任務已不存在，無法核准！");
+        function renderReports() {
+            const list = document.getElementById('report-list');
+            list.innerHTML = '';
+            if(gameConfig.reports.length === 0) list.innerHTML = '<span style="color:#64748b;font-size:12px;">無待審核回報</span>';
             
-            if (!confirm(`確認核准 ${uid} 的回報？\n發放 ${m.reward}G 後，該任務將從全伺服器永久下架！`)) return;
+            gameConfig.reports.forEach(r => {
+                const m = gameConfig.missions.find(x => x.id === r.mid);
+                if(!m) return; // 任務已被刪除
+                list.innerHTML += `<div class="list-item" style="flex-direction:column; align-items:flex-start;">
+                    <div style="margin-bottom:8px;">獵人 <b style="color:#38bdf8">${r.uid}</b> 回報完成: <span style="color:#e2e8f0">${m.title}</span></div>
+                    <div style="display:flex; gap:10px; width:100%;">
+                        <button class="btn btn-green" style="flex:1;" onclick="handleReport('${r.uid}', '${r.mid}', ${m.reward}, true)">核准發放 ${m.reward}G</button>
+                        <button class="btn btn-red" style="flex:1;" onclick="handleReport('${r.uid}', '${r.mid}', 0, false)">駁回</button>
+                    </div>
+                </div>`;
+            });
+        }
 
-            const uRef = doc(db, "users", uid);
-            const configRef = doc(db, "config", "game_data");
-
-            try {
-                const uSnap = await getDoc(uRef);
-                if (!uSnap.exists()) return alert("找不到該玩家資料！");
-                
-                const curGold = uSnap.data().gold || 0;
-
-                // 1. 給玩家加錢、解除他的等待審核狀態
-                await updateDoc(uRef, { gold: curGold + m.reward, pending: arrayRemove(mid) });
-
-                // 2. 從全局資料庫中徹底銷毀這個任務，並清除這筆報表
-                await updateDoc(configRef, { 
-                    missions: arrayRemove(m),
-                    reports: arrayRemove({ uid: uid, mid: mid }) 
-                });
-
-                alert(`✓ 獎勵已發放！任務「${m.title}」已正式結案並銷毀。`);
-            } catch (err) {
-                console.error(err);
-                alert("執行失敗，請檢查主控台報錯。");
-            }
-        };
-
-        // 審核拒絕：不發錢，解除玩家等待狀態，任務仍留在全服
-        window.reject = async (uid, mid) => {
-            if (!confirm(`確定駁回 ${uid} 的回報？（不發放金幣，退回給玩家重解）`)) return;
-            try {
-                await updateDoc(doc(db, "users", uid), { pending: arrayRemove(mid) });
-                await updateDoc(doc(db, "config", "game_data"), { reports: arrayRemove({ uid: uid, mid: mid }) });
-                alert(`✗ 已駁回該筆回報。`);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-        // 玩家資訊查詢
-        window.queryPlayer = async () => {
-            const uid = document.getElementById('query-uid').value.trim();
-            if (!uid) return alert("請輸入玩家 ID！");
-            const snap = await getDoc(doc(db, "users", uid));
-            const infoBox = document.getElementById('player-info');
-            if (!snap.exists()) {
-                infoBox.classList.remove('hidden');
-                infoBox.innerHTML = '<span style="color:#ff0055">資料庫無此玩家紀錄！</span>';
-                return;
-            }
-            const d = snap.data();
-            const inv = d.inventory || [];
-            
-            // 防呆計算：確保只計算正常的卡片物件
-            const validCards = inv.filter(c => typeof c === 'object' && c.rarity);
-            const totalCards = validCards.reduce((acc, c) => acc + (c.count || 1), 0);
-            
-            infoBox.classList.remove('hidden');
-            infoBox.innerHTML = `
-                <div class="pi-row"><span class="pi-label">玩家識別 ID</span><span class="pi-val" style="color:#00ffcc">${uid}</span></div>
-                <div class="pi-row"><span class="pi-label">持有多金幣</span><span class="pi-val" style="color:#ffd700">${d.gold || 0} G</span></div>
-                <div class="pi-row"><span class="pi-label">保底墊刀數</span><span class="pi-val">${d.pity_count || 0} / 50</span></div>
-                <div class="pi-row"><span class="pi-label">最後簽到日</span><span class="pi-val">${d.lastSignIn || '從未簽到'}</span></div>
-                <div class="pi-row"><span class="pi-label">卡牌總數量</span><span class="pi-val">${totalCards} 張</span></div>
-                <div class="pi-row"><span class="pi-label">圖鑑解鎖率</span><span class="pi-val">${validCards.length} 種</span></div>
-                <div class="pi-row"><span class="pi-label">待審核任務</span><span class="pi-val">${(d.pending || []).length > 0 ? (d.pending || []).join(', ') : '無'}</span></div>
-            `;
-        };
-
-        // 手動發放金幣
-        window.manualGold = async () => {
-            const uid = document.getElementById('manual-uid').value.trim();
-            const amount = parseInt(document.getElementById('manual-gold').value);
-            if (!uid || isNaN(amount) || amount <= 0) return alert("請填寫正確的玩家 ID 與匯款金額！");
+        window.handleReport = async (uid, mid, reward, isApprove) => {
+            const rObj = { uid, mid };
+            await updateDoc(doc(db, "config", "game_data"), { reports: arrayRemove(rObj) });
             
             const uRef = doc(db, "users", uid);
-            try {
+            await updateDoc(uRef, { pending: arrayRemove(mid) });
+
+            if(isApprove) {
                 const snap = await getDoc(uRef);
-                if (!snap.exists()) return alert("找不到該玩家！請確認 ID 是否正確。");
-                const curGold = snap.data().gold || 0;
-                await updateDoc(uRef, { gold: curGold + amount });
-                alert(`✓ 金幣空投成功！已匯入 ${amount}G 至 ${uid} 帳戶。\n目前餘額：${curGold + amount}G`);
-                document.getElementById('manual-uid').value = '';
-                document.getElementById('manual-gold').value = '';
-            } catch (err) {
-                console.error(err);
-                alert("發放失敗！");
+                if(snap.exists()) {
+                    await updateDoc(uRef, { gold: (snap.data().gold || 0) + reward });
+                }
             }
         };
     </script>
