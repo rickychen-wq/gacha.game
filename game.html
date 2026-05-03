@@ -3,100 +3,605 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V46 - 完美無缺防破版</title>
+    <title>Solo Leveling: TCG V48 - 終極無損展開版</title>
     <style>
         /* ================= 基礎設定 ================= */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #020617; display: flex; justify-content: center; align-items: center; height: 100dvh; width: 100vw; overflow: hidden; color: #e2e8f0; }
-        #app { width: 100%; max-width: 400px; height: 100%; background: radial-gradient(circle at top, #1e293b 0%, #020617 100%); position: relative; display: flex; flex-direction: column; border: 1px solid #334155; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Courier New', Courier, monospace; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        body { 
+            background-color: #020617; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100dvh; 
+            width: 100vw; 
+            overflow: hidden; 
+            color: #e2e8f0; 
+        }
+        #app { 
+            width: 100%; 
+            max-width: 400px; 
+            height: 100%; 
+            background: radial-gradient(circle at top, #1e293b 0%, #020617 100%); 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            border: 1px solid #334155; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.8); 
+        }
 
         /* ================= 登入/註冊介面 ================= */
-        #login-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
-        .sys-title { color: #38bdf8; font-size: 26px; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 15px rgba(56,189,248,0.5); letter-spacing: 3px; }
-        .sys-sub { color: #94a3b8; font-size: 11px; margin-bottom: 40px; letter-spacing: 4px; }
-        .log-input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(30, 41, 59, 0.6); border: 1px solid #475569; color: #fff; border-radius: 8px; outline: none; font-size: 14px; transition: 0.3s; }
-        .log-input:focus { border-color: #38bdf8; box-shadow: inset 0 0 10px rgba(56,189,248,0.2); background: rgba(30, 41, 59, 0.9); }
-        .log-btn { padding: 15px; color: #38bdf8; font-weight: bold; border-radius: 8px; font-size: 15px; cursor: pointer; transition: 0.2s; letter-spacing: 2px; }
-        .btn-login { background: rgba(56,189,248,0.15); border: 1px solid #38bdf8; }
-        .btn-login:active { background: #38bdf8; color: #020617; }
-        .btn-reg { background: transparent; border: 1px dashed #38bdf8; opacity: 0.8; }
-        .btn-reg:active { background: rgba(56,189,248,0.1); }
-        #log-err { color: #f43f5e; font-size: 12px; margin-top: 15px; display: none; letter-spacing: 1px; text-align: center; }
+        #login-view { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(2, 6, 23, 0.85); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px); 
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 30px; 
+        }
+        .sys-title { 
+            color: #38bdf8; 
+            font-size: 26px; 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            text-shadow: 0 0 15px rgba(56,189,248,0.5); 
+            letter-spacing: 3px; 
+        }
+        .sys-sub { 
+            color: #94a3b8; 
+            font-size: 11px; 
+            margin-bottom: 40px; 
+            letter-spacing: 4px; 
+        }
+        .log-input { 
+            width: 100%; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            background: rgba(30, 41, 59, 0.6); 
+            border: 1px solid #475569; 
+            color: #fff; 
+            border-radius: 8px; 
+            outline: none; 
+            font-size: 14px; 
+            transition: 0.3s; 
+        }
+        .log-input:focus { 
+            border-color: #38bdf8; 
+            box-shadow: inset 0 0 10px rgba(56,189,248,0.2); 
+            background: rgba(30, 41, 59, 0.9); 
+        }
+        .log-btn { 
+            padding: 15px; 
+            color: #38bdf8; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            letter-spacing: 2px; 
+        }
+        .btn-login { 
+            background: rgba(56,189,248,0.15); 
+            border: 1px solid #38bdf8; 
+        }
+        .btn-login:active { 
+            background: #38bdf8; 
+            color: #020617; 
+        }
+        .btn-reg { 
+            background: transparent; 
+            border: 1px dashed #38bdf8; 
+            opacity: 0.8; 
+        }
+        .btn-reg:active { 
+            background: rgba(56,189,248,0.1); 
+        }
+        #log-err { 
+            color: #f43f5e; 
+            font-size: 12px; 
+            margin-top: 15px; 
+            display: none; 
+            letter-spacing: 1px; 
+            text-align: center; 
+        }
 
         /* ================= 頂部資訊列 ================= */
-        .top-bar { height: 60px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 10; }
-        .p-info { display: flex; flex-direction: column; }
-        .logout-btn { color: #f43f5e; font-size: 10px; background: rgba(244, 63, 94, 0.1); border: 1px solid #f43f5e; border-radius: 4px; padding: 3px 8px; margin-top: 4px; cursor: pointer; width: fit-content; transition: 0.2s; }
-        .logout-btn:hover { background: #f43f5e; color: #fff; }
-        .gold-ui { background: rgba(250, 204, 21, 0.1); border: 1px solid rgba(250, 204, 21, 0.4); padding: 5px 12px; border-radius: 6px; color: #facc15; font-weight: bold; font-size: 13px; box-shadow: 0 0 10px rgba(250,204,21,0.1); }
+        .top-bar { 
+            height: 60px; 
+            border-bottom: 1px solid #334155; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0 15px; 
+            background: rgba(15, 23, 42, 0.8); 
+            backdrop-filter: blur(8px); 
+            z-index: 10; 
+        }
+        .p-info { 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .logout-btn { 
+            color: #f43f5e; 
+            font-size: 10px; 
+            background: rgba(244, 63, 94, 0.1); 
+            border: 1px solid #f43f5e; 
+            border-radius: 4px; 
+            padding: 3px 8px; 
+            margin-top: 4px; 
+            cursor: pointer; 
+            width: fit-content; 
+            transition: 0.2s; 
+        }
+        .logout-btn:hover { 
+            background: #f43f5e; 
+            color: #fff; 
+        }
+        
+        .top-right-wrap { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .music-btn { 
+            background: rgba(30, 41, 59, 0.6); 
+            border: 1px solid #475569; 
+            border-radius: 50%; 
+            width: 30px; 
+            height: 30px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 12px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            color: #94a3b8; 
+        }
+        .music-btn.playing { 
+            color: #38bdf8; 
+            border-color: rgba(56, 189, 248, 0.5); 
+            box-shadow: 0 0 10px rgba(56,189,248,0.2); 
+            animation: spin 4s linear infinite; 
+        }
+        @keyframes spin { 
+            100% { transform: rotate(360deg); } 
+        }
+        .gold-ui { 
+            background: rgba(250, 204, 21, 0.1); 
+            border: 1px solid rgba(250, 204, 21, 0.4); 
+            padding: 5px 12px; 
+            border-radius: 6px; 
+            color: #facc15; 
+            font-weight: bold; 
+            font-size: 13px; 
+            box-shadow: 0 0 10px rgba(250,204,21,0.1); 
+        }
         
         /* ================= 遊戲主要視窗 ================= */
-        .main-view { flex: 1; overflow-y: auto; padding: 15px; position: relative; }
-        .pool-tabs { display: flex; gap: 8px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; background: rgba(30, 41, 59, 0.5); color: #94a3b8; border: 1px solid #334155; padding: 10px; text-align: center; font-weight: bold; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.3s; backdrop-filter: blur(4px); }
-        .tab-btn.active { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.5); box-shadow: 0 0 10px rgba(56,189,248,0.1); }
-        .banner { width: 100%; height: 180px; border-radius: 8px; margin-bottom: 20px; position: relative; overflow: hidden; border: 1px solid #475569; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        .main-view { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 15px; 
+            position: relative; 
+        }
+        .pool-tabs { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 15px; 
+        }
+        .tab-btn { 
+            flex: 1; 
+            background: rgba(30, 41, 59, 0.5); 
+            color: #94a3b8; 
+            border: 1px solid #334155; 
+            padding: 10px; 
+            text-align: center; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            font-size: 12px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            backdrop-filter: blur(4px); 
+        }
+        .tab-btn.active { 
+            background: rgba(56, 189, 248, 0.15); 
+            color: #38bdf8; 
+            border-color: rgba(56, 189, 248, 0.5); 
+            box-shadow: 0 0 10px rgba(56,189,248,0.1); 
+        }
+        .banner { 
+            width: 100%; 
+            height: 180px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            position: relative; 
+            overflow: hidden; 
+            border: 1px solid #475569; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+        }
+        .banner img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            opacity: 0.9; 
+        }
         
         /* ================= 抽卡按鈕與保底條 ================= */
-        .gacha-btns { display: flex; gap: 10px; }
-        .g-btn { flex: 1; padding: 15px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px); }
-        .g-btn span { display: block; font-size: 10px; opacity: 0.6; margin-top: 4px; }
-        .g-btn:active { transform: scale(0.97); background: rgba(56,189,248,0.2); }
-        #pity-bar-wrap { margin-top: 14px; }
-        #pity-bar-wrap label { font-size: 10px; color: #94a3b8; display: flex; justify-content: space-between; margin-bottom: 6px; letter-spacing: 1px; }
-        #pity-bar-track { width: 100%; height: 6px; background: #0f172a; overflow: hidden; border-radius: 3px; border: 1px solid #334155; }
-        #pity-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #a855f7); transition: width 0.5s ease; box-shadow: 0 0 10px rgba(168,85,247,0.5); }
+        .gacha-btns { 
+            display: flex; 
+            gap: 10px; 
+        }
+        .g-btn { 
+            flex: 1; 
+            padding: 15px; 
+            background: rgba(15, 23, 42, 0.8); 
+            border: 1px solid rgba(56,189,248,0.4); 
+            color: #38bdf8; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            backdrop-filter: blur(4px); 
+        }
+        .g-btn span { 
+            display: block; 
+            font-size: 10px; 
+            opacity: 0.6; 
+            margin-top: 4px; 
+        }
+        .g-btn:active { 
+            transform: scale(0.97); 
+            background: rgba(56,189,248,0.2); 
+        }
+        #pity-bar-wrap { 
+            margin-top: 14px; 
+        }
+        #pity-bar-wrap label { 
+            font-size: 10px; 
+            color: #94a3b8; 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 6px; 
+            letter-spacing: 1px; 
+        }
+        #pity-bar-track { 
+            width: 100%; 
+            height: 6px; 
+            background: #0f172a; 
+            overflow: hidden; 
+            border-radius: 3px; 
+            border: 1px solid #334155; 
+        }
+        #pity-bar-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #3b82f6, #a855f7); 
+            transition: width 0.5s ease; 
+            box-shadow: 0 0 10px rgba(168,85,247,0.5); 
+        }
 
         /* ================= 委託任務卡片 ================= */
-        .m-card { background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-left: 3px solid #38bdf8; padding: 15px; margin-bottom: 12px; border-radius: 6px; backdrop-filter: blur(4px); }
-        .m-btn { width: 100%; margin-top: 10px; padding: 10px; background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4); font-weight: bold; border-radius: 4px; cursor: pointer; }
-        .m-btn:disabled { background: rgba(15, 23, 42, 0.5); color: #475569; border-color: #334155; cursor: not-allowed; }
+        .m-card { 
+            background: rgba(30, 41, 59, 0.6); 
+            border: 1px solid #334155; 
+            border-left: 3px solid #38bdf8; 
+            padding: 15px; 
+            margin-bottom: 12px; 
+            border-radius: 6px; 
+            backdrop-filter: blur(4px); 
+        }
+        .m-btn { 
+            width: 100%; 
+            margin-top: 10px; 
+            padding: 10px; 
+            background: rgba(56,189,248,0.15); 
+            color: #38bdf8; 
+            border: 1px solid rgba(56,189,248,0.4); 
+            font-weight: bold; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        .m-btn:disabled { 
+            background: rgba(15, 23, 42, 0.5); 
+            color: #475569; 
+            border-color: #334155; 
+            cursor: not-allowed; 
+        }
 
         /* ================= 抽卡動畫疊層 (防摔死 Flexbox) ================= */
-        #overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(2,6,23,0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .stack-wrap { width: 220px; height: 320px; perspective: 1200px; position: relative; margin-top: -50px; }
-        .stack { position: relative; width: 100%; height: 100%; }
-        #hint { margin-top: 50px; color: #94a3b8; font-size: 13px; letter-spacing: 2px; background: rgba(15,23,42,0.85); padding: 10px 25px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 0 20px rgba(0,0,0,0.6); }
-        .card-w { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; }
-        .card-i { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .card-i.flipped { transform: rotateY(180deg) scale(1.08); }
-        .face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        .back { background: linear-gradient(135deg, #1e293b 0%, #020617 100%); display: flex; justify-content: center; align-items: center; border: 1px solid rgba(56,189,248,0.3); box-shadow: inset 0 0 30px rgba(0,0,0,0.8); position: relative; }
-        .back::after { content: 'SL'; color: rgba(255, 255, 255, 0.05); font-size: 50px; font-weight: 900; letter-spacing: 8px; }
-        .front { transform: rotateY(180deg); background: #0f172a; }
-        .front img { width: 100%; height: 100%; object-fit: cover; object-position: center top; position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.9; }
-        .r-banner { position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; z-index: 2; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 15px; letter-spacing: 3px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; }
-        @keyframes fly { 0% { opacity: 1; transform: rotateY(180deg) scale(1.08); filter: blur(0px); } 40% { opacity: 1; transform: rotateY(180deg) scale(1.15); filter: blur(1px); box-shadow: 0 0 40px #38bdf8; } 100% { opacity: 0; transform: rotateY(180deg) scale(0.2); filter: blur(15px); } }
-        .dismissed { animation: fly 0.6s forwards; pointer-events: none; }
+        #overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100dvh; 
+            background: rgba(2,6,23,0.9); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px); 
+            z-index: 10000; 
+            display: none; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .stack-wrap { 
+            width: 220px; 
+            height: 320px; 
+            perspective: 1200px; 
+            position: relative; 
+            margin-top: -50px; 
+        }
+        .stack { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+        }
+        #hint { 
+            margin-top: 50px; 
+            color: #94a3b8; 
+            font-size: 13px; 
+            letter-spacing: 2px; 
+            background: rgba(15,23,42,0.85); 
+            padding: 10px 25px; 
+            border-radius: 20px; 
+            border: 1px solid #334155; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.6); 
+        }
+        .card-w { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            cursor: pointer; 
+        }
+        .card-i { 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+            transform-style: preserve-3d; 
+            transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .card-i.flipped { 
+            transform: rotateY(180deg) scale(1.08); 
+        }
+        .face { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.15); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+        }
+        .back { 
+            background: linear-gradient(135deg, #1e293b 0%, #020617 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            border: 1px solid rgba(56,189,248,0.3); 
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8); 
+            position: relative; 
+        }
+        .back::after { 
+            content: 'SL'; 
+            color: rgba(255, 255, 255, 0.05); 
+            font-size: 50px; 
+            font-weight: 900; 
+            letter-spacing: 8px; 
+        }
+        .front { 
+            transform: rotateY(180deg); 
+            background: #0f172a; 
+        }
+        .front img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            object-position: center top; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 1; 
+            opacity: 0.9; 
+        }
+        .r-banner { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 40px; 
+            z-index: 2; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: bold; 
+            font-size: 15px; 
+            letter-spacing: 3px; 
+            background: rgba(15, 23, 42, 0.85); 
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px); 
+            border-top: 1px solid rgba(255,255,255,0.1); 
+            text-transform: uppercase; 
+        }
+        @keyframes fly { 
+            0% { opacity: 1; transform: rotateY(180deg) scale(1.08); filter: blur(0px); } 
+            40% { opacity: 1; transform: rotateY(180deg) scale(1.15); filter: blur(1px); box-shadow: 0 0 40px #38bdf8; } 
+            100% { opacity: 0; transform: rotateY(180deg) scale(0.2); filter: blur(15px); } 
+        }
+        .dismissed { 
+            animation: fly 0.6s forwards; 
+            pointer-events: none; 
+        }
 
         /* ================= 圖鑑放大特效層 ================= */
-        #detail-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(2,6,23,0.92); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 10005; display: none; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
-        .detail-card { width: 280px; aspect-ratio: 2/3; position: relative; border-radius: 12px; overflow: hidden; border: 2px solid #334155; box-shadow: 0 20px 60px rgba(0,0,0,0.9); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; background: #0f172a; }
-        .detail-card img { width: 100%; height: 100%; object-fit: cover; object-position: center top; position: absolute; top: 0; left: 0; z-index: 1; }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.6) translateY(40px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        @keyframes detailBreathSSS { 0% { box-shadow: 0 0 30px rgba(225,29,72,0.4); transform: scale(1); } 100% { box-shadow: 0 0 70px rgba(225,29,72,0.8); transform: scale(1.02); } }
+        #detail-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100dvh; 
+            background: rgba(2,6,23,0.92); 
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px); 
+            z-index: 10005; 
+            display: none; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+        }
+        .detail-card { 
+            width: 280px; 
+            aspect-ratio: 2/3; 
+            position: relative; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 2px solid #334155; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9); 
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+            background: #0f172a; 
+        }
+        .detail-card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            object-position: center top; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 1; 
+        }
+        @keyframes popIn { 
+            0% { opacity: 0; transform: scale(0.6) translateY(40px); } 
+            100% { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+        @keyframes detailBreathSSS { 
+            0% { box-shadow: 0 0 30px rgba(225,29,72,0.4); transform: scale(1); } 
+            100% { box-shadow: 0 0 70px rgba(225,29,72,0.8); transform: scale(1.02); } 
+        }
         .detail-card.rarity-SSS { border-color: rgba(225,29,72,0.8); animation: detailBreathSSS 2s infinite alternate; }
         .detail-card.rarity-SS { border-color: rgba(249,115,22,0.8); box-shadow: 0 0 50px rgba(249,115,22,0.6); }
         .detail-card.rarity-S { border-color: rgba(168,85,247,0.8); box-shadow: 0 0 50px rgba(168,85,247,0.6); }
         .detail-card.rarity-A { border-color: rgba(234,179,8,0.6); box-shadow: 0 0 30px rgba(234,179,8,0.3); }
 
         /* ================= 圖鑑與封印灰霧介面 ================= */
-        #bag-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 5px; }
-        .bag-card { position: relative; border-radius: 6px; overflow: hidden; border: 1px solid #334155; background: rgba(15, 23, 42, 0.7); aspect-ratio: 2/3; display: flex; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(4px); transition: 0.2s; }
-        .bag-card:active { transform: scale(0.95); }
-        .bag-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: 0.3s; z-index: 1; }
-        .bag-card .rarity-label { position: absolute; bottom: 0; left: 0; right: 0; height: 22px; line-height: 22px; text-align: center; font-size: 10px; font-weight: bold; background: rgba(15,23,42,0.9); letter-spacing: 1px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2; }
-        .bag-card .count-badge { position: absolute; top: 4px; right: 4px; background: rgba(15,23,42,0.9); border: 1px solid rgba(250,204,21,0.5); color: #facc15; font-size: 9px; border-radius: 4px; padding: 2px 5px; z-index: 3; }
-        .bag-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .bag-header h2 { color: #38bdf8; font-size: 14px; letter-spacing: 1px; }
-        .bag-header span { font-size: 11px; color: #94a3b8; }
-        .bag-card.locked { border-color: #1e293b !important; box-shadow: none !important; background: rgba(2,6,23,0.5); cursor: not-allowed; }
-        .bag-card.locked:active { transform: none; }
-        .bag-card.locked img { filter: grayscale(100%) brightness(0.4) contrast(0.8) blur(1px); opacity: 0.55; }
-        .bag-card.locked .rarity-label { color: #475569 !important; background: transparent; border-top-color: transparent; }
+        #bag-list { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            padding-top: 5px; 
+        }
+        .bag-card { 
+            position: relative; 
+            border-radius: 6px; 
+            overflow: hidden; 
+            border: 1px solid #334155; 
+            background: rgba(15, 23, 42, 0.7); 
+            aspect-ratio: 2/3; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            backdrop-filter: blur(4px); 
+            transition: 0.2s; 
+        }
+        .bag-card:active { 
+            transform: scale(0.95); 
+        }
+        .bag-card img { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            object-position: center top; 
+            transition: 0.3s; 
+            z-index: 1; 
+        }
+        .bag-card .rarity-label { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            height: 22px; 
+            line-height: 22px; 
+            text-align: center; 
+            font-size: 10px; 
+            font-weight: bold; 
+            background: rgba(15,23,42,0.9); 
+            letter-spacing: 1px; 
+            border-top: 1px solid rgba(255,255,255,0.05); 
+            z-index: 2; 
+        }
+        .bag-card .count-badge { 
+            position: absolute; 
+            top: 4px; 
+            right: 4px; 
+            background: rgba(15,23,42,0.9); 
+            border: 1px solid rgba(250,204,21,0.5); 
+            color: #facc15; 
+            font-size: 9px; 
+            border-radius: 4px; 
+            padding: 2px 5px; 
+            z-index: 3; 
+        }
+        .bag-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 14px; 
+        }
+        .bag-header h2 { 
+            color: #38bdf8; 
+            font-size: 14px; 
+            letter-spacing: 1px; 
+        }
+        .bag-header span { 
+            font-size: 11px; 
+            color: #94a3b8; 
+        }
+        .bag-card.locked { 
+            border-color: #1e293b !important; 
+            box-shadow: none !important; 
+            background: rgba(2,6,23,0.5); 
+            cursor: not-allowed; 
+        }
+        .bag-card.locked:active { 
+            transform: none; 
+        }
+        .bag-card.locked img { 
+            filter: grayscale(100%) brightness(0.4) contrast(0.8) blur(1px); 
+            opacity: 0.55; 
+        }
+        .bag-card.locked .rarity-label { 
+            color: #475569 !important; 
+            background: transparent; 
+            border-top-color: transparent; 
+        }
 
-        @keyframes breathSSS { 0% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } 50% { box-shadow: inset 0 0 25px rgba(225,29,72,0.5); } 100% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } }
+        @keyframes breathSSS { 
+            0% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } 
+            50% { box-shadow: inset 0 0 25px rgba(225,29,72,0.5); } 
+            100% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } 
+        }
         .rarity-SSS { border-color: rgba(225,29,72,0.6) !important; animation: breathSSS 3s infinite ease-in-out; }
         .rarity-SSS .r-banner { color: #fb7185; text-shadow: 0 0 8px rgba(251,113,133,0.5); border-top-color: rgba(225,29,72,0.4); }
         .rarity-SSS .rarity-label { color: #fb7185; }
@@ -104,21 +609,49 @@
         .rarity-SS .r-banner, .rarity-SS .rarity-label { color: #fdba74; }
         .rarity-S { border-color: rgba(168,85,247,0.4) !important; box-shadow: inset 0 0 15px rgba(168,85,247,0.15); }
         .rarity-S .r-banner, .rarity-S .rarity-label { color: #d8b4fe; }
-        .rarity-A { border-color: rgba(234,179,8,0.3) !important; } .rarity-A .r-banner, .rarity-A .rarity-label { color: #fde047; }
-        .rarity-B { border-color: rgba(6,182,212,0.3) !important; } .rarity-B .r-banner, .rarity-B .rarity-label { color: #67e8f9; }
-        .rarity-C { border-color: rgba(148,163,184,0.3) !important; } .rarity-C .r-banner, .rarity-C .rarity-label { color: #cbd5e1; }
-        .rarity-D { border-color: rgba(51,65,85,0.5) !important; filter: grayscale(30%);} .rarity-D .r-banner, .rarity-D .rarity-label { color: #94a3b8; }
+        .rarity-A { border-color: rgba(234,179,8,0.3) !important; } 
+        .rarity-A .r-banner, .rarity-A .rarity-label { color: #fde047; }
+        .rarity-B { border-color: rgba(6,182,212,0.3) !important; } 
+        .rarity-B .r-banner, .rarity-B .rarity-label { color: #67e8f9; }
+        .rarity-C { border-color: rgba(148,163,184,0.3) !important; } 
+        .rarity-C .r-banner, .rarity-C .rarity-label { color: #cbd5e1; }
+        .rarity-D { border-color: rgba(51,65,85,0.5) !important; filter: grayscale(30%);} 
+        .rarity-D .r-banner, .rarity-D .rarity-label { color: #94a3b8; }
         .card-guaranteed .back { border-color: rgba(234,179,8,0.5) !important; box-shadow: inset 0 0 25px rgba(234,179,8,0.2); }
 
         /* ================= 底部導覽列 (4格) ================= */
         .hidden { display: none !important; }
-        .nav { height: 70px; display: flex; align-items: center; border-top: 1px solid #334155; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); }
-        .nav-i { flex: 1; color: #64748b; font-size: 11px; text-align: center; cursor: pointer; transition: 0.2s; letter-spacing: 1px; font-weight: bold; }
-        .nav-i.active { color: #38bdf8; text-shadow: 0 0 10px rgba(56,189,248,0.4); }
+        .nav { 
+            height: 70px; 
+            display: flex; 
+            align-items: center; 
+            border-top: 1px solid #334155; 
+            background: rgba(15, 23, 42, 0.9); 
+            backdrop-filter: blur(10px); 
+        }
+        .nav-i { 
+            flex: 1; 
+            color: #64748b; 
+            font-size: 11px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            letter-spacing: 1px; 
+            font-weight: bold; 
+        }
+        .nav-i.active { 
+            color: #38bdf8; 
+            text-shadow: 0 0 10px rgba(56,189,248,0.4); 
+        }
     </style>
 </head>
 <body>
     <div id="app">
+        <!-- 🚨 V48 BGM 音軌，預設放置 audio/bgm.mp3 -->
+        <audio id="sys-bgm" loop>
+            <source src="audio/bgm.mp3" type="audio/mpeg">
+        </audio>
+
         <!-- ================= 登入介面 ================= -->
         <div id="login-view">
             <div class="sys-title">SYS_LOGIN</div>
@@ -138,12 +671,18 @@
                 <h1 id="p-id" style="color:#38bdf8; font-size:12px; letter-spacing:1px;">ID: ...</h1>
                 <button class="logout-btn" onclick="executeLogout()">LOGOUT</button>
             </div>
-            <div class="gold-ui">G: <span id="p-gold">0</span></div>
+            <div class="top-right-wrap">
+                <!-- 🎵 音樂切換小按鈕 -->
+                <div id="music-toggle" class="music-btn" onclick="toggleMusic()">🎵</div>
+                <div class="gold-ui">G: <span id="p-gold">0</span></div>
+            </div>
         </div>
 
         <!-- ================= 抽卡動畫疊層 ================= -->
         <div id="overlay">
-            <div class="stack-wrap"><div class="stack" id="stack"></div></div>
+            <div class="stack-wrap">
+                <div class="stack" id="stack"></div>
+            </div>
             <div id="hint">[ 點擊進行數據回收 ]</div>
         </div>
 
@@ -168,15 +707,22 @@
                 </div>
                 <div class="banner">
                     <img id="b-img" src="images/freren/banner.jpg" onerror="this.src='https://via.placeholder.com/400x180/111/444'">
-                    <div style="position:absolute; bottom:10px; left:10px; color:#f8fafc; font-size: 13px; font-weight:bold; letter-spacing:1px; text-shadow: 0 2px 5px #000;" id="b-txt">> ARCHIVE: Frieren</div>
+                    <div style="position:absolute; bottom:10px; left:10px; color:#f8fafc; font-size: 13px; font-weight:bold; letter-spacing:1px; text-shadow: 0 2px 5px #000;" id="b-txt">
+                        > ARCHIVE: Frieren
+                    </div>
                 </div>
                 <div class="gacha-btns">
                     <button class="g-btn" onclick="draw(1, 70)">單次解析<span>70 G</span></button>
                     <button class="g-btn" style="border-color:rgba(168,85,247,0.4); color:#d8b4fe;" onclick="draw(5, 300)">五連解析<span>300 G</span></button>
                 </div>
                 <div id="pity-bar-wrap">
-                    <label><span>🛡 S級以上保底演算</span><span id="pity-text">0 / 50</span></label>
-                    <div id="pity-bar-track"><div id="pity-bar-fill" style="width:0%"></div></div>
+                    <label>
+                        <span>🛡 S級以上保底演算</span>
+                        <span id="pity-text">0 / 50</span>
+                    </label>
+                    <div id="pity-bar-track">
+                        <div id="pity-bar-fill" style="width:0%"></div>
+                    </div>
                 </div>
             </div>
 
@@ -195,7 +741,7 @@
                         選擇圖鑑中的卡片掛單，向全服獵人出售換取金幣。
                     </p>
                     
-                    <!-- 🚨 V46：防破版的上下兩層輸入區 -->
+                    <!-- 🚨 防破版的上下兩層輸入區 -->
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         <select id="trade-card-sel" style="width:100%; padding:10px; background:#020617; color:#e2e8f0; border:1px solid #475569; border-radius:4px; font-size:11px; outline:none;"></select>
                         <div style="display:flex; gap:8px;">
@@ -234,7 +780,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, collection, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // Firebase 初始化設定
         const config = { 
             apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo", 
             authDomain: "my-gacha-game-f7663.firebaseapp.com", 
@@ -246,23 +791,27 @@
         const app = initializeApp(config); 
         const db = getFirestore(app);
 
-        // 全局變數
         let userRef = null; 
         let uData = { gold: 0, inventory: [], pending: [], pity_count: 0 }; 
-        let currentPool = 'freren';
+        let currentPool = 'freren'; 
         let currentUserId = localStorage.getItem('hunter_id');
+        let bgmAudio = document.getElementById('sys-bgm');
+        let bgmToggleBtn = document.getElementById('music-toggle');
 
-        // 卡池設定資料
         const pools = {
             'freren': { 
-                sss: ['sss1.jpg'], ss: ['ss1.jpg'], s: ['s1.jpg', 's2.jpg', 's3.webp', 's4.jpg', 's5.jpg'], 
+                sss: ['sss1.jpg'], 
+                ss: ['ss1.jpg'], 
+                s: ['s1.jpg', 's2.jpg', 's3.webp', 's4.jpg', 's5.jpg'], 
                 a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a5.jpg', 'a6.jpg'], 
                 b: ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg', 'b7.jpg', 'b8.jpg', 'b9.jpg'], 
                 c: ['c1.jpg', 'c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg', 'c7.jpg', 'c8.jpg', 'c9.jpg', 'c10.jpg'], 
                 d: ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg', 'd8.jpg'] 
             },
             'elite': { 
-                sss: ['sss1.jpg', 'sss2.jpg', 'sss3.jpg'], ss: ['ss1.jpg'], s: ['s1.jpg', 's2.jpg', 's3.jpg', 's4.jpg'], 
+                sss: ['sss1.jpg', 'sss2.jpg', 'sss3.jpg'], 
+                ss: ['ss1.jpg'], 
+                s: ['s1.jpg', 's2.jpg', 's3.jpg', 's4.jpg'], 
                 a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a4.jpg', 'a5.jpg', 'a6.jpg'], 
                 b: ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg'], 
                 c: ['c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg'], 
@@ -270,14 +819,27 @@
             }
         };
 
-        // 抽卡機率表
-        const rates = [ {r:'d', p:0.4}, {r:'c', p:0.3}, {r:'b', p:0.18}, {r:'a', p:0.08}, {r:'s', p:0.03}, {r:'ss', p:0.008}, {r:'sss', p:0.002} ];
+        const rates = [ 
+            {r:'d', p:0.4}, 
+            {r:'c', p:0.3}, 
+            {r:'b', p:0.18}, 
+            {r:'a', p:0.08}, 
+            {r:'s', p:0.03}, 
+            {r:'ss', p:0.008}, 
+            {r:'sss', p:0.002} 
+        ];
 
-        // 讀取玩家資料並啟動系統監聽
         function loadUserData(id) {
             document.getElementById('login-view').style.display = 'none'; 
             document.getElementById('p-id').innerText = `ID: ${id}`;
             userRef = doc(db, "users", id);
+
+            // 🎵 強制播放音樂
+            bgmAudio.play().then(() => { 
+                bgmToggleBtn.classList.add('playing'); 
+            }).catch(e => {
+                console.log('需要玩家互動後才能播放音樂');
+            });
 
             onSnapshot(userRef, (s) => {
                 if (s.exists()) {
@@ -287,7 +849,7 @@
                     uData.pending = uData.pending || [];
                     
                     document.getElementById('p-gold').innerText = Number(uData.gold) || 0; 
-                    updatePityBar(uData.pity_count);
+                    updatePityBar(uData.pity_count); 
                     renderBag(); 
                     updateTradeSelect();
                 }
@@ -297,21 +859,46 @@
             syncMarket();   
         }
 
-        if (currentUserId) { loadUserData(currentUserId); } else { document.getElementById('login-view').style.display = 'flex'; }
+        if (currentUserId) { 
+            loadUserData(currentUserId); 
+        } else { 
+            document.getElementById('login-view').style.display = 'flex'; 
+        }
+
+        // ================= 音樂控制邏輯 =================
+        window.toggleMusic = () => {
+            if (bgmAudio.paused) { 
+                bgmAudio.play(); 
+                bgmToggleBtn.classList.add('playing'); 
+            } else { 
+                bgmAudio.pause(); 
+                bgmToggleBtn.classList.remove('playing'); 
+            }
+        };
 
         // ================= 登入與註冊邏輯 =================
         window.executeLogin = async () => {
             const id = document.getElementById('log-id').value.trim(); 
             const pw = document.getElementById('log-pw').value;
             const errBox = document.getElementById('log-err');
-            if(!id || !pw) { errBox.innerText = "ACCESS DENIED: 請輸入 ID 與密碼"; errBox.style.display = 'block'; return; }
-            errBox.innerText = "驗證中..."; errBox.style.display = 'block';
+            
+            if(!id || !pw) { 
+                errBox.innerText = "ACCESS DENIED: 請輸入 ID 與密碼"; 
+                errBox.style.display = 'block'; 
+                return; 
+            }
+            
+            errBox.innerText = "驗證中..."; 
+            errBox.style.display = 'block';
             
             const snap = await getDoc(doc(db, "users", id));
             if (!snap.exists() || snap.data().password !== pw) {
                 errBox.innerText = "ACCESS DENIED: 帳號不存在或密碼錯誤";
             } else {
-                errBox.style.display = 'none'; localStorage.setItem('hunter_id', id); currentUserId = id; loadUserData(id);
+                errBox.style.display = 'none'; 
+                localStorage.setItem('hunter_id', id); 
+                currentUserId = id; 
+                loadUserData(id);
             }
         };
 
@@ -319,49 +906,76 @@
             const id = document.getElementById('log-id').value.trim(); 
             const pw = document.getElementById('log-pw').value;
             const errBox = document.getElementById('log-err');
-            if(!id || !pw) { errBox.innerText = "ERROR: 請輸入要註冊的 ID 與密碼"; errBox.style.display = 'block'; return; }
-            errBox.innerText = "註冊中..."; errBox.style.display = 'block';
+            
+            if(!id || !pw) { 
+                errBox.innerText = "ERROR: 請輸入要註冊的 ID 與密碼"; 
+                errBox.style.display = 'block'; 
+                return; 
+            }
+            
+            errBox.innerText = "註冊中..."; 
+            errBox.style.display = 'block';
             
             const snap = await getDoc(doc(db, "users", id));
-            if (snap.exists()) {
-                errBox.innerText = "ERROR: 註冊失敗，此 ID 已被其他獵人搶先使用！";
+            if (snap.exists()) { 
+                errBox.innerText = "ERROR: 註冊失敗，此 ID 已被搶先使用！"; 
             } else {
-                errBox.style.display = 'none';
-                await setDoc(doc(db, "users", id), { password: pw, gold: 500, inventory: [], pending: [], pity_count: 0 });
-                localStorage.setItem('hunter_id', id); currentUserId = id; loadUserData(id);
+                errBox.style.display = 'none'; 
+                await setDoc(doc(db, "users", id), { 
+                    password: pw, 
+                    gold: 500, 
+                    inventory: [], 
+                    pending: [], 
+                    pity_count: 0 
+                });
+                localStorage.setItem('hunter_id', id); 
+                currentUserId = id; 
+                loadUserData(id);
             }
         };
 
-        window.executeLogout = () => { if(confirm('確定要登出連線嗎？')) { localStorage.removeItem('hunter_id'); location.reload(); } };
+        window.executeLogout = () => { 
+            if(confirm('確定要登出連線嗎？')) { 
+                localStorage.removeItem('hunter_id'); 
+                location.reload(); 
+            } 
+        };
 
         function updatePityBar(count) {
-            const pity = Math.min(count, 50);
-            document.getElementById('pity-text').innerText = `${pity} / 50`;
+            const pity = Math.min(count, 50); 
+            document.getElementById('pity-text').innerText = `${pity} / 50`; 
             document.getElementById('pity-bar-fill').style.width = `${(pity / 50) * 100}%`;
         }
 
         // ================= 委託任務系統 =================
         function syncMissions() {
             onSnapshot(doc(db, "config", "game_data"), (s) => {
-                const list = document.getElementById('m-list');
+                const list = document.getElementById('m-list'); 
                 list.innerHTML = '<h2 style="color:#38bdf8;margin-bottom:15px; font-size:14px; letter-spacing:1px;">當前委託任務</h2>';
+                
                 const missions = s.exists() ? (s.data().missions || []) : [];
-                if (missions.length === 0) { list.innerHTML += '<div style="color:#64748b; font-size:11px;">無待處理的委託紀錄。</div>'; return; }
+                if (missions.length === 0) { 
+                    list.innerHTML += '<div style="color:#64748b; font-size:11px;">無待處理的委託紀錄。</div>'; 
+                    return; 
+                }
                 
                 missions.forEach(m => {
                     const isP = uData.pending?.includes(m.id);
                     list.innerHTML += `
                         <div class="m-card">
-                            <b style="color:#e2e8f0;">${m.title}</b><span style="float:right;color:#facc15">+${m.reward} G</span>
+                            <b style="color:#e2e8f0;">${m.title}</b>
+                            <span style="float:right;color:#facc15">+${m.reward} G</span>
                             <p style="font-size:11px;color:#94a3b8;margin-top:6px;">${m.desc}</p>
-                            <button class="m-btn" onclick="rep('${m.id}')" ${isP ? 'disabled style="background:rgba(15,23,42,0.5);cursor:not-allowed"' : ''}>${isP ? '審核中...' : '回報完成'}</button>
+                            <button class="m-btn" onclick="rep('${m.id}')" ${isP ? 'disabled style="background:rgba(15,23,42,0.5);cursor:not-allowed"' : ''}>
+                                ${isP ? '審核中...' : '回報完成'}
+                            </button>
                         </div>`;
                 });
             });
         }
 
         window.rep = async (id) => {
-            await updateDoc(userRef, { pending: arrayUnion(id) });
+            await updateDoc(userRef, { pending: arrayUnion(id) }); 
             await setDoc(doc(db, "config", "game_data"), { reports: arrayUnion({ uid: currentUserId, mid: id }) }, { merge: true });
             alert("資料已上傳至協會，請等待審核。");
         };
@@ -371,50 +985,89 @@
             const currentGold = Number(uData.gold) || 0;
             if (currentGold < cost) return alert("系統配給不足！請完成委託任務。");
             
-            let pityCount = uData.pity_count || 0; let results = []; let newPityCount = pityCount;
+            let pityCount = uData.pity_count || 0; 
+            let results = []; 
+            let newPityCount = pityCount;
+            
             for (let i = 0; i < n; i++) {
-                let rank = 'd'; let isGuaranteed = false;
-                if (newPityCount >= 49) { rank = 's'; isGuaranteed = true; newPityCount = 0; } else {
+                let rank = 'd'; 
+                let isGuaranteed = false;
+                
+                if (newPityCount >= 49) { 
+                    rank = 's'; 
+                    isGuaranteed = true; 
+                    newPityCount = 0; 
+                } else {
                     let rand = Math.random(), cum = 0;
-                    for (let c of rates) { cum += c.p; if (rand <= cum) { rank = c.r; break; } }
-                    if (['s', 'ss', 'sss'].includes(rank)) newPityCount = 0; else newPityCount++;
+                    for (let c of rates) { 
+                        cum += c.p; 
+                        if (rand <= cum) { rank = c.r; break; } 
+                    }
+                    if (['s', 'ss', 'sss'].includes(rank)) newPityCount = 0; 
+                    else newPityCount++;
                 }
-                const files = pools[currentPool][rank];
+                
+                const files = pools[currentPool][rank]; 
                 const file = files.length > 0 ? files[Math.floor(Math.random() * files.length)] : 'default.jpg';
                 results.push({ rank, file, isGuaranteed, id: `${currentPool}_${rank}_${file}` });
             }
 
-            const invMap = {}; (uData.inventory || []).forEach(c => { invMap[c.id] = { ...c }; });
+            const invMap = {}; 
+            (uData.inventory || []).forEach(c => { invMap[c.id] = { ...c }; });
+            
             results.forEach(card => {
-                if (invMap[card.id]) { invMap[card.id].count = (invMap[card.id].count || 1) + 1; 
-                } else { invMap[card.id] = { id: card.id, pool: currentPool, rarity: card.rank, img: `images/${currentPool}/${card.file}`, count: 1 }; }
+                if (invMap[card.id]) { 
+                    invMap[card.id].count = (invMap[card.id].count || 1) + 1; 
+                } else { 
+                    invMap[card.id] = { id: card.id, pool: currentPool, rarity: card.rank, img: `images/${currentPool}/${card.file}`, count: 1 }; 
+                }
             });
 
-            await updateDoc(userRef, { gold: currentGold - cost, pity_count: newPityCount, inventory: Object.values(invMap) });
+            await updateDoc(userRef, { gold: currentGold - cost, pity_count: newPityCount, inventory: Object.values(invMap) }); 
             startGacha(results);
         };
 
         function startGacha(cards) {
-            const overlay = document.getElementById('overlay'); const stack = document.getElementById('stack');
-            overlay.style.display = 'flex'; document.getElementById('hint').innerText = '[ 點擊進行數據回收 ]'; stack.innerHTML = '';
+            const overlay = document.getElementById('overlay'); 
+            const stack = document.getElementById('stack');
+            overlay.style.display = 'flex'; 
+            document.getElementById('hint').innerText = '[ 點擊進行數據回收 ]'; 
+            stack.innerHTML = ''; 
+            
             let active = 0, rev = false;
 
             cards.reverse().forEach((card, i) => {
-                const w = document.createElement('div');
-                w.className = 'card-w' + (card.isGuaranteed ? ' card-guaranteed' : '');
-                w.style.zIndex = cards.length - i; w.style.transform = `translate(${i * 4}px, ${i * 4}px)`;
+                const w = document.createElement('div'); 
+                w.className = 'card-w' + (card.isGuaranteed ? ' card-guaranteed' : ''); 
+                w.style.zIndex = cards.length - i; 
+                w.style.transform = `translate(${i * 4}px, ${i * 4}px)`;
+                
                 w.innerHTML = `
-                    <div class="card-i"><div class="face back"></div> 
+                    <div class="card-i">
+                        <div class="face back"></div>
                         <div class="face front rarity-${card.rank.toUpperCase()}">
                             <img src="images/${currentPool}/${card.file}" onerror="this.src='https://via.placeholder.com/200x260/111/444'">
-                            <div class="r-banner">${card.rank.toUpperCase()} ${card.isGuaranteed ? '<span style="color:#fde047;font-size:10px;margin-left:5px;">⚡保底</span>' : ''}</div>
+                            <div class="r-banner">
+                                ${card.rank.toUpperCase()} 
+                                ${card.isGuaranteed ? '<span style="color:#fde047;font-size:10px;margin-left:5px;">⚡保底</span>' : ''}
+                            </div>
                         </div>
                     </div>`;
-
+                
                 w.onclick = () => {
                     if (i !== active) return;
-                    if (!rev) { rev = true; document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped')); document.getElementById('hint').innerText = '[ 點擊吸收資料庫 ]';
-                    } else { w.style.pointerEvents = 'none'; w.firstElementChild.classList.add('dismissed'); active++; if (active >= cards.length) { setTimeout(() => { overlay.style.display = 'none'; }, 700); } }
+                    if (!rev) { 
+                        rev = true; 
+                        document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped')); 
+                        document.getElementById('hint').innerText = '[ 點擊吸收資料庫 ]';
+                    } else { 
+                        w.style.pointerEvents = 'none'; 
+                        w.firstElementChild.classList.add('dismissed'); 
+                        active++; 
+                        if (active >= cards.length) { 
+                            setTimeout(() => { overlay.style.display = 'none'; }, 700); 
+                        } 
+                    }
                 };
                 stack.appendChild(w);
             });
@@ -425,35 +1078,48 @@
             document.getElementById('detail-img').src = `images/${pool}/${file}`;
             const countHtml = count > 1 ? `<span style="font-size:10px;color:#cbd5e1;margin-left:8px;">已擁有 x${count}</span>` : '';
             document.getElementById('detail-rarity').innerHTML = `${rarity.toUpperCase()} ${countHtml}`;
-            const dCard = document.getElementById('detail-card');
-            dCard.className = 'detail-card'; dCard.classList.add(`rarity-${rarity.toUpperCase()}`);
+            const dCard = document.getElementById('detail-card'); 
+            dCard.className = 'detail-card'; 
+            dCard.classList.add(`rarity-${rarity.toUpperCase()}`);
             document.getElementById('detail-overlay').style.display = 'flex';
         };
 
-        window.closeDetail = () => { document.getElementById('detail-overlay').style.display = 'none'; };
+        window.closeDetail = () => { 
+            document.getElementById('detail-overlay').style.display = 'none'; 
+        };
 
         function renderBag() {
-            const invMap = {}; (uData.inventory || []).forEach(c => { invMap[c.id] = c; });
-            const list = document.getElementById('bag-list'); let html = ''; let totalCards = 0; let unlockedCards = 0;
+            const invMap = {}; 
+            (uData.inventory || []).forEach(c => { invMap[c.id] = c; });
+            const list = document.getElementById('bag-list'); 
+            let html = ''; 
+            let totalCards = 0; 
+            let unlockedCards = 0; 
             const order = ['sss', 'ss', 's', 'a', 'b', 'c', 'd'];
 
             order.forEach(r => {
                 if(!pools[currentPool][r]) return;
                 pools[currentPool][r].forEach(file => {
-                    totalCards++;
-                    const cardId = `${currentPool}_${r}_${file}`; const ownedCard = invMap[cardId];
-                    const isLocked = !ownedCard; const count = ownedCard ? ownedCard.count : 0;
+                    totalCards++; 
+                    const cardId = `${currentPool}_${r}_${file}`; 
+                    const ownedCard = invMap[cardId]; 
+                    const isLocked = !ownedCard; 
+                    const count = ownedCard ? ownedCard.count : 0;
+                    
                     if (!isLocked) unlockedCards++;
+                    
                     html += `
                         <div class="bag-card rarity-${r.toUpperCase()} ${isLocked ? 'locked' : ''}" 
-                             ${!isLocked ? `onclick="showDetail('${currentPool}', '${r}', '${file}', ${count})"` : ''} style="${!isLocked ? 'cursor:pointer;' : ''}">
+                             ${!isLocked ? `onclick="showDetail('${currentPool}', '${r}', '${file}', ${count})"` : ''} 
+                             style="${!isLocked ? 'cursor:pointer;' : ''}">
                             <img src="images/${currentPool}/${file}" onerror="this.src='https://via.placeholder.com/100x150/111/444'">
                             <div class="rarity-label">${isLocked ? 'UNKNOWN' : r.toUpperCase()}</div>
                             ${count > 1 ? `<div class="count-badge">x${count}</div>` : ''}
                         </div>`;
                 });
             });
-            document.getElementById('bag-count').innerText = `${unlockedCards} / ${totalCards}`; list.innerHTML = html;
+            document.getElementById('bag-count').innerText = `${unlockedCards} / ${totalCards}`; 
+            list.innerHTML = html;
         }
 
         // ================= 黑市交易系統 =================
@@ -461,33 +1127,32 @@
             const sel = document.getElementById('trade-card-sel'); 
             sel.innerHTML = '<option value="">選擇要出售的卡片...</option>';
             
-            (uData.inventory || []).forEach(c => {
-                if(c.count >= 1) {
-                    sel.innerHTML += `<option value="${c.id}">[${c.rarity.toUpperCase()}] ${c.id.split('_')[2]} (可賣: ${c.count}張)</option>`;
-                }
+            (uData.inventory || []).forEach(c => { 
+                if(c.count >= 1) { 
+                    sel.innerHTML += `<option value="${c.id}">[${c.rarity.toUpperCase()}] ${c.id.split('_')[2]} (可賣: ${c.count}張)</option>`; 
+                } 
             });
         }
 
         window.postTrade = async () => {
-            const cId = document.getElementById('trade-card-sel').value;
+            const cId = document.getElementById('trade-card-sel').value; 
             const price = parseInt(document.getElementById('trade-price').value);
             
             if(!cId || isNaN(price) || price <= 0) return alert("請選擇卡片並輸入有效的售價");
-
-            let inv = [...uData.inventory];
+            
+            let inv = [...uData.inventory]; 
             let cardIndex = inv.findIndex(c => c.id === cId);
             
             if(cardIndex > -1 && inv[cardIndex].count >= 1) {
                 let cardData = {...inv[cardIndex]};
                 
-                if (inv[cardIndex].count === 1) {
-                    inv.splice(cardIndex, 1);
-                } else {
-                    inv[cardIndex].count -= 1;
+                if (inv[cardIndex].count === 1) { 
+                    inv.splice(cardIndex, 1); 
+                } else { 
+                    inv[cardIndex].count -= 1; 
                 }
                 
                 await updateDoc(userRef, { inventory: inv });
-                
                 await addDoc(collection(db, "market"), { 
                     seller: currentUserId, 
                     cardId: cardData.id, 
@@ -496,7 +1161,6 @@
                     price: price, 
                     time: Date.now() 
                 });
-                
                 alert("卡片已掛上黑市！\n(卡片已從您的圖鑑中扣除)");
             } else { 
                 alert("錯誤：您已經沒有這張卡片可以出售了！"); 
@@ -508,16 +1172,16 @@
                 const board = document.getElementById('trade-board'); 
                 board.innerHTML = '';
                 
-                if(s.empty) {
-                    board.innerHTML = '<div style="color:#64748b;font-size:11px;text-align:center;padding:20px;">黑市目前空無一物。</div>';
-                    return;
+                if(s.empty) { 
+                    board.innerHTML = '<div style="color:#64748b;font-size:11px;text-align:center;padding:20px;">黑市目前空無一物。</div>'; 
+                    return; 
                 }
                 
-                let items = []; s.forEach(d => items.push({ id: d.id, ...d.data() }));
+                let items = []; 
+                s.forEach(d => items.push({ id: d.id, ...d.data() }));
                 
                 items.sort((a,b) => b.time - a.time).forEach(item => {
                     const isMine = item.seller === currentUserId;
-                    
                     board.innerHTML += `
                         <div style="background:rgba(30,41,59,0.8); border:1px solid #334155; border-left:3px solid ${isMine ? '#94a3b8' : '#38bdf8'}; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; gap:10px; align-items:center;">
@@ -547,10 +1211,10 @@
             let inv = [...uData.inventory]; 
             let idx = inv.findIndex(c => c.id === cardId);
             
-            if(idx > -1) {
-                inv[idx].count += 1;
-            } else {
-                inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 });
+            if(idx > -1) { 
+                inv[idx].count += 1; 
+            } else { 
+                inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 }); 
             }
             
             await updateDoc(userRef, { inventory: inv });
@@ -559,42 +1223,49 @@
         window.buyTrade = async (docId, seller, price, cardId, rarity, img) => {
             if(uData.gold < price) return alert("金幣不足，無法在黑市交易！");
             if(!confirm(`確定花費 ${price}G 購買此卡片？`)) return;
-
+            
             let inv = [...uData.inventory]; 
             let idx = inv.findIndex(c => c.id === cardId);
             
-            if(idx > -1) {
+            if(idx > -1) { 
                 inv[idx].count += 1; 
-            } else {
-                inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 });
+            } else { 
+                inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 }); 
             }
+            
             await updateDoc(userRef, { gold: uData.gold - price, inventory: inv });
-
+            
             const sSnap = await getDoc(doc(db, "users", seller));
-            if(sSnap.exists()) {
-                await updateDoc(doc(db, "users", seller), { gold: (sSnap.data().gold || 0) + price });
+            if(sSnap.exists()) { 
+                await updateDoc(doc(db, "users", seller), { gold: (sSnap.data().gold || 0) + price }); 
             }
-
-            await deleteDoc(doc(db, "market", docId));
+            
+            await deleteDoc(doc(db, "market", docId)); 
             alert("交易成功！卡片已存入圖鑑。");
         };
 
         // ================= UI 導覽系統 =================
-        window.switchPool = (pId, btn) => {
-            currentPool = pId;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('b-img').src = `images/${pId}/banner.jpg`;
-            document.getElementById('b-txt').innerText = `> ARCHIVE: ${pId === 'freren' ? 'Frieren' : 'Classroom of the Elite'}`;
-            if(!document.getElementById('page-bag').classList.contains('hidden')) renderBag();
+        window.switchPool = (pId, btn) => { 
+            currentPool = pId; 
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+            btn.classList.add('active'); 
+            document.getElementById('b-img').src = `images/${pId}/banner.jpg`; 
+            document.getElementById('b-txt').innerText = `> ARCHIVE: ${pId === 'freren' ? 'Frieren' : 'Classroom of the Elite'}`; 
+            
+            if(!document.getElementById('page-bag').classList.contains('hidden')) {
+                renderBag(); 
+            }
         };
-
-        window.tab = (id, b) => {
-            ['page-gacha', 'page-mission', 'page-trade', 'page-bag'].forEach(p => document.getElementById(p).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
-            b.classList.add('active');
-            if(id === 'page-bag') renderBag();
+        
+        window.tab = (id, b) => { 
+            ['page-gacha', 'page-mission', 'page-trade', 'page-bag'].forEach(p => document.getElementById(p).classList.add('hidden')); 
+            document.getElementById(id).classList.remove('hidden'); 
+            document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active')); 
+            b.classList.add('active'); 
+            
+            if(id === 'page-bag') {
+                renderBag(); 
+            }
         };
 
     </script>
