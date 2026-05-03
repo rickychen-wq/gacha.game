@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V52 - 霸道總裁強制引爆版</title>
+    <title>Solo Leveling: TCG V54 - 賦予靈魂具名版</title>
     <style>
         /* ================= 基礎設定 ================= */
         * { 
@@ -408,8 +408,8 @@
             justify-content: center; 
             align-items: center; 
             font-weight: bold; 
-            font-size: 15px; 
-            letter-spacing: 3px; 
+            font-size: 14px; 
+            letter-spacing: 1px; 
             background: rgba(15, 23, 42, 0.85); 
             backdrop-filter: blur(10px); 
             -webkit-backdrop-filter: blur(10px); 
@@ -520,7 +520,7 @@
             height: 22px; 
             line-height: 22px; 
             text-align: center; 
-            font-size: 10px; 
+            font-size: 11px; 
             font-weight: bold; 
             background: rgba(15,23,42,0.9); 
             letter-spacing: 1px; 
@@ -623,7 +623,7 @@
 </head>
 <body>
     <div id="app">
-        <!-- 🚨 V52: 無按鈕，強制載入 freren.mp3 -->
+        <!-- 🚨 V54: 無按鈕，強制載入 freren.mp3 -->
         <audio id="sys-bgm" loop>
             <source src="audio/freren.mp3" type="audio/mpeg">
         </audio>
@@ -648,7 +648,6 @@
                 <button class="logout-btn" onclick="executeLogout()">LOGOUT</button>
             </div>
             <div class="top-right-wrap">
-                <!-- 🎵 靜音按鈕已經被徹底消滅 🎵 -->
                 <div class="gold-ui">G: <span id="p-gold">0</span></div>
             </div>
         </div>
@@ -771,16 +770,25 @@
         let currentUserId = localStorage.getItem('hunter_id');
         let bgmAudio = document.getElementById('sys-bgm');
 
-        // ================= 卡池設定 =================
+        // ================= 🚨 V54 新增：全域自動去殼過濾器 (擷取純名字) =================
+        const formatCardName = (filename) => {
+            if(!filename) return "未知";
+            let name = filename.replace(/\.[^/.]+$/, ""); // 拔掉副檔名 (.jpg, .webp 等)
+            name = name.replace(/^(sss|ss|s|a|b|c|d)\s*/i, ""); // 拔掉開頭的稀有度字母
+            name = name.replace(/\s*\(\d+\)/g, ""); // 拔掉重複檔案的標籤例如 (2), (3)
+            return name;
+        };
+
+        // ================= 卡池設定 (已依照截圖100%更新) =================
         const pools = {
             'freren': { 
-                sss: ['sss1.jpg'], 
-                ss: ['ss1.jpg'], 
-                s: ['s1.jpg', 's2.jpg', 's3.webp', 's4.jpg', 's5.jpg'], 
-                a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a5.jpg', 'a6.jpg'], 
-                b: ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg', 'b7.jpg', 'b8.jpg', 'b9.jpg'], 
-                c: ['c1.jpg', 'c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg', 'c7.jpg', 'c8.jpg', 'c9.jpg', 'c10.jpg'], 
-                d: ['d1.jpg', 'd2.jpg', 'd3.jpg', 'd4.jpg', 'd5.jpg', 'd6.jpg', 'd7.jpg', 'd8.jpg'] 
+                sss: ['sss魔王城.jpg'], 
+                ss: ['ss月影.jpg'], 
+                s: ['s 日恆.webp', 's月光.jpg', 's欣梅爾.jpg', 's芙莉蓮.jpg', 's賽利耶.jpg'], 
+                a: ['a修塔爾克.jpg', 'a費倫 (2).jpg', 'a費倫.jpg', 'a瑪哈特.jpg', 'a贊恩.jpg'], 
+                b: ['b冉則.jpg', 'b由貝爾 (2).jpg', 'b由貝爾 (3).jpg', 'b由貝爾.jpg', 'b威亞貝爾.jpg', 'b梅特黛.jpg', 'b葛納烏.jpg', 'b鄧肯.jpg', 'b蘭特.jpg'], 
+                c: ['c艾莉.jpg', 'c拉比涅.jpg', 'c拉歐芬.jpg', 'c阿烏拉 (2).jpg', 'c阿烏拉 (3).jpg', 'c阿烏拉 (4).jpg', 'c阿烏拉.jpg'], 
+                d: ['d未知 (2).jpg', 'd未知.jpg', 'd艾冉 (2).jpg', 'd艾冉.jpg', 'd欣梅爾.jpg', 'd海塔 (2).jpg', 'd海塔.jpg', 'd魔族 (2).jpg', 'd魔族 (3).jpg', 'd魔族 (4).jpg', 'd魔族.jpg'] 
             },
             'elite': { 
                 sss: ['sss1.jpg', 'sss2.jpg', 'sss3.jpg'], 
@@ -822,7 +830,6 @@
             document.getElementById('p-id').innerText = `ID: ${id}`;
             userRef = doc(db, "users", id);
 
-            // 如果已經登入過的玩家直接重整網頁，啟動隱形地雷
             forcePlayMusic();
 
             onSnapshot(userRef, (s) => {
@@ -849,7 +856,7 @@
             document.getElementById('login-view').style.display = 'flex'; 
         }
 
-        // ================= 登入系統 (點下去瞬間引爆音樂) =================
+        // ================= 登入系統 =================
         window.executeLogin = async () => {
             const id = document.getElementById('log-id').value.trim(); 
             const pw = document.getElementById('log-pw').value;
@@ -861,7 +868,6 @@
                 return; 
             }
             
-            // 🚨 終極暴力解法：在等待網路驗證前，直接強播音樂，不給瀏覽器擋下的機會！
             bgmAudio.play().catch(e => console.log('強播攔截'));
 
             errBox.innerText = "驗證中..."; 
@@ -879,7 +885,7 @@
             }
         };
 
-        // ================= 註冊系統 (點下去瞬間引爆音樂) =================
+        // ================= 註冊系統 =================
         window.executeRegister = async () => {
             const id = document.getElementById('log-id').value.trim(); 
             const pw = document.getElementById('log-pw').value;
@@ -891,7 +897,6 @@
                 return; 
             }
             
-            // 🚨 同理，註冊時也直接硬撞開音樂！
             bgmAudio.play().catch(e => console.log('強播攔截'));
 
             errBox.innerText = "註冊中..."; 
@@ -1032,7 +1037,7 @@
             startGacha(results);
         };
 
-        // ================= 抽卡 3D 動畫 =================
+        // ================= 抽卡 3D 動畫 (已套用名稱過濾器) =================
         function startGacha(cards) {
             const overlay = document.getElementById('overlay'); 
             const stack = document.getElementById('stack');
@@ -1055,7 +1060,7 @@
                         <div class="face front rarity-${card.rank.toUpperCase()}">
                             <img src="images/${currentPool}/${card.file}" onerror="this.src='https://via.placeholder.com/200x260/111/444'">
                             <div class="r-banner">
-                                ${card.rank.toUpperCase()} 
+                                [${card.rank.toUpperCase()}] ${formatCardName(card.file)}
                                 ${card.isGuaranteed ? '<span style="color:#fde047;font-size:10px;margin-left:5px;">⚡保底</span>' : ''}
                             </div>
                         </div>
@@ -1084,11 +1089,12 @@
             });
         }
 
-        // ================= 圖鑑放大特效 =================
+        // ================= 圖鑑放大特效 (已套用名稱過濾器) =================
         window.showDetail = (pool, rarity, file, count) => {
             document.getElementById('detail-img').src = `images/${pool}/${file}`;
             const countHtml = count > 1 ? `<span style="font-size:10px;color:#cbd5e1;margin-left:8px;">已擁有 x${count}</span>` : '';
-            document.getElementById('detail-rarity').innerHTML = `${rarity.toUpperCase()} ${countHtml}`;
+            
+            document.getElementById('detail-rarity').innerHTML = `[${rarity.toUpperCase()}] ${formatCardName(file)} ${countHtml}`;
             
             const dCard = document.getElementById('detail-card'); 
             dCard.className = 'detail-card'; 
@@ -1101,7 +1107,7 @@
             document.getElementById('detail-overlay').style.display = 'none'; 
         };
 
-        // ================= 渲染圖鑑 =================
+        // ================= 渲染圖鑑 (已套用名稱過濾器) =================
         function renderBag() {
             const invMap = {}; 
             (uData.inventory || []).forEach(c => { invMap[c.id] = c; });
@@ -1129,7 +1135,7 @@
                              ${!isLocked ? `onclick="showDetail('${currentPool}', '${r}', '${file}', ${count})"` : ''} 
                              style="${!isLocked ? 'cursor:pointer;' : ''}">
                             <img src="images/${currentPool}/${file}" onerror="this.src='https://via.placeholder.com/100x150/111/444'">
-                            <div class="rarity-label">${isLocked ? 'UNKNOWN' : r.toUpperCase()}</div>
+                            <div class="rarity-label">${isLocked ? 'UNKNOWN' : formatCardName(file)}</div>
                             ${count > 1 ? `<div class="count-badge">x${count}</div>` : ''}
                         </div>`;
                 });
@@ -1139,14 +1145,14 @@
             list.innerHTML = html;
         }
 
-        // ================= 交易系統: 更新下拉選單 =================
+        // ================= 交易系統: 更新下拉選單 (已套用名稱過濾器) =================
         function updateTradeSelect() {
             const sel = document.getElementById('trade-card-sel'); 
             sel.innerHTML = '<option value="">選擇要出售的卡片...</option>';
             
             (uData.inventory || []).forEach(c => { 
                 if(c.count >= 1) { 
-                    sel.innerHTML += `<option value="${c.id}">[${c.rarity.toUpperCase()}] ${c.id.split('_')[2]} (可賣: ${c.count}張)</option>`; 
+                    sel.innerHTML += `<option value="${c.id}">[${c.rarity.toUpperCase()}] ${formatCardName(c.id.split('_')[2])} (可賣: ${c.count}張)</option>`; 
                 } 
             });
         }
@@ -1189,7 +1195,7 @@
             }
         };
 
-        // ================= 交易系統: 渲染市場 =================
+        // ================= 交易系統: 渲染市場 (已套用名稱過濾器) =================
         function syncMarket() {
             onSnapshot(collection(db, "market"), (s) => {
                 const board = document.getElementById('trade-board'); 
@@ -1211,7 +1217,7 @@
                                 <img src="${item.img}" onerror="this.src='https://via.placeholder.com/35x50/111/444'" style="width:35px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #475569;">
                                 <div>
                                     <div style="font-size:10px; color:#94a3b8;">賣方: ${item.seller}</div>
-                                    <div style="font-weight:bold; color:#e2e8f0; font-size:12px;">${item.rarity.toUpperCase()} 級遺物</div>
+                                    <div style="font-weight:bold; color:#e2e8f0; font-size:12px;">[${item.rarity.toUpperCase()}] ${formatCardName(item.cardId.split('_')[2])}</div>
                                 </div>
                             </div>
                             <div style="text-align:right;">
@@ -1279,7 +1285,6 @@
             document.getElementById('b-img').src = `images/${pId}/banner.jpg`; 
             document.getElementById('b-txt').innerText = `> ARCHIVE: ${pId === 'freren' ? 'Frieren' : 'Classroom of the Elite'}`; 
             
-            // 🚨 動態改變音樂並強制播放
             bgmAudio.src = `audio/${pId}.mp3`;
             forcePlayMusic();
 
