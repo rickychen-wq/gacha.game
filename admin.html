@@ -140,7 +140,7 @@
             <button onclick="giveCard()">強制入庫</button>
         </div>
 
-        <!-- 🚨 V56 補回的發佈任務系統 -->
+        <!-- 📢 發佈任務系統 -->
         <div class="section">
             <h3>📢 佈達全服委託 (發佈任務)</h3>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -154,6 +154,7 @@
             </div>
         </div>
 
+        <!-- 📋 任務審核 (已升級：動態獎金 + 核准後下架) -->
         <div class="section">
             <h3>📋 任務審核 (處理回報)</h3>
             <div id="report-list">連線中...</div>
@@ -196,7 +197,7 @@
             }
         };
 
-        // 🚨 後台同步名單
+        // ================= 後台同步名單 =================
         const pools = {
             'frieren': { 
                 sss: ['sss魔王城.jpg'], 
@@ -278,7 +279,7 @@
             } else { alert("❌ 錯誤：找不到該獵人資料"); }
         };
 
-        // ================= 🚨 V56 補回：發佈任務系統 =================
+        // 【發佈任務系統】
         window.postMission = async () => {
             const title = document.getElementById('mission-title').value.trim();
             const desc = document.getElementById('mission-desc').value.trim();
@@ -302,15 +303,14 @@
                 await setDoc(gRef, { missions: [newMission], reports: [] });
             }
             
-            // 清空輸入框
             document.getElementById('mission-title').value = '';
             document.getElementById('mission-desc').value = '';
             document.getElementById('mission-reward').value = '';
             
-            alert("✅ 任務已成功發佈至全服！玩家重新整理即可看見。");
+            alert("✅ 任務已成功發佈至全服！");
         };
 
-        // ================= 🚨 V56 補回：清空任務系統 =================
+        // 【清空任務系統】
         window.clearMissions = async () => {
             if(!confirm("⚠️ 確定要清空全服所有任務嗎？（玩家回報中的任務不受影響）")) return;
             
@@ -340,30 +340,63 @@
             list.innerHTML = html;
         };
 
-        // 【任務審核監聽】
+        // 🚨 V57 升級：【任務審核監聽】(抓取真實獎勵)
         function listenReports() {
             onSnapshot(doc(db, "config", "game_data"), (s) => {
                 const list = document.getElementById('report-list');
                 list.innerHTML = '';
                 if(s.exists() && s.data().reports && s.data().reports.length > 0) {
+                    let missions = s.data().missions || []; // 抓取現有任務清單來核對獎金
+                    
                     s.data().reports.forEach(r => {
-                        list.innerHTML += `<div style="background:#020617; padding:12px; margin-bottom:8px; border:1px solid #475569; border-left:3px solid #facc15; display:flex; justify-content:space-between; align-items:center;"><div><span style="color:#94a3b8; font-size:12px;">申請人：</span><b style="color:#e2e8f0;">${r.uid}</b><br><span style="color:#94a3b8; font-size:12px;">任務編號：</span><b style="color:#a855f7;">${r.mid}</b></div><button onclick="approveMission('${r.uid}', '${r.mid}')">核准 (+200G)</button></div>`;
+                        let mObj = missions.find(m => m.id === r.mid);
+                        let reward = mObj ? Number(mObj.reward) : 0; // 真實獎勵，找不到就變 0
+                        let title = mObj ? mObj.title : "未知任務 (已失效)";
+                        
+                        list.innerHTML += `
+                            <div style="background:#020617; padding:12px; margin-bottom:8px; border:1px solid #475569; border-left:3px solid #facc15; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <span style="color:#94a3b8; font-size:12px;">申請人：</span><b style="color:#e2e8f0;">${r.uid}</b><br>
+                                    <span style="color:#94a3b8; font-size:12px;">任務內容：</span><b style="color:#a855f7;">${title}</b>
+                                </div>
+                                <button onclick="approveMission('${r.uid}', '${r.mid}', ${reward})">核准 (+${reward}G)</button>
+                            </div>`;
                     });
-                } else { list.innerHTML = '<span style="color:#64748b;">通訊頻道無新回報。</span>'; }
+                } else { 
+                    list.innerHTML = '<span style="color:#64748b;">通訊頻道無新回報。</span>'; 
+                }
             });
         }
 
-        // 【核准任務】
-        window.approveMission = async (uid, mid) => {
-            const reward = 200;
+        // 🚨 V57 升級：【核准任務】(動態派發獎金 + 刪除全服任務)
+        window.approveMission = async (uid, mid, actualReward) => {
+            const reward = parseInt(actualReward) || 0;
+            
+            // 1. 發放真實獎金給玩家，並解除 pending 狀態
             const uRef = doc(db, "users", uid);
             const uSnap = await getDoc(uRef);
             if(uSnap.exists()) {
-                await updateDoc(uRef, { gold: (uSnap.data().gold || 0) + reward, pending: arrayRemove(mid) });
+                await updateDoc(uRef, { 
+                    gold: (uSnap.data().gold || 0) + reward, 
+                    pending: arrayRemove(mid) 
+                });
             }
+
+            // 2. 將報告刪除，並且把該任務從「全服 missions」陣列中拔除！
             const gRef = doc(db, "config", "game_data");
-            await updateDoc(gRef, { reports: arrayRemove({uid: uid, mid: mid}) });
-            alert(`✅ 任務 ${mid} 已核准！已將 ${reward}G 匯入 ${uid} 帳戶。`);
+            const gSnap = await getDoc(gRef);
+            if(gSnap.exists()) {
+                let data = gSnap.data();
+                // 濾掉已經完成的這個任務，剩下的重新存回去
+                let updatedMissions = (data.missions || []).filter(m => m.id !== mid);
+                
+                await updateDoc(gRef, { 
+                    reports: arrayRemove({uid: uid, mid: mid}),
+                    missions: updatedMissions
+                });
+            }
+
+            alert(`✅ 任務已核准！已將 ${reward}G 匯入 ${uid} 帳戶，並且任務已從全服撤下。`);
             loadUsers();
         };
 
