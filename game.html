@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V54 - 賦予靈魂具名版</title>
+    <title>Solo Leveling: TCG V55 - 拼字校正完美版</title>
     <style>
         /* ================= 基礎設定 ================= */
         * { 
@@ -623,9 +623,9 @@
 </head>
 <body>
     <div id="app">
-        <!-- 🚨 V54: 無按鈕，強制載入 freren.mp3 -->
+        <!-- 🚨 V55: 改回正統拼字 frieren.mp3 -->
         <audio id="sys-bgm" loop>
-            <source src="audio/freren.mp3" type="audio/mpeg">
+            <source src="audio/frieren.mp3" type="audio/mpeg">
         </audio>
 
         <!-- ================= 登入介面 ================= -->
@@ -676,11 +676,11 @@
             <!-- 1. 召喚頁面 -->
             <div id="page-gacha">
                 <div class="pool-tabs">
-                    <div class="tab-btn active" onclick="switchPool('freren', this)">芙莉蓮</div>
+                    <div class="tab-btn active" onclick="switchPool('frieren', this)">芙莉蓮</div>
                     <div class="tab-btn" onclick="switchPool('elite', this)">實力至上</div>
                 </div>
                 <div class="banner">
-                    <img id="b-img" src="images/freren/banner.jpg" onerror="this.src='https://via.placeholder.com/400x180/111/444'">
+                    <img id="b-img" src="images/frieren/banner.jpg" onerror="this.src='https://via.placeholder.com/400x180/111/444'">
                     <div style="position:absolute; bottom:10px; left:10px; color:#f8fafc; font-size: 13px; font-weight:bold; letter-spacing:1px; text-shadow: 0 2px 5px #000;" id="b-txt">
                         > ARCHIVE: Frieren
                     </div>
@@ -766,26 +766,26 @@
         // ================= 全域變數 =================
         let userRef = null; 
         let uData = { gold: 0, inventory: [], pending: [], pity_count: 0 }; 
-        let currentPool = 'freren'; 
+        let currentPool = 'frieren'; 
         let currentUserId = localStorage.getItem('hunter_id');
         let bgmAudio = document.getElementById('sys-bgm');
 
-        // ================= 🚨 V54 新增：全域自動去殼過濾器 (擷取純名字) =================
+        // ================= 全域自動去殼過濾器 =================
         const formatCardName = (filename) => {
             if(!filename) return "未知";
-            let name = filename.replace(/\.[^/.]+$/, ""); // 拔掉副檔名 (.jpg, .webp 等)
-            name = name.replace(/^(sss|ss|s|a|b|c|d)\s*/i, ""); // 拔掉開頭的稀有度字母
-            name = name.replace(/\s*\(\d+\)/g, ""); // 拔掉重複檔案的標籤例如 (2), (3)
+            let name = filename.replace(/\.[^/.]+$/, ""); 
+            name = name.replace(/^(sss|ss|s|a|b|c|d)\s*/i, ""); 
+            name = name.replace(/\s*\(\d+\)/g, ""); 
             return name;
         };
 
-        // ================= 卡池設定 (已依照截圖100%更新) =================
+        // ================= 卡池設定 =================
         const pools = {
-            'freren': { 
+            'frieren': { 
                 sss: ['sss魔王城.jpg'], 
                 ss: ['ss月影.jpg'], 
                 s: ['s 日恆.webp', 's月光.jpg', 's欣梅爾.jpg', 's芙莉蓮.jpg', 's賽利耶.jpg'], 
-                a: ['a修塔爾克.jpg', 'a費倫 (2).jpg', 'a費倫.jpg', 'a瑪哈特.jpg', 'a贊恩.jpg'], 
+                a: ['a修塔爾克.jpg', 'a費倫 (2).jpg', 'a費倫.jpg', 'a瑪哈特.jpg', 'a讚恩.jpg'], 
                 b: ['b冉則.jpg', 'b由貝爾 (2).jpg', 'b由貝爾 (3).jpg', 'b由貝爾.jpg', 'b威亞貝爾.jpg', 'b梅特黛.jpg', 'b葛納烏.jpg', 'b鄧肯.jpg', 'b蘭特.jpg'], 
                 c: ['c艾莉.jpg', 'c拉比涅.jpg', 'c拉歐芬.jpg', 'c阿烏拉 (2).jpg', 'c阿烏拉 (3).jpg', 'c阿烏拉 (4).jpg', 'c阿烏拉.jpg'], 
                 d: ['d未知 (2).jpg', 'd未知.jpg', 'd艾冉 (2).jpg', 'd艾冉.jpg', 'd欣梅爾.jpg', 'd海塔 (2).jpg', 'd海塔.jpg', 'd魔族 (2).jpg', 'd魔族 (3).jpg', 'd魔族 (4).jpg', 'd魔族.jpg'] 
@@ -1037,7 +1037,7 @@
             startGacha(results);
         };
 
-        // ================= 抽卡 3D 動畫 (已套用名稱過濾器) =================
+        // ================= 抽卡 3D 動畫 =================
         function startGacha(cards) {
             const overlay = document.getElementById('overlay'); 
             const stack = document.getElementById('stack');
@@ -1089,7 +1089,7 @@
             });
         }
 
-        // ================= 圖鑑放大特效 (已套用名稱過濾器) =================
+        // ================= 圖鑑放大特效 =================
         window.showDetail = (pool, rarity, file, count) => {
             document.getElementById('detail-img').src = `images/${pool}/${file}`;
             const countHtml = count > 1 ? `<span style="font-size:10px;color:#cbd5e1;margin-left:8px;">已擁有 x${count}</span>` : '';
@@ -1107,7 +1107,7 @@
             document.getElementById('detail-overlay').style.display = 'none'; 
         };
 
-        // ================= 渲染圖鑑 (已套用名稱過濾器) =================
+        // ================= 渲染圖鑑 =================
         function renderBag() {
             const invMap = {}; 
             (uData.inventory || []).forEach(c => { invMap[c.id] = c; });
@@ -1145,7 +1145,7 @@
             list.innerHTML = html;
         }
 
-        // ================= 交易系統: 更新下拉選單 (已套用名稱過濾器) =================
+        // ================= 交易系統: 更新下拉選單 =================
         function updateTradeSelect() {
             const sel = document.getElementById('trade-card-sel'); 
             sel.innerHTML = '<option value="">選擇要出售的卡片...</option>';
@@ -1195,7 +1195,7 @@
             }
         };
 
-        // ================= 交易系統: 渲染市場 (已套用名稱過濾器) =================
+        // ================= 交易系統: 渲染市場 =================
         function syncMarket() {
             onSnapshot(collection(db, "market"), (s) => {
                 const board = document.getElementById('trade-board'); 
@@ -1283,7 +1283,7 @@
             btn.classList.add('active'); 
             
             document.getElementById('b-img').src = `images/${pId}/banner.jpg`; 
-            document.getElementById('b-txt').innerText = `> ARCHIVE: ${pId === 'freren' ? 'Frieren' : 'Classroom of the Elite'}`; 
+            document.getElementById('b-txt').innerText = `> ARCHIVE: ${pId === 'frieren' ? 'Frieren' : 'Classroom of the Elite'}`; 
             
             bgmAudio.src = `audio/${pId}.mp3`;
             forcePlayMusic();
