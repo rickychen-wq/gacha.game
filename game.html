@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V49 - 雙卡池專屬神曲版</title>
+    <title>Solo Leveling: TCG V48 - 終極無損展開版</title>
     <style>
         /* ================= 基礎設定 ================= */
         * { 
@@ -647,9 +647,9 @@
 </head>
 <body>
     <div id="app">
-        <!-- 🚨 V49: 預設載入 freren.mp3，切換卡池時動態改變 src -->
+        <!-- 🚨 V48 BGM 音軌，預設放置 audio/bgm.mp3 -->
         <audio id="sys-bgm" loop>
-            <source src="audio/freren.mp3" type="audio/mpeg">
+            <source src="audio/bgm.mp3" type="audio/mpeg">
         </audio>
 
         <!-- ================= 登入介面 ================= -->
@@ -741,6 +741,7 @@
                         選擇圖鑑中的卡片掛單，向全服獵人出售換取金幣。
                     </p>
                     
+                    <!-- 🚨 防破版的上下兩層輸入區 -->
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         <select id="trade-card-sel" style="width:100%; padding:10px; background:#020617; color:#e2e8f0; border:1px solid #475569; border-radius:4px; font-size:11px; outline:none;"></select>
                         <div style="display:flex; gap:8px;">
@@ -819,8 +820,13 @@
         };
 
         const rates = [ 
-            {r:'d', p:0.4}, {r:'c', p:0.3}, {r:'b', p:0.18}, 
-            {r:'a', p:0.08}, {r:'s', p:0.03}, {r:'ss', p:0.008}, {r:'sss', p:0.002} 
+            {r:'d', p:0.4}, 
+            {r:'c', p:0.3}, 
+            {r:'b', p:0.18}, 
+            {r:'a', p:0.08}, 
+            {r:'s', p:0.03}, 
+            {r:'ss', p:0.008}, 
+            {r:'sss', p:0.002} 
         ];
 
         function loadUserData(id) {
@@ -828,10 +834,11 @@
             document.getElementById('p-id').innerText = `ID: ${id}`;
             userRef = doc(db, "users", id);
 
+            // 🎵 強制播放音樂
             bgmAudio.play().then(() => { 
                 bgmToggleBtn.classList.add('playing'); 
             }).catch(e => {
-                console.log('需要互動後播放');
+                console.log('需要玩家互動後才能播放音樂');
             });
 
             onSnapshot(userRef, (s) => {
@@ -858,6 +865,7 @@
             document.getElementById('login-view').style.display = 'flex'; 
         }
 
+        // ================= 音樂控制邏輯 =================
         window.toggleMusic = () => {
             if (bgmAudio.paused) { 
                 bgmAudio.play(); 
@@ -868,6 +876,7 @@
             }
         };
 
+        // ================= 登入與註冊邏輯 =================
         window.executeLogin = async () => {
             const id = document.getElementById('log-id').value.trim(); 
             const pw = document.getElementById('log-pw').value;
@@ -878,7 +887,9 @@
                 errBox.style.display = 'block'; 
                 return; 
             }
-            errBox.innerText = "驗證中..."; errBox.style.display = 'block';
+            
+            errBox.innerText = "驗證中..."; 
+            errBox.style.display = 'block';
             
             const snap = await getDoc(doc(db, "users", id));
             if (!snap.exists() || snap.data().password !== pw) {
@@ -897,18 +908,25 @@
             const errBox = document.getElementById('log-err');
             
             if(!id || !pw) { 
-                errBox.innerText = "ERROR: 請輸入 ID 與密碼"; errBox.style.display = 'block'; 
+                errBox.innerText = "ERROR: 請輸入要註冊的 ID 與密碼"; 
+                errBox.style.display = 'block'; 
                 return; 
             }
-            errBox.innerText = "註冊中..."; errBox.style.display = 'block';
+            
+            errBox.innerText = "註冊中..."; 
+            errBox.style.display = 'block';
             
             const snap = await getDoc(doc(db, "users", id));
             if (snap.exists()) { 
-                errBox.innerText = "ERROR: 註冊失敗，ID 已被使用！"; 
+                errBox.innerText = "ERROR: 註冊失敗，此 ID 已被搶先使用！"; 
             } else {
                 errBox.style.display = 'none'; 
                 await setDoc(doc(db, "users", id), { 
-                    password: pw, gold: 500, inventory: [], pending: [], pity_count: 0 
+                    password: pw, 
+                    gold: 500, 
+                    inventory: [], 
+                    pending: [], 
+                    pity_count: 0 
                 });
                 localStorage.setItem('hunter_id', id); 
                 currentUserId = id; 
@@ -917,7 +935,10 @@
         };
 
         window.executeLogout = () => { 
-            if(confirm('確定要登出嗎？')) { localStorage.removeItem('hunter_id'); location.reload(); } 
+            if(confirm('確定要登出連線嗎？')) { 
+                localStorage.removeItem('hunter_id'); 
+                location.reload(); 
+            } 
         };
 
         function updatePityBar(count) {
@@ -926,19 +947,24 @@
             document.getElementById('pity-bar-fill').style.width = `${(pity / 50) * 100}%`;
         }
 
+        // ================= 委託任務系統 =================
         function syncMissions() {
             onSnapshot(doc(db, "config", "game_data"), (s) => {
                 const list = document.getElementById('m-list'); 
                 list.innerHTML = '<h2 style="color:#38bdf8;margin-bottom:15px; font-size:14px; letter-spacing:1px;">當前委託任務</h2>';
                 
                 const missions = s.exists() ? (s.data().missions || []) : [];
-                if (missions.length === 0) { list.innerHTML += '<div style="color:#64748b; font-size:11px;">無待處理的任務。</div>'; return; }
+                if (missions.length === 0) { 
+                    list.innerHTML += '<div style="color:#64748b; font-size:11px;">無待處理的委託紀錄。</div>'; 
+                    return; 
+                }
                 
                 missions.forEach(m => {
                     const isP = uData.pending?.includes(m.id);
                     list.innerHTML += `
                         <div class="m-card">
-                            <b style="color:#e2e8f0;">${m.title}</b><span style="float:right;color:#facc15">+${m.reward} G</span>
+                            <b style="color:#e2e8f0;">${m.title}</b>
+                            <span style="float:right;color:#facc15">+${m.reward} G</span>
                             <p style="font-size:11px;color:#94a3b8;margin-top:6px;">${m.desc}</p>
                             <button class="m-btn" onclick="rep('${m.id}')" ${isP ? 'disabled style="background:rgba(15,23,42,0.5);cursor:not-allowed"' : ''}>
                                 ${isP ? '審核中...' : '回報完成'}
@@ -954,29 +980,47 @@
             alert("資料已上傳至協會，請等待審核。");
         };
 
+        // ================= 抽卡與動畫系統 =================
         window.draw = async (n, cost) => {
             const currentGold = Number(uData.gold) || 0;
-            if (currentGold < cost) return alert("系統配給不足！");
+            if (currentGold < cost) return alert("系統配給不足！請完成委託任務。");
             
-            let pityCount = uData.pity_count || 0; let results = []; let newPityCount = pityCount;
+            let pityCount = uData.pity_count || 0; 
+            let results = []; 
+            let newPityCount = pityCount;
             
             for (let i = 0; i < n; i++) {
-                let rank = 'd'; let isGuaranteed = false;
-                if (newPityCount >= 49) { rank = 's'; isGuaranteed = true; newPityCount = 0; } else {
+                let rank = 'd'; 
+                let isGuaranteed = false;
+                
+                if (newPityCount >= 49) { 
+                    rank = 's'; 
+                    isGuaranteed = true; 
+                    newPityCount = 0; 
+                } else {
                     let rand = Math.random(), cum = 0;
-                    for (let c of rates) { cum += c.p; if (rand <= cum) { rank = c.r; break; } }
-                    if (['s', 'ss', 'sss'].includes(rank)) newPityCount = 0; else newPityCount++;
+                    for (let c of rates) { 
+                        cum += c.p; 
+                        if (rand <= cum) { rank = c.r; break; } 
+                    }
+                    if (['s', 'ss', 'sss'].includes(rank)) newPityCount = 0; 
+                    else newPityCount++;
                 }
+                
                 const files = pools[currentPool][rank]; 
                 const file = files.length > 0 ? files[Math.floor(Math.random() * files.length)] : 'default.jpg';
                 results.push({ rank, file, isGuaranteed, id: `${currentPool}_${rank}_${file}` });
             }
 
-            const invMap = {}; (uData.inventory || []).forEach(c => { invMap[c.id] = { ...c }; });
+            const invMap = {}; 
+            (uData.inventory || []).forEach(c => { invMap[c.id] = { ...c }; });
             
             results.forEach(card => {
-                if (invMap[card.id]) { invMap[card.id].count = (invMap[card.id].count || 1) + 1; } 
-                else { invMap[card.id] = { id: card.id, pool: currentPool, rarity: card.rank, img: `images/${currentPool}/${card.file}`, count: 1 }; }
+                if (invMap[card.id]) { 
+                    invMap[card.id].count = (invMap[card.id].count || 1) + 1; 
+                } else { 
+                    invMap[card.id] = { id: card.id, pool: currentPool, rarity: card.rank, img: `images/${currentPool}/${card.file}`, count: 1 }; 
+                }
             });
 
             await updateDoc(userRef, { gold: currentGold - cost, pity_count: newPityCount, inventory: Object.values(invMap) }); 
@@ -984,107 +1028,223 @@
         };
 
         function startGacha(cards) {
-            const overlay = document.getElementById('overlay'); const stack = document.getElementById('stack');
-            overlay.style.display = 'flex'; document.getElementById('hint').innerText = '[ 點擊進行數據回收 ]'; stack.innerHTML = ''; 
+            const overlay = document.getElementById('overlay'); 
+            const stack = document.getElementById('stack');
+            overlay.style.display = 'flex'; 
+            document.getElementById('hint').innerText = '[ 點擊進行數據回收 ]'; 
+            stack.innerHTML = ''; 
+            
             let active = 0, rev = false;
 
             cards.reverse().forEach((card, i) => {
                 const w = document.createElement('div'); 
                 w.className = 'card-w' + (card.isGuaranteed ? ' card-guaranteed' : ''); 
-                w.style.zIndex = cards.length - i; w.style.transform = `translate(${i * 4}px, ${i * 4}px)`;
+                w.style.zIndex = cards.length - i; 
+                w.style.transform = `translate(${i * 4}px, ${i * 4}px)`;
                 
-                w.innerHTML = `<div class="card-i"><div class="face back"></div><div class="face front rarity-${card.rank.toUpperCase()}"><img src="images/${currentPool}/${card.file}" onerror="this.src='https://via.placeholder.com/200x260/111/444'"><div class="r-banner">${card.rank.toUpperCase()} ${card.isGuaranteed ? '<span style="color:#fde047;font-size:10px;margin-left:5px;">⚡保底</span>' : ''}</div></div></div>`;
+                w.innerHTML = `
+                    <div class="card-i">
+                        <div class="face back"></div>
+                        <div class="face front rarity-${card.rank.toUpperCase()}">
+                            <img src="images/${currentPool}/${card.file}" onerror="this.src='https://via.placeholder.com/200x260/111/444'">
+                            <div class="r-banner">
+                                ${card.rank.toUpperCase()} 
+                                ${card.isGuaranteed ? '<span style="color:#fde047;font-size:10px;margin-left:5px;">⚡保底</span>' : ''}
+                            </div>
+                        </div>
+                    </div>`;
                 
                 w.onclick = () => {
                     if (i !== active) return;
-                    if (!rev) { rev = true; document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped')); document.getElementById('hint').innerText = '[ 點擊吸收資料庫 ]';
-                    } else { w.style.pointerEvents = 'none'; w.firstElementChild.classList.add('dismissed'); active++; if (active >= cards.length) { setTimeout(() => { overlay.style.display = 'none'; }, 700); } }
+                    if (!rev) { 
+                        rev = true; 
+                        document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped')); 
+                        document.getElementById('hint').innerText = '[ 點擊吸收資料庫 ]';
+                    } else { 
+                        w.style.pointerEvents = 'none'; 
+                        w.firstElementChild.classList.add('dismissed'); 
+                        active++; 
+                        if (active >= cards.length) { 
+                            setTimeout(() => { overlay.style.display = 'none'; }, 700); 
+                        } 
+                    }
                 };
                 stack.appendChild(w);
             });
         }
 
+        // ================= 圖鑑與放大檢視系統 =================
         window.showDetail = (pool, rarity, file, count) => {
             document.getElementById('detail-img').src = `images/${pool}/${file}`;
             const countHtml = count > 1 ? `<span style="font-size:10px;color:#cbd5e1;margin-left:8px;">已擁有 x${count}</span>` : '';
             document.getElementById('detail-rarity').innerHTML = `${rarity.toUpperCase()} ${countHtml}`;
-            const dCard = document.getElementById('detail-card'); dCard.className = 'detail-card'; dCard.classList.add(`rarity-${rarity.toUpperCase()}`);
+            const dCard = document.getElementById('detail-card'); 
+            dCard.className = 'detail-card'; 
+            dCard.classList.add(`rarity-${rarity.toUpperCase()}`);
             document.getElementById('detail-overlay').style.display = 'flex';
         };
 
-        window.closeDetail = () => { document.getElementById('detail-overlay').style.display = 'none'; };
+        window.closeDetail = () => { 
+            document.getElementById('detail-overlay').style.display = 'none'; 
+        };
 
         function renderBag() {
-            const invMap = {}; (uData.inventory || []).forEach(c => { invMap[c.id] = c; });
-            const list = document.getElementById('bag-list'); let html = ''; let totalCards = 0; let unlockedCards = 0; 
+            const invMap = {}; 
+            (uData.inventory || []).forEach(c => { invMap[c.id] = c; });
+            const list = document.getElementById('bag-list'); 
+            let html = ''; 
+            let totalCards = 0; 
+            let unlockedCards = 0; 
             const order = ['sss', 'ss', 's', 'a', 'b', 'c', 'd'];
 
             order.forEach(r => {
                 if(!pools[currentPool][r]) return;
                 pools[currentPool][r].forEach(file => {
-                    totalCards++; const cardId = `${currentPool}_${r}_${file}`; const ownedCard = invMap[cardId]; const isLocked = !ownedCard; const count = ownedCard ? ownedCard.count : 0;
+                    totalCards++; 
+                    const cardId = `${currentPool}_${r}_${file}`; 
+                    const ownedCard = invMap[cardId]; 
+                    const isLocked = !ownedCard; 
+                    const count = ownedCard ? ownedCard.count : 0;
+                    
                     if (!isLocked) unlockedCards++;
-                    html += `<div class="bag-card rarity-${r.toUpperCase()} ${isLocked ? 'locked' : ''}" ${!isLocked ? `onclick="showDetail('${currentPool}', '${r}', '${file}', ${count})"` : ''} style="${!isLocked ? 'cursor:pointer;' : ''}"><img src="images/${currentPool}/${file}" onerror="this.src='https://via.placeholder.com/100x150/111/444'"><div class="rarity-label">${isLocked ? 'UNKNOWN' : r.toUpperCase()}</div>${count > 1 ? `<div class="count-badge">x${count}</div>` : ''}</div>`;
+                    
+                    html += `
+                        <div class="bag-card rarity-${r.toUpperCase()} ${isLocked ? 'locked' : ''}" 
+                             ${!isLocked ? `onclick="showDetail('${currentPool}', '${r}', '${file}', ${count})"` : ''} 
+                             style="${!isLocked ? 'cursor:pointer;' : ''}">
+                            <img src="images/${currentPool}/${file}" onerror="this.src='https://via.placeholder.com/100x150/111/444'">
+                            <div class="rarity-label">${isLocked ? 'UNKNOWN' : r.toUpperCase()}</div>
+                            ${count > 1 ? `<div class="count-badge">x${count}</div>` : ''}
+                        </div>`;
                 });
             });
-            document.getElementById('bag-count').innerText = `${unlockedCards} / ${totalCards}`; list.innerHTML = html;
+            document.getElementById('bag-count').innerText = `${unlockedCards} / ${totalCards}`; 
+            list.innerHTML = html;
         }
 
+        // ================= 黑市交易系統 =================
         function updateTradeSelect() {
-            const sel = document.getElementById('trade-card-sel'); sel.innerHTML = '<option value="">選擇要出售的卡片...</option>';
-            (uData.inventory || []).forEach(c => { if(c.count >= 1) { sel.innerHTML += `<option value="${c.id}">[${c.rarity.toUpperCase()}] ${c.id.split('_')[2]} (可賣: ${c.count}張)</option>`; } });
+            const sel = document.getElementById('trade-card-sel'); 
+            sel.innerHTML = '<option value="">選擇要出售的卡片...</option>';
+            
+            (uData.inventory || []).forEach(c => { 
+                if(c.count >= 1) { 
+                    sel.innerHTML += `<option value="${c.id}">[${c.rarity.toUpperCase()}] ${c.id.split('_')[2]} (可賣: ${c.count}張)</option>`; 
+                } 
+            });
         }
 
         window.postTrade = async () => {
-            const cId = document.getElementById('trade-card-sel').value; const price = parseInt(document.getElementById('trade-price').value);
-            if(!cId || isNaN(price) || price <= 0) return alert("請設定有效售價");
+            const cId = document.getElementById('trade-card-sel').value; 
+            const price = parseInt(document.getElementById('trade-price').value);
             
-            let inv = [...uData.inventory]; let cardIndex = inv.findIndex(c => c.id === cId);
+            if(!cId || isNaN(price) || price <= 0) return alert("請選擇卡片並輸入有效的售價");
+            
+            let inv = [...uData.inventory]; 
+            let cardIndex = inv.findIndex(c => c.id === cId);
+            
             if(cardIndex > -1 && inv[cardIndex].count >= 1) {
                 let cardData = {...inv[cardIndex]};
-                if (inv[cardIndex].count === 1) { inv.splice(cardIndex, 1); } else { inv[cardIndex].count -= 1; }
+                
+                if (inv[cardIndex].count === 1) { 
+                    inv.splice(cardIndex, 1); 
+                } else { 
+                    inv[cardIndex].count -= 1; 
+                }
                 
                 await updateDoc(userRef, { inventory: inv });
-                await addDoc(collection(db, "market"), { seller: currentUserId, cardId: cardData.id, img: cardData.img, rarity: cardData.rarity, price: price, time: Date.now() });
-                alert("卡片已掛上黑市！");
-            } else { alert("您沒有足夠的卡片！"); }
+                await addDoc(collection(db, "market"), { 
+                    seller: currentUserId, 
+                    cardId: cardData.id, 
+                    img: cardData.img, 
+                    rarity: cardData.rarity, 
+                    price: price, 
+                    time: Date.now() 
+                });
+                alert("卡片已掛上黑市！\n(卡片已從您的圖鑑中扣除)");
+            } else { 
+                alert("錯誤：您已經沒有這張卡片可以出售了！"); 
+            }
         };
 
         function syncMarket() {
             onSnapshot(collection(db, "market"), (s) => {
-                const board = document.getElementById('trade-board'); board.innerHTML = '';
-                if(s.empty) { board.innerHTML = '<div style="color:#64748b;font-size:11px;text-align:center;padding:20px;">黑市空無一物。</div>'; return; }
+                const board = document.getElementById('trade-board'); 
+                board.innerHTML = '';
                 
-                let items = []; s.forEach(d => items.push({ id: d.id, ...d.data() }));
+                if(s.empty) { 
+                    board.innerHTML = '<div style="color:#64748b;font-size:11px;text-align:center;padding:20px;">黑市目前空無一物。</div>'; 
+                    return; 
+                }
+                
+                let items = []; 
+                s.forEach(d => items.push({ id: d.id, ...d.data() }));
+                
                 items.sort((a,b) => b.time - a.time).forEach(item => {
                     const isMine = item.seller === currentUserId;
-                    board.innerHTML += `<div style="background:rgba(30,41,59,0.8); border:1px solid #334155; border-left:3px solid ${isMine ? '#94a3b8' : '#38bdf8'}; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;"><div style="display:flex; gap:10px; align-items:center;"><img src="${item.img}" onerror="this.src='https://via.placeholder.com/35x50/111/444'" style="width:35px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #475569;"><div><div style="font-size:10px; color:#94a3b8;">賣方: ${item.seller}</div><div style="font-weight:bold; color:#e2e8f0; font-size:12px;">${item.rarity.toUpperCase()} 級遺物</div></div></div><div style="text-align:right;"><div style="color:#facc15; font-weight:bold; font-size:12px; margin-bottom:5px;">${item.price} G</div><button class="m-btn" style="padding:4px 10px; margin:0; font-size:10px; width:auto; border-color:${isMine?'#475569':'#38bdf8'}; color:${isMine?'#94a3b8':'#38bdf8'};" onclick="${isMine ? `cancelTrade('${item.id}', '${item.cardId}', '${item.rarity}', '${item.img}')` : `buyTrade('${item.id}', '${item.seller}', ${item.price}, '${item.cardId}', '${item.rarity}', '${item.img}')`}">${isMine ? '撤銷掛單' : '購買'}</button></div></div>`;
+                    board.innerHTML += `
+                        <div style="background:rgba(30,41,59,0.8); border:1px solid #334155; border-left:3px solid ${isMine ? '#94a3b8' : '#38bdf8'}; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <img src="${item.img}" onerror="this.src='https://via.placeholder.com/35x50/111/444'" style="width:35px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #475569;">
+                                <div>
+                                    <div style="font-size:10px; color:#94a3b8;">賣方: ${item.seller}</div>
+                                    <div style="font-weight:bold; color:#e2e8f0; font-size:12px;">${item.rarity.toUpperCase()} 級遺物</div>
+                                </div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="color:#facc15; font-weight:bold; font-size:12px; margin-bottom:5px;">${item.price} G</div>
+                                <button class="m-btn" style="padding:4px 10px; margin:0; font-size:10px; width:auto; border-color:${isMine?'#475569':'#38bdf8'}; color:${isMine?'#94a3b8':'#38bdf8'};" 
+                                    onclick="${isMine ? `cancelTrade('${item.id}', '${item.cardId}', '${item.rarity}', '${item.img}')` : `buyTrade('${item.id}', '${item.seller}', ${item.price}, '${item.cardId}', '${item.rarity}', '${item.img}')`}">
+                                    ${isMine ? '撤銷掛單' : '購買'}
+                                </button>
+                            </div>
+                        </div>`;
                 });
             });
         }
 
         window.cancelTrade = async (docId, cardId, rarity, img) => {
-            if(!confirm("撤銷掛單？")) return;
+            if(!confirm("確定要撤銷掛單嗎？卡片將退回圖鑑。")) return;
+            
             await deleteDoc(doc(db, "market", docId));
-            let inv = [...uData.inventory]; let idx = inv.findIndex(c => c.id === cardId);
-            if(idx > -1) { inv[idx].count += 1; } else { inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 }); }
+            
+            let inv = [...uData.inventory]; 
+            let idx = inv.findIndex(c => c.id === cardId);
+            
+            if(idx > -1) { 
+                inv[idx].count += 1; 
+            } else { 
+                inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 }); 
+            }
+            
             await updateDoc(userRef, { inventory: inv });
         };
 
         window.buyTrade = async (docId, seller, price, cardId, rarity, img) => {
-            if(uData.gold < price) return alert("金幣不足！");
-            if(!confirm(`花費 ${price}G 購買？`)) return;
+            if(uData.gold < price) return alert("金幣不足，無法在黑市交易！");
+            if(!confirm(`確定花費 ${price}G 購買此卡片？`)) return;
             
-            let inv = [...uData.inventory]; let idx = inv.findIndex(c => c.id === cardId);
-            if(idx > -1) { inv[idx].count += 1; } else { inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 }); }
+            let inv = [...uData.inventory]; 
+            let idx = inv.findIndex(c => c.id === cardId);
+            
+            if(idx > -1) { 
+                inv[idx].count += 1; 
+            } else { 
+                inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 }); 
+            }
+            
             await updateDoc(userRef, { gold: uData.gold - price, inventory: inv });
             
             const sSnap = await getDoc(doc(db, "users", seller));
-            if(sSnap.exists()) { await updateDoc(doc(db, "users", seller), { gold: (sSnap.data().gold || 0) + price }); }
-            await deleteDoc(doc(db, "market", docId)); alert("交易成功！");
+            if(sSnap.exists()) { 
+                await updateDoc(doc(db, "users", seller), { gold: (sSnap.data().gold || 0) + price }); 
+            }
+            
+            await deleteDoc(doc(db, "market", docId)); 
+            alert("交易成功！卡片已存入圖鑑。");
         };
 
-        // 🚨 V49: 雙卡池專屬 BGM 無縫切換邏輯
+        // ================= UI 導覽系統 =================
         window.switchPool = (pId, btn) => { 
             currentPool = pId; 
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
@@ -1092,13 +1252,6 @@
             document.getElementById('b-img').src = `images/${pId}/banner.jpg`; 
             document.getElementById('b-txt').innerText = `> ARCHIVE: ${pId === 'freren' ? 'Frieren' : 'Classroom of the Elite'}`; 
             
-            // 如果音樂正在播放，切換時就改變來源並繼續播放
-            const wasPlaying = !bgmAudio.paused && bgmToggleBtn.classList.contains('playing');
-            bgmAudio.src = `audio/${pId}.mp3`;
-            if (wasPlaying) {
-                bgmAudio.play().catch(e => console.log(e));
-            }
-
             if(!document.getElementById('page-bag').classList.contains('hidden')) {
                 renderBag(); 
             }
@@ -1109,7 +1262,10 @@
             document.getElementById(id).classList.remove('hidden'); 
             document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active')); 
             b.classList.add('active'); 
-            if(id === 'page-bag') { renderBag(); }
+            
+            if(id === 'page-bag') {
+                renderBag(); 
+            }
         };
 
     </script>
