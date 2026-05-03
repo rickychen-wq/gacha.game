@@ -53,6 +53,15 @@
             background: #38bdf8; 
             color: #0f172a; 
         }
+        .btn-danger {
+            background: rgba(244, 63, 94, 0.15);
+            color: #f43f5e;
+            border-color: #f43f5e;
+        }
+        .btn-danger:hover {
+            background: #f43f5e;
+            color: #0f172a;
+        }
         table { 
             width: 100%; 
             border-collapse: collapse; 
@@ -131,6 +140,20 @@
             <button onclick="giveCard()">強制入庫</button>
         </div>
 
+        <!-- 🚨 V56 補回的發佈任務系統 -->
+        <div class="section">
+            <h3>📢 佈達全服委託 (發佈任務)</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="mission-title" placeholder="任務標題 (例：討伐A級魔物)" style="flex: 1; min-width: 200px;">
+                <input type="text" id="mission-desc" placeholder="任務描述" style="flex: 2; min-width: 300px;">
+                <input type="number" id="mission-reward" placeholder="獎勵金幣 (G)" style="width: 150px;">
+            </div>
+            <div style="margin-top: 10px;">
+                <button onclick="postMission()">發佈任務至全服</button>
+                <button class="btn-danger" onclick="clearMissions()" style="margin-left: 10px;">清空所有任務</button>
+            </div>
+        </div>
+
         <div class="section">
             <h3>📋 任務審核 (處理回報)</h3>
             <div id="report-list">連線中...</div>
@@ -146,7 +169,7 @@
     <!-- ================= 程式邏輯核心 ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, onSnapshot, arrayRemove } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, onSnapshot, arrayRemove, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         // Firebase 初始化
         const config = { 
@@ -166,8 +189,8 @@
             if(pw === '0414') {
                 document.getElementById('admin-login').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'block';
-                loadUsers(); // 密碼對了才載入資料
-                listenReports(); // 密碼對了才監聽任務
+                loadUsers(); 
+                listenReports(); 
             } else {
                 alert("❌ 存取拒絕：密碼錯誤！");
             }
@@ -253,6 +276,47 @@
                 alert(`✅ 成功派發：[${rank.toUpperCase()}] ${file} 已送達獵人 ${uid} 的圖鑑！`);
                 loadUsers();
             } else { alert("❌ 錯誤：找不到該獵人資料"); }
+        };
+
+        // ================= 🚨 V56 補回：發佈任務系統 =================
+        window.postMission = async () => {
+            const title = document.getElementById('mission-title').value.trim();
+            const desc = document.getElementById('mission-desc').value.trim();
+            const reward = parseInt(document.getElementById('mission-reward').value);
+
+            if(!title || !desc || isNaN(reward)) return alert("❌ 錯誤：標題、描述、獎勵金幣皆不可空白！");
+
+            const newMission = {
+                id: 'm_' + Date.now(),
+                title: title,
+                desc: desc,
+                reward: reward
+            };
+
+            const gRef = doc(db, "config", "game_data");
+            const snap = await getDoc(gRef);
+            
+            if(snap.exists()) {
+                await updateDoc(gRef, { missions: arrayUnion(newMission) });
+            } else {
+                await setDoc(gRef, { missions: [newMission], reports: [] });
+            }
+            
+            // 清空輸入框
+            document.getElementById('mission-title').value = '';
+            document.getElementById('mission-desc').value = '';
+            document.getElementById('mission-reward').value = '';
+            
+            alert("✅ 任務已成功發佈至全服！玩家重新整理即可看見。");
+        };
+
+        // ================= 🚨 V56 補回：清空任務系統 =================
+        window.clearMissions = async () => {
+            if(!confirm("⚠️ 確定要清空全服所有任務嗎？（玩家回報中的任務不受影響）")) return;
+            
+            const gRef = doc(db, "config", "game_data");
+            await updateDoc(gRef, { missions: [] });
+            alert("🗑️ 所有任務已從伺服器清空！");
         };
 
         // 【讀取全服玩家】
