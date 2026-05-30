@@ -5,126 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hunter Association - 總部後台系統</title>
     <style>
-        /* ================= 後台專屬黑客風格 ================= */
-        body { 
-            background: #0f172a; 
-            color: #e2e8f0; 
-            font-family: 'Courier New', Courier, monospace; 
-            padding: 20px; 
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        h1 { 
-            color: #38bdf8; 
-            border-bottom: 2px solid #334155; 
-            padding-bottom: 10px; 
-            text-shadow: 0 0 10px rgba(56,189,248,0.3);
-        }
-        .section { 
-            background: #1e293b; 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-            border: 1px solid #334155; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        h3 { color: #a855f7; margin-top: 0; }
-        input, select { 
-            padding: 10px; 
-            margin: 5px 5px 5px 0; 
-            background: #020617; 
-            color: #e2e8f0; 
-            border: 1px solid #475569; 
-            border-radius: 4px; 
-            outline: none;
-        }
-        input:focus, select:focus { border-color: #38bdf8; }
-        button { 
-            padding: 10px 15px; 
-            background: rgba(56,189,248,0.15); 
-            color: #38bdf8; 
-            border: 1px solid #38bdf8; 
-            border-radius: 4px;
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: 0.2s;
-        }
-        button:hover { 
-            background: #38bdf8; 
-            color: #0f172a; 
-        }
-        .btn-danger {
-            background: rgba(244, 63, 94, 0.15);
-            color: #f43f5e;
-            border-color: #f43f5e;
-        }
-        .btn-danger:hover {
-            background: #f43f5e;
-            color: #0f172a;
-        }
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 15px; 
-        }
-        th, td { 
-            border: 1px solid #334155; 
-            padding: 10px; 
-            text-align: left; 
-        }
-        th { 
-            background: #020617; 
-            color: #38bdf8; 
-        }
-        tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+        body { background:#0f172a; color:#e2e8f0; font-family:'Courier New',Courier,monospace; padding:20px; max-width:900px; margin:0 auto; }
+        h1   { color:#38bdf8; border-bottom:2px solid #334155; padding-bottom:10px; text-shadow:0 0 10px rgba(56,189,248,0.3); }
+        .section { background:#1e293b; padding:20px; border-radius:8px; margin-bottom:20px; border:1px solid #334155; box-shadow:0 4px 6px rgba(0,0,0,0.3); }
+        h3   { color:#a855f7; margin-top:0; }
+        input, select { padding:10px; margin:5px 5px 5px 0; background:#020617; color:#e2e8f0; border:1px solid #475569; border-radius:4px; outline:none; font-family:'Courier New',Courier,monospace; }
+        input:focus, select:focus { border-color:#38bdf8; }
+        button { padding:10px 15px; background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid #38bdf8; border-radius:4px; cursor:pointer; font-weight:bold; transition:0.2s; font-family:'Courier New',Courier,monospace; }
+        button:hover { background:#38bdf8; color:#0f172a; }
+        .btn-danger { background:rgba(244,63,94,0.15); color:#f43f5e; border-color:#f43f5e; }
+        .btn-danger:hover { background:#f43f5e; color:#0f172a; }
+        table { width:100%; border-collapse:collapse; margin-top:15px; }
+        th,td { border:1px solid #334155; padding:10px; text-align:left; }
+        th    { background:#020617; color:#38bdf8; }
+        tr:nth-child(even) { background:rgba(255,255,255,0.02); }
 
-        /* ================= 權限驗證鎖 ================= */
-        #admin-login {
-            position: fixed; 
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(2,6,23,0.95); 
-            backdrop-filter: blur(10px);
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center;
-            z-index: 10000;
-        }
-        #admin-login h2 { color: #f43f5e; letter-spacing: 2px; }
-        #admin-login input { width: 250px; text-align: center; font-size: 18px; letter-spacing: 5px; }
-        #admin-panel { display: none; }
+        /* 通知訊息 */
+        #admin-msg { display:none; padding:10px 16px; border-radius:6px; font-size:13px; font-weight:bold; margin-bottom:15px; letter-spacing:0.5px; }
+        #admin-msg.success { background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.4); color:#86efac; }
+        #admin-msg.error   { background:rgba(244,63,94,0.1);  border:1px solid rgba(244,63,94,0.4);  color:#fda4af; }
+        #admin-msg.info    { background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc; }
+
+        /* 登入鎖 */
+        #admin-login { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(2,6,23,0.95); backdrop-filter:blur(10px); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10000; gap:15px; }
+        #admin-login h2 { color:#f43f5e; letter-spacing:2px; margin:0; }
+        #admin-login p  { color:#64748b; font-size:12px; margin:0; text-align:center; }
+        #admin-login input  { width:280px; text-align:center; font-size:18px; letter-spacing:5px; }
+        #admin-login button { width:280px; }
+        #login-err { color:#f43f5e; font-size:12px; display:none; }
+        #admin-panel { display:none; }
     </style>
 </head>
 <body>
 
-    <!-- 🚨 權限驗證畫面 -->
+    <!-- 權限驗證畫面 -->
     <div id="admin-login">
         <h2>⚠️ 總部權限驗證</h2>
+        <p>密碼需在 Firebase Console 設定<br><code style="color:#38bdf8;">config/admin → password</code></p>
         <input type="password" id="admin-pw" placeholder="輸入存取密碼">
-        <button onclick="verifyAdmin()" style="margin-top: 15px; width: 250px;">解鎖系統</button>
+        <div id="login-err"></div>
+        <button id="unlock-btn" onclick="verifyAdmin()">解鎖系統</button>
     </div>
 
-    <!-- 🔓 後台主要控制台 (預設隱藏) -->
+    <!-- 後台主控台 -->
     <div id="admin-panel">
         <h1>🛠️ 獵人協會 - 總部終端機</h1>
+        <div id="admin-msg"></div>
 
         <div class="section">
             <h3>💰 系統配給 (修改金幣)</h3>
-            <input type="text" id="gold-uid" placeholder="輸入獵人 ID">
+            <input type="text"   id="gold-uid"    placeholder="輸入獵人 ID">
             <input type="number" id="gold-amount" placeholder="輸入要配發的總金幣">
             <button onclick="updateGold()">覆寫金幣</button>
         </div>
 
         <div class="section">
             <h3>🎴 強制派發遺物 (發送卡片)</h3>
-            <p style="font-size:12px; color:#94a3b8; margin-bottom:10px;">⚠️ 這裡的名單已與前台100%同步，絕對不會破圖。</p>
+            <p style="font-size:12px; color:#94a3b8; margin-bottom:10px;">⚠️ 名單已與前台同步，不會破圖。</p>
             <input type="text" id="card-uid" placeholder="輸入獵人 ID">
-            
-            <select id="card-pool" onchange="updateRankSelect()">
-                <option value="frieren">芙莉蓮卡池 (Frieren)</option>
-                <option value="elite">實力至上卡池 (Elite)</option>
+            <select id="card-pool" onchange="updateFileSelect()">
+                <option value="frieren">芙莉蓮卡池</option>
+                <option value="elite">實力至上卡池</option>
             </select>
-            
             <select id="card-rank" onchange="updateFileSelect()">
                 <option value="sss">SSS 級</option>
                 <option value="ss">SS 級</option>
@@ -134,27 +76,23 @@
                 <option value="c">C 級</option>
                 <option value="d">D 級</option>
             </select>
-            
             <select id="card-file"></select>
-            
             <button onclick="giveCard()">強制入庫</button>
         </div>
 
-        <!-- 📢 發佈任務系統 -->
         <div class="section">
             <h3>📢 佈達全服委託 (發佈任務)</h3>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <input type="text" id="mission-title" placeholder="任務標題 (例：討伐A級魔物)" style="flex: 1; min-width: 200px;">
-                <input type="text" id="mission-desc" placeholder="任務描述" style="flex: 2; min-width: 300px;">
-                <input type="number" id="mission-reward" placeholder="獎勵金幣 (G)" style="width: 150px;">
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <input type="text"   id="mission-title"  placeholder="任務標題" style="flex:1; min-width:200px;">
+                <input type="text"   id="mission-desc"   placeholder="任務描述" style="flex:2; min-width:300px;">
+                <input type="number" id="mission-reward" placeholder="獎勵金幣 (G)" style="width:150px;">
             </div>
-            <div style="margin-top: 10px;">
+            <div style="margin-top:10px;">
                 <button onclick="postMission()">發佈任務至全服</button>
-                <button class="btn-danger" onclick="clearMissions()" style="margin-left: 10px;">清空所有任務</button>
+                <button class="btn-danger" onclick="clearMissions()" style="margin-left:10px;">清空所有任務</button>
             </div>
         </div>
 
-        <!-- 📋 任務審核 (已升級：動態獎金 + 核准後下架) -->
         <div class="section">
             <h3>📋 任務審核 (處理回報)</h3>
             <div id="report-list">連線中...</div>
@@ -167,246 +105,211 @@
         </div>
     </div>
 
-    <!-- ================= 程式邏輯核心 ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, onSnapshot, arrayRemove, arrayUnion } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // Firebase 初始化
-        const config = { 
-            apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo", 
-            authDomain: "my-gacha-game-f7663.firebaseapp.com", 
-            projectId: "my-gacha-game-f7663", 
-            storageBucket: "my-gacha-game-f7663.firebasestorage.app", 
-            messagingSenderId: "1035192644413", 
-            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54" 
+        const config = {
+            apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
+            authDomain: "my-gacha-game-f7663.firebaseapp.com",
+            projectId: "my-gacha-game-f7663",
+            storageBucket: "my-gacha-game-f7663.firebasestorage.app",
+            messagingSenderId: "1035192644413",
+            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54"
         };
-        const app = initializeApp(config); 
-        const db = getFirestore(app);
+        const app = initializeApp(config);
+        const db  = getFirestore(app);
 
-        // ================= 權限驗證 =================
-        window.verifyAdmin = () => {
-            const pw = document.getElementById('admin-pw').value;
-            if(pw === '0414') {
-                document.getElementById('admin-login').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-                loadUsers(); 
-                listenReports(); 
-            } else {
-                alert("❌ 存取拒絕：密碼錯誤！");
+        function showMsg(text, type = 'info') {
+            const el = document.getElementById('admin-msg');
+            el.textContent = text;
+            el.className   = type;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        // ================= 密碼從 Firestore 讀取 =================
+        // 設定方式：Firebase Console → Firestore → config/admin → 新增欄位 password: "你的密碼"
+        window.verifyAdmin = async () => {
+            const pw  = document.getElementById('admin-pw').value;
+            const btn = document.getElementById('unlock-btn');
+            const err = document.getElementById('login-err');
+            if (!pw) { err.innerText = '請輸入密碼'; err.style.display = 'block'; return; }
+            btn.disabled   = true;
+            btn.textContent = '驗證中...';
+            err.style.display = 'none';
+            try {
+                const snap = await getDoc(doc(db, 'config', 'admin'));
+                const correctPw = snap.exists() ? snap.data().password : null;
+                if (!correctPw) {
+                    err.innerText = '後台密碼尚未設定，請在 Firebase Console 設定 config/admin.password';
+                    err.style.display = 'block';
+                } else if (pw === correctPw) {
+                    document.getElementById('admin-login').style.display = 'none';
+                    document.getElementById('admin-panel').style.display = 'block';
+                    loadUsers();
+                    listenReports();
+                } else {
+                    err.innerText = '存取拒絕：密碼錯誤';
+                    err.style.display = 'block';
+                    document.getElementById('admin-pw').value = '';
+                }
+            } catch {
+                err.innerText = '連線失敗，請重試';
+                err.style.display = 'block';
             }
+            btn.disabled    = false;
+            btn.textContent = '解鎖系統';
         };
 
-        // ================= 後台同步名單 =================
+        document.getElementById('admin-pw').addEventListener('keydown', (e) => { if (e.key === 'Enter') verifyAdmin(); });
+
+        // ================= 卡池名單 =================
         const pools = {
-            'frieren': { 
-                sss: ['sss魔王城.jpg'], 
-                ss: ['ss月影.jpg'], 
-                s: ['s 日恆.webp', 's月光.jpg', 's欣梅爾.jpg', 's芙莉蓮.jpg', 's賽利耶 .jpg'], 
-                a: ['a修塔爾克.jpg', 'a費倫 (2).jpg', 'a費倫.jpg', 'a瑪哈特.jpg', 'a讚恩.jpg'], 
-                b: ['b冉則.jpg', 'b由貝爾 (2).jpg', 'b由貝爾 (3).jpg', 'b由貝爾.jpg', 'b威亞貝爾.jpg', 'b梅特戴.jpg', 'b葛納烏.jpg', 'b鄧肯.jpg', 'b蘭特.jpg'], 
-                c: ['c艾莉.jpg', 'c拉比涅.jpg', 'c拉歐芬.jpg', 'c阿烏拉 (2).jpg', 'c阿烏拉 (3).jpg', 'c阿烏拉 (4).jpg', 'c阿烏拉.jpg'], 
-                d: ['d未知 (2).jpg', 'd未知.jpg', 'd艾冉 (2).jpg', 'd艾冉.jpg', 'd欣梅爾.jpg', 'd海塔 (2).jpg', 'd海塔.jpg', 'd魔族 (2).jpg', 'd魔族 (3).jpg', 'd魔族 (4).jpg', 'd魔族.jpg'] 
+            'frieren': {
+                sss: ['sss魔王城.jpg'],
+                ss:  ['ss月影.jpg'],
+                s:   ['s 日恆.webp','s月光.jpg','s欣梅爾.jpg','s芙莉蓮.jpg','s賽利耶 .jpg'],
+                a:   ['a修塔爾克.jpg','a費倫 (2).jpg','a費倫.jpg','a瑪哈特.jpg','a讚恩.jpg'],
+                b:   ['b冉則.jpg','b由貝爾 (2).jpg','b由貝爾 (3).jpg','b由貝爾.jpg','b威亞貝爾.jpg','b梅特戴.jpg','b葛納烏.jpg','b鄧肯.jpg','b蘭特.jpg'],
+                c:   ['c艾莉.jpg','c拉比涅.jpg','c拉歐芬.jpg','c阿烏拉 (2).jpg','c阿烏拉 (3).jpg','c阿烏拉 (4).jpg','c阿烏拉.jpg'],
+                d:   ['d未知 (2).jpg','d未知.jpg','d艾冉 (2).jpg','d艾冉.jpg','d欣梅爾.jpg','d海塔 (2).jpg','d海塔.jpg','d魔族 (2).jpg','d魔族 (3).jpg','d魔族 (4).jpg','d魔族.jpg']
             },
-            'elite': { 
-                sss: ['sss1.jpg', 'sss2.jpg', 'sss3.jpg'], 
-                ss: ['ss1.jpg'], 
-                s: ['s1.jpg', 's2.jpg', 's3.jpg', 's4.jpg'], 
-                a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a4.jpg', 'a5.jpg', 'a6.jpg'], 
-                b: ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg'], 
-                c: ['c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg'], 
-                d: ['d1.jpg'] 
+            'elite': {
+                sss: ['sss1.jpg','sss2.jpg','sss3.jpg'],
+                ss:  ['ss1.jpg'],
+                s:   ['s1.jpg','s2.jpg','s3.jpg','s4.jpg'],
+                a:   ['a1.jpg','a2.jpg','a3.jpg','a4.jpg','a5.jpg','a6.jpg'],
+                b:   ['b1.jpg','b2.jpg','b3.jpg','b4.jpg','b5.jpg','b6.jpg'],
+                c:   ['c2.jpg','c3.jpg','c4.jpg','c5.jpg','c6.jpg'],
+                d:   ['d1.jpg']
             }
         };
-
-        window.updateRankSelect = () => { window.updateFileSelect(); };
 
         window.updateFileSelect = () => {
-            const pool = document.getElementById('card-pool').value;
-            const rank = document.getElementById('card-rank').value;
+            const pool    = document.getElementById('card-pool').value;
+            const rank    = document.getElementById('card-rank').value;
             const fileSel = document.getElementById('card-file');
             fileSel.innerHTML = '';
-            
             const files = pools[pool][rank] || [];
-            if(files.length === 0) {
-                fileSel.innerHTML = `<option value="">(無資料)</option>`;
-                return;
-            }
+            if (!files.length) { fileSel.innerHTML = '<option>(無資料)</option>'; return; }
             files.forEach(f => { fileSel.innerHTML += `<option value="${f}">${f}</option>`; });
         };
         updateFileSelect();
 
-        // 【發送金幣】
         window.updateGold = async () => {
             const uid = document.getElementById('gold-uid').value.trim();
             const amt = parseInt(document.getElementById('gold-amount').value);
-            if(!uid || isNaN(amt)) return alert("❌ 錯誤：請輸入正確的 ID 與數量");
-
-            const ref = doc(db, "users", uid);
+            if (!uid || isNaN(amt)) return showMsg('請輸入正確的 ID 與數量', 'error');
+            const ref  = doc(db, 'users', uid);
             const snap = await getDoc(ref);
-            if(snap.exists()){
+            if (snap.exists()) {
                 await updateDoc(ref, { gold: amt });
-                alert(`✅ 成功：已將獵人 [${uid}] 的配給修改為 ${amt} G`);
+                showMsg(`已將 [${uid}] 的金幣修改為 ${amt} G`, 'success');
                 loadUsers();
-            } else { alert("❌ 錯誤：找不到該獵人資料"); }
+            } else { showMsg('找不到該獵人資料', 'error'); }
         };
 
-        // 【派發特定卡片】
         window.giveCard = async () => {
-            const uid = document.getElementById('card-uid').value.trim();
+            const uid  = document.getElementById('card-uid').value.trim();
             const pool = document.getElementById('card-pool').value;
             const rank = document.getElementById('card-rank').value;
             const file = document.getElementById('card-file').value;
-
-            if(!uid || !file) return alert("❌ 錯誤：請填寫完整資訊");
-
-            const ref = doc(db, "users", uid);
+            if (!uid || !file) return showMsg('請填寫完整資訊', 'error');
+            const ref  = doc(db, 'users', uid);
             const snap = await getDoc(ref);
-            
-            if(snap.exists()){
-                let data = snap.data();
-                let inv = data.inventory || [];
-                let cardId = `${pool}_${rank}_${file}`;
-                let imgPath = `images/${pool}/${file}`;
-
-                let idx = inv.findIndex(c => c.id === cardId);
-                if(idx > -1) { inv[idx].count += 1; } 
-                else { inv.push({ id: cardId, pool: pool, rarity: rank, img: imgPath, count: 1 }); }
-
+            if (snap.exists()) {
+                let inv    = snap.data().inventory || [];
+                const cId  = `${pool}_${rank}_${file}`;
+                const idx  = inv.findIndex(c => c.id === cId);
+                if (idx > -1) inv[idx].count += 1;
+                else inv.push({ id: cId, pool, rarity: rank, img: `images/${pool}/${file}`, count: 1 });
                 await updateDoc(ref, { inventory: inv });
-                alert(`✅ 成功派發：[${rank.toUpperCase()}] ${file} 已送達獵人 ${uid} 的圖鑑！`);
+                showMsg(`[${rank.toUpperCase()}] ${file} 已送達 ${uid}`, 'success');
                 loadUsers();
-            } else { alert("❌ 錯誤：找不到該獵人資料"); }
+            } else { showMsg('找不到該獵人資料', 'error'); }
         };
 
-        // 【發佈任務系統】
         window.postMission = async () => {
-            const title = document.getElementById('mission-title').value.trim();
-            const desc = document.getElementById('mission-desc').value.trim();
+            const title  = document.getElementById('mission-title').value.trim();
+            const desc   = document.getElementById('mission-desc').value.trim();
             const reward = parseInt(document.getElementById('mission-reward').value);
-
-            if(!title || !desc || isNaN(reward)) return alert("❌ 錯誤：標題、描述、獎勵金幣皆不可空白！");
-
-            const newMission = {
-                id: 'm_' + Date.now(),
-                title: title,
-                desc: desc,
-                reward: reward
-            };
-
-            const gRef = doc(db, "config", "game_data");
+            if (!title || !desc || isNaN(reward)) return showMsg('標題、描述、獎勵金幣皆不可空白', 'error');
+            const newMission = { id: 'm_' + Date.now(), title, desc, reward };
+            const gRef = doc(db, 'config', 'game_data');
             const snap = await getDoc(gRef);
-            
-            if(snap.exists()) {
-                await updateDoc(gRef, { missions: arrayUnion(newMission) });
-            } else {
-                await setDoc(gRef, { missions: [newMission], reports: [] });
-            }
-            
-            document.getElementById('mission-title').value = '';
-            document.getElementById('mission-desc').value = '';
+            if (snap.exists()) await updateDoc(gRef, { missions: arrayUnion(newMission) });
+            else await setDoc(gRef, { missions: [newMission], reports: [] });
+            document.getElementById('mission-title').value  = '';
+            document.getElementById('mission-desc').value   = '';
             document.getElementById('mission-reward').value = '';
-            
-            alert("✅ 任務已成功發佈至全服！");
+            showMsg('任務已成功發佈至全服！', 'success');
         };
 
-        // 【清空任務系統】
         window.clearMissions = async () => {
-            if(!confirm("⚠️ 確定要清空全服所有任務嗎？（玩家回報中的任務不受影響）")) return;
-            
-            const gRef = doc(db, "config", "game_data");
-            await updateDoc(gRef, { missions: [] });
-            alert("🗑️ 所有任務已從伺服器清空！");
+            if (!confirm('確定要清空全服所有任務嗎？')) return;
+            await updateDoc(doc(db, 'config', 'game_data'), { missions: [] });
+            showMsg('所有任務已清空', 'info');
         };
 
-        // 【讀取全服玩家】
         window.loadUsers = async () => {
             const list = document.getElementById('user-list');
             list.innerHTML = '<span style="color:#64748b;">掃描資料庫中...</span>';
-            
-            const qs = await getDocs(collection(db, "users"));
-            if(qs.empty) {
-                list.innerHTML = '<span style="color:#64748b;">目前伺服器尚無獵人資料。</span>';
-                return;
-            }
-
-            let html = '<table><tr><th>獵人 ID</th><th>系統金幣</th><th>已解鎖卡片種類</th><th>密碼核對</th></tr>';
-            qs.forEach(doc => {
-                let d = doc.data();
-                let cCount = (d.inventory || []).length;
-                html += `<tr><td style="color:#38bdf8; font-weight:bold;">${doc.id}</td><td style="color:#facc15;">${d.gold || 0} G</td><td>${cCount} 種</td><td style="color:#64748b; font-size:12px;">${d.password || '無'}</td></tr>`;
+            const qs = await getDocs(collection(db, 'users'));
+            if (qs.empty) { list.innerHTML = '<span style="color:#64748b;">目前伺服器尚無獵人資料。</span>'; return; }
+            let html = '<table><tr><th>獵人 ID</th><th>系統金幣</th><th>已解鎖卡片</th><th>Pending 任務</th></tr>';
+            qs.forEach(d => {
+                const data    = d.data();
+                const cCount  = (data.inventory || []).length;
+                const pending = (data.pending   || []).length;
+                html += `<tr><td style="color:#38bdf8; font-weight:bold;">${d.id}</td><td style="color:#facc15;">${data.gold || 0} G</td><td>${cCount} 種</td><td style="color:${pending > 0 ? '#facc15' : '#64748b'};">${pending} 項</td></tr>`;
             });
             html += '</table>';
             list.innerHTML = html;
         };
 
-        // 🚨 V57 升級：【任務審核監聽】(抓取真實獎勵)
         function listenReports() {
-            onSnapshot(doc(db, "config", "game_data"), (s) => {
+            onSnapshot(doc(db, 'config', 'game_data'), (s) => {
                 const list = document.getElementById('report-list');
                 list.innerHTML = '';
-                if(s.exists() && s.data().reports && s.data().reports.length > 0) {
-                    let missions = s.data().missions || []; // 抓取現有任務清單來核對獎金
-                    
-                    s.data().reports.forEach(r => {
-                        let mObj = missions.find(m => m.id === r.mid);
-                        let reward = mObj ? Number(mObj.reward) : 0; // 真實獎勵，找不到就變 0
-                        let title = mObj ? mObj.title : "未知任務 (已失效)";
-                        
-                        list.innerHTML += `
-                            <div style="background:#020617; padding:12px; margin-bottom:8px; border:1px solid #475569; border-left:3px solid #facc15; display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <span style="color:#94a3b8; font-size:12px;">申請人：</span><b style="color:#e2e8f0;">${r.uid}</b><br>
-                                    <span style="color:#94a3b8; font-size:12px;">任務內容：</span><b style="color:#a855f7;">${title}</b>
-                                </div>
-                                <button onclick="approveMission('${r.uid}', '${r.mid}', ${reward})">核准 (+${reward}G)</button>
-                            </div>`;
-                    });
-                } else { 
-                    list.innerHTML = '<span style="color:#64748b;">通訊頻道無新回報。</span>'; 
+                if (!s.exists() || !(s.data().reports?.length > 0)) {
+                    list.innerHTML = '<span style="color:#64748b;">通訊頻道無新回報。</span>';
+                    return;
                 }
+                const missions = s.data().missions || [];
+                s.data().reports.forEach(r => {
+                    const mObj   = missions.find(m => m.id === r.mid);
+                    const reward = mObj ? Number(mObj.reward) : 0;
+                    const title  = mObj ? mObj.title : '未知任務 (已失效)';
+                    const div    = document.createElement('div');
+                    div.style.cssText = 'background:#020617; padding:12px; margin-bottom:8px; border:1px solid #475569; border-left:3px solid #facc15; display:flex; justify-content:space-between; align-items:center;';
+                    div.innerHTML = `
+                        <div>
+                            <span style="color:#94a3b8; font-size:12px;">申請人：</span><b style="color:#e2e8f0;">${r.uid}</b><br>
+                            <span style="color:#94a3b8; font-size:12px;">任務：</span><b style="color:#a855f7;">${title}</b>
+                        </div>
+                        <button onclick="approveMission('${r.uid}','${r.mid}',${reward})">核准 (+${reward}G)</button>`;
+                    list.appendChild(div);
+                });
             });
         }
 
-        // 🚨 V57 升級：【核准任務】(動態派發獎金 + 刪除全服任務)
         window.approveMission = async (uid, mid, actualReward) => {
             const reward = parseInt(actualReward) || 0;
-            
-            // 1. 發放真實獎金給玩家，並解除 pending 狀態
-            const uRef = doc(db, "users", uid);
-            const uSnap = await getDoc(uRef);
-            if(uSnap.exists()) {
-                await updateDoc(uRef, { 
-                    gold: (uSnap.data().gold || 0) + reward, 
-                    pending: arrayRemove(mid) 
-                });
+            const uRef   = doc(db, 'users', uid);
+            const uSnap  = await getDoc(uRef);
+            if (uSnap.exists()) {
+                await updateDoc(uRef, { gold: (uSnap.data().gold || 0) + reward, pending: arrayRemove(mid) });
             }
-
-            // 2. 將報告刪除，並且把該任務從「全服 missions」陣列中拔除！
-            const gRef = doc(db, "config", "game_data");
+            const gRef  = doc(db, 'config', 'game_data');
             const gSnap = await getDoc(gRef);
-            if(gSnap.exists()) {
-                let data = gSnap.data();
-                // 濾掉已經完成的這個任務，剩下的重新存回去
-                let updatedMissions = (data.missions || []).filter(m => m.id !== mid);
-                
-                await updateDoc(gRef, { 
-                    reports: arrayRemove({uid: uid, mid: mid}),
-                    missions: updatedMissions
-                });
+            if (gSnap.exists()) {
+                const updatedMissions = (gSnap.data().missions || []).filter(m => m.id !== mid);
+                await updateDoc(gRef, { reports: arrayRemove({ uid, mid }), missions: updatedMissions });
             }
-
-            alert(`✅ 任務已核准！已將 ${reward}G 匯入 ${uid} 帳戶，並且任務已從全服撤下。`);
+            showMsg(`任務已核准！${reward}G 已匯入 ${uid}，任務已從全服撤下。`, 'success');
             loadUsers();
         };
-
-        // 綁定 Enter 鍵觸發登入
-        document.getElementById("admin-pw").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                verifyAdmin();
-            }
-        });
     </script>
 </body>
 </html>
