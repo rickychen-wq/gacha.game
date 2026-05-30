@@ -6,55 +6,87 @@
     <title>Solo Leveling - 登入系統</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
-        body { 
-            background-color: #050505; color: #00ffcc; height: 100vh; display: flex; 
-            justify-content: center; align-items: center; 
-            background-image: linear-gradient(rgba(0, 255, 204, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 204, 0.05) 1px, transparent 1px);
+        body {
+            background-color: #050505;
+            color: #00ffcc;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0,255,204,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,204,0.05) 1px, transparent 1px);
             background-size: 30px 30px;
             padding: 20px;
         }
         .login-box {
-            background: rgba(10, 10, 10, 0.9); padding: 40px; border: 2px solid #333;
-            box-shadow: 0 0 30px rgba(0, 255, 204, 0.2); text-align: center; width: 100%; max-width: 400px;
-            animation: glow 4s infinite alternate; border-radius: 12px;
+            background: rgba(10,10,10,0.92);
+            padding: 40px;
+            border: 2px solid #333;
+            box-shadow: 0 0 30px rgba(0,255,204,0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            animation: glow 4s infinite alternate;
+            border-radius: 12px;
         }
         @keyframes glow { from { border-color: #00ffcc; } to { border-color: #ff0055; } }
         h1 { margin-bottom: 30px; font-size: 22px; letter-spacing: 3px; border-bottom: 2px solid #222; padding-bottom: 15px; text-transform: uppercase; }
-        
+
         .input-group { position: relative; margin-bottom: 20px; }
         input {
             width: 100%; padding: 15px; background: #000; border: 1px solid #333;
             color: #00ffcc; font-size: 16px; outline: none; transition: 0.3s; border-radius: 8px;
-            text-align: center; letter-spacing: 1px;
+            text-align: center; letter-spacing: 1px; font-family: 'Courier New', Courier, monospace;
         }
-        input:focus { border-color: #00ffcc; box-shadow: 0 0 15px rgba(0, 255, 204, 0.3); }
-        
+        input:focus { border-color: #00ffcc; box-shadow: 0 0 15px rgba(0,255,204,0.3); }
+
+        /* 密碼可見切換 */
+        .pw-wrap { position: relative; }
+        .pw-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #444;
+            transition: 0.2s;
+            padding: 4px;
+        }
+        .pw-toggle:hover { color: #00ffcc; }
+
         .btn {
-            width: 100%; padding: 15px; background: rgba(0, 255, 204, 0.1); border: 1px solid #00ffcc;
+            width: 100%; padding: 15px; background: rgba(0,255,204,0.1); border: 1px solid #00ffcc;
             color: #00ffcc; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 15px;
-            border-radius: 8px; letter-spacing: 2px;
+            border-radius: 8px; letter-spacing: 2px; font-family: 'Courier New', Courier, monospace;
         }
         .btn:hover { background: #00ffcc; color: #000; box-shadow: 0 0 20px rgba(0,255,204,0.4); transform: translateY(-2px); }
-        
-        .btn-reg { border-color: #ff0055; color: #ff0055; background: rgba(255, 0, 85, 0.1); margin-bottom: 0; }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; background: rgba(0,255,204,0.05); }
+        .btn-reg { border-color: #ff0055; color: #ff0055; background: rgba(255,0,85,0.1); margin-bottom: 0; }
         .btn-reg:hover { background: #ff0055; color: #fff; box-shadow: 0 0 20px rgba(255,0,85,0.4); }
-        
-        #msg { color: #ff0055; font-size: 14px; min-height: 20px; margin-bottom: 20px; font-weight: bold; }
+        #msg { font-size: 14px; min-height: 20px; margin-bottom: 20px; font-weight: bold; letter-spacing: 1px; transition: 0.3s; }
+        #msg.error { color: #ff0055; }
+        #msg.success { color: #00ffcc; }
+        #msg.loading { color: #888; }
     </style>
 </head>
 <body>
-
     <div class="login-box">
         <h1>SYSTEM_LOGIN</h1>
-        <div id="msg">等待神經連結...</div>
-        
+        <div id="msg" class="loading">等待神經連結...</div>
+
         <div class="input-group">
-            <input type="text" id="username" placeholder="輸入遊戲 ID (不需信箱)">
+            <input type="text" id="username" placeholder="輸入遊戲 ID">
         </div>
-        <div class="input-group">
+        <div class="input-group pw-wrap">
             <input type="password" id="password" placeholder="輸入密碼 (至少 6 碼)">
+            <button class="pw-toggle" id="pw-eye" onclick="togglePw()" type="button" title="顯示/隱藏密碼">👁</button>
         </div>
-        
+
         <button class="btn" id="btn-login">神經連結 (登入)</button>
         <button class="btn btn-reg" id="btn-register">創建身分 (註冊新 ID)</button>
     </div>
@@ -72,60 +104,63 @@
             appId: "1:1035192644413:web:1ad5337b9760a154cf8b54"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const app  = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // 已登入就自動開門
         onAuthStateChanged(auth, (user) => {
-            if (user) window.location.href = "game.html";
+            if (user) window.location.href = 'game.html';
         });
 
-        const userInp = document.getElementById('username');
-        const passInp = document.getElementById('password');
-        const msgBox = document.getElementById('msg');
+        const userInp  = document.getElementById('username');
+        const passInp  = document.getElementById('password');
+        const msgBox   = document.getElementById('msg');
+        const btnLogin = document.getElementById('btn-login');
+        const btnReg   = document.getElementById('btn-register');
+        const DOMAIN   = '@solodungeon.game';
 
-        // ✨ 這是我們的魔術墊檔網域，Firebase 看到這個才會放行
-        const hiddenDomain = "@solodungeon.game";
+        function setMsg(text, type) {
+            msgBox.textContent = text;
+            msgBox.className   = type;
+        }
+        function setBusy(busy) {
+            btnLogin.disabled = btnReg.disabled = busy;
+        }
 
-        // 登入邏輯
-        document.getElementById('btn-login').addEventListener('click', () => {
-            const userId = userInp.value.trim();
+        // Enter 鍵支援
+        passInp.addEventListener('keydown', (e) => { if (e.key === 'Enter') btnLogin.click(); });
+
+        btnLogin.addEventListener('click', () => {
+            const userId   = userInp.value.trim();
             const password = passInp.value.trim();
-            
-            if(!userId || !password) {
-                msgBox.innerText = "錯誤: ID 與密碼不能為空";
-                return;
-            }
-
-            const fakeEmail = userId + hiddenDomain; // 偷偷組裝成信箱格式
-
-            signInWithEmailAndPassword(auth, fakeEmail, password)
-                .then(() => { msgBox.style.color = '#00ffcc'; msgBox.innerText = "登入成功，空間跳轉中..."; })
-                .catch(error => msgBox.innerText = "錯誤: ID 不存在或密碼不正確");
+            if (!userId || !password) { setMsg('錯誤: ID 與密碼不能為空', 'error'); return; }
+            setBusy(true);
+            setMsg('驗證中...', 'loading');
+            signInWithEmailAndPassword(auth, userId + DOMAIN, password)
+                .then(() => setMsg('登入成功，空間跳轉中...', 'success'))
+                .catch(() => { setMsg('錯誤: ID 不存在或密碼不正確', 'error'); setBusy(false); });
         });
 
-        // 註冊邏輯
-        document.getElementById('btn-register').addEventListener('click', () => {
-            const userId = userInp.value.trim();
+        btnReg.addEventListener('click', () => {
+            const userId   = userInp.value.trim();
             const password = passInp.value.trim();
-            
-            if(!userId || password.length < 6) {
-                msgBox.innerText = "錯誤: ID 不能為空，且密碼需至少 6 碼";
-                return;
-            }
-
-            const fakeEmail = userId + hiddenDomain; // 偷偷組裝成信箱格式
-
-            createUserWithEmailAndPassword(auth, fakeEmail, password)
-                .then(() => { msgBox.style.color = '#00ffcc'; msgBox.innerText = "註冊成功！建立資料夾中..."; })
+            if (!userId || password.length < 6) { setMsg('錯誤: ID 不能為空，且密碼需至少 6 碼', 'error'); return; }
+            setBusy(true);
+            setMsg('建立身分中...', 'loading');
+            createUserWithEmailAndPassword(auth, userId + DOMAIN, password)
+                .then(() => setMsg('註冊成功！建立資料夾中...', 'success'))
                 .catch(error => {
-                    if(error.code === 'auth/email-already-in-use') {
-                        msgBox.innerText = "錯誤: 這個 ID 已經被別人搶走啦！";
-                    } else {
-                        msgBox.innerText = "系統異常，請檢查網路連線。";
-                    }
+                    if (error.code === 'auth/email-already-in-use') setMsg('錯誤: 這個 ID 已經被別人搶走啦！', 'error');
+                    else setMsg('系統異常，請檢查網路連線。', 'error');
+                    setBusy(false);
                 });
         });
+
+        // 密碼可見切換 (暴露給 HTML onclick)
+        window.togglePw = () => {
+            const isText = passInp.type === 'text';
+            passInp.type = isText ? 'password' : 'text';
+            document.getElementById('pw-eye').textContent = isText ? '👁' : '🙈';
+        };
     </script>
 </body>
 </html>

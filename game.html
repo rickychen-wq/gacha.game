@@ -3,656 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solo Leveling: TCG V55 - 拼字校正完美版</title>
+    <title>Solo Leveling: TCG</title>
     <style>
-        /* ================= 基礎設定 ================= */
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Courier New', Courier, monospace; 
-            -webkit-tap-highlight-color: transparent; 
-        }
-        body { 
-            background-color: #020617; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100dvh; 
-            width: 100vw; 
-            overflow: hidden; 
-            color: #e2e8f0; 
-        }
-        #app { 
-            width: 100%; 
-            max-width: 400px; 
-            height: 100%; 
-            background: radial-gradient(circle at top, #1e293b 0%, #020617 100%); 
-            position: relative; 
-            display: flex; 
-            flex-direction: column; 
-            border: 1px solid #334155; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.8); 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #020617; display: flex; justify-content: center; align-items: center; height: 100dvh; width: 100vw; overflow: hidden; color: #e2e8f0; }
+        #app { width: 100%; max-width: 400px; height: 100%; background: radial-gradient(circle at top, #1e293b 0%, #020617 100%); position: relative; display: flex; flex-direction: column; border: 1px solid #334155; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
 
-        /* ================= 登入/註冊介面 ================= */
-        #login-view { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(2, 6, 23, 0.85); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px); 
-            z-index: 9999; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 30px; 
-        }
-        .sys-title { 
-            color: #38bdf8; 
-            font-size: 26px; 
-            font-weight: bold; 
-            margin-bottom: 5px; 
-            text-shadow: 0 0 15px rgba(56,189,248,0.5); 
-            letter-spacing: 3px; 
-        }
-        .sys-sub { 
-            color: #94a3b8; 
-            font-size: 11px; 
-            margin-bottom: 40px; 
-            letter-spacing: 4px; 
-        }
-        .log-input { 
-            width: 100%; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            background: rgba(30, 41, 59, 0.6); 
-            border: 1px solid #475569; 
-            color: #fff; 
-            border-radius: 8px; 
-            outline: none; 
-            font-size: 14px; 
-            transition: 0.3s; 
-        }
-        .log-input:focus { 
-            border-color: #38bdf8; 
-            box-shadow: inset 0 0 10px rgba(56,189,248,0.2); 
-            background: rgba(30, 41, 59, 0.9); 
-        }
-        .log-btn { 
-            padding: 15px; 
-            color: #38bdf8; 
-            font-weight: bold; 
-            border-radius: 8px; 
-            font-size: 15px; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            letter-spacing: 2px; 
-        }
-        .btn-login { 
-            background: rgba(56,189,248,0.15); 
-            border: 1px solid #38bdf8; 
-        }
-        .btn-login:active { 
-            background: #38bdf8; 
-            color: #020617; 
-        }
-        .btn-reg { 
-            background: transparent; 
-            border: 1px dashed #38bdf8; 
-            opacity: 0.8; 
-        }
-        .btn-reg:active { 
-            background: rgba(56,189,248,0.1); 
-        }
-        #log-err { 
-            color: #f43f5e; 
-            font-size: 12px; 
-            margin-top: 15px; 
-            display: none; 
-            letter-spacing: 1px; 
-            text-align: center; 
-        }
+        /* ================= Toast 通知 ================= */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; width: 90%; max-width: 360px; }
+        .toast { background: rgba(15,23,42,0.97); border: 1px solid #334155; border-radius: 8px; padding: 12px 18px; font-size: 13px; letter-spacing: 0.5px; backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.6); animation: toastIn 0.3s ease forwards; width: 100%; text-align: center; }
+        .toast.success { border-color: rgba(34,197,94,0.5); color: #86efac; }
+        .toast.error { border-color: rgba(244,63,94,0.5); color: #fda4af; }
+        .toast.info { border-color: rgba(56,189,248,0.5); color: #7dd3fc; }
+        .toast.out { animation: toastOut 0.3s ease forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
+
+        /* ================= 登入介面 ================= */
+        #login-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2,6,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
+        .sys-title { color: #38bdf8; font-size: 26px; font-weight: bold; margin-bottom: 5px; text-shadow: 0 0 15px rgba(56,189,248,0.5); letter-spacing: 3px; }
+        .sys-sub { color: #94a3b8; font-size: 11px; margin-bottom: 40px; letter-spacing: 4px; }
+        .log-input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(30,41,59,0.6); border: 1px solid #475569; color: #fff; border-radius: 8px; outline: none; font-size: 14px; transition: 0.3s; }
+        .log-input:focus { border-color: #38bdf8; box-shadow: inset 0 0 10px rgba(56,189,248,0.2); background: rgba(30,41,59,0.9); }
+        .log-btn { padding: 15px; color: #38bdf8; font-weight: bold; border-radius: 8px; font-size: 15px; cursor: pointer; transition: 0.2s; letter-spacing: 2px; font-family: 'Courier New', Courier, monospace; }
+        .btn-login { background: rgba(56,189,248,0.15); border: 1px solid #38bdf8; }
+        .btn-login:active { background: #38bdf8; color: #020617; }
+        .btn-reg { background: transparent; border: 1px dashed #38bdf8; opacity: 0.8; }
+        .btn-reg:active { background: rgba(56,189,248,0.1); }
+        .log-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+        #log-err { color: #f43f5e; font-size: 12px; margin-top: 15px; display: none; letter-spacing: 1px; text-align: center; }
 
         /* ================= 頂部資訊列 ================= */
-        .top-bar { 
-            height: 60px; 
-            border-bottom: 1px solid #334155; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 0 15px; 
-            background: rgba(15, 23, 42, 0.8); 
-            backdrop-filter: blur(8px); 
-            z-index: 10; 
-        }
-        .p-info { 
-            display: flex; 
-            flex-direction: column; 
-        }
-        .logout-btn { 
-            color: #f43f5e; 
-            font-size: 10px; 
-            background: rgba(244, 63, 94, 0.1); 
-            border: 1px solid #f43f5e; 
-            border-radius: 4px; 
-            padding: 3px 8px; 
-            margin-top: 4px; 
-            cursor: pointer; 
-            width: fit-content; 
-            transition: 0.2s; 
-        }
-        .logout-btn:hover { 
-            background: #f43f5e; 
-            color: #fff; 
-        }
-        .top-right-wrap { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-        }
-        .gold-ui { 
-            background: rgba(250, 204, 21, 0.1); 
-            border: 1px solid rgba(250, 204, 21, 0.4); 
-            padding: 5px 12px; 
-            border-radius: 6px; 
-            color: #facc15; 
-            font-weight: bold; 
-            font-size: 13px; 
-            box-shadow: 0 0 10px rgba(250,204,21,0.1); 
-        }
-        
-        /* ================= 遊戲主要視窗 ================= */
-        .main-view { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 15px; 
-            position: relative; 
-        }
-        .pool-tabs { 
-            display: flex; 
-            gap: 8px; 
-            margin-bottom: 15px; 
-        }
-        .tab-btn { 
-            flex: 1; 
-            background: rgba(30, 41, 59, 0.5); 
-            color: #94a3b8; 
-            border: 1px solid #334155; 
-            padding: 10px; 
-            text-align: center; 
-            font-weight: bold; 
-            border-radius: 6px; 
-            font-size: 12px; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            backdrop-filter: blur(4px); 
-        }
-        .tab-btn.active { 
-            background: rgba(56, 189, 248, 0.15); 
-            color: #38bdf8; 
-            border-color: rgba(56, 189, 248, 0.5); 
-            box-shadow: 0 0 10px rgba(56,189,248,0.1); 
-        }
-        .banner { 
-            width: 100%; 
-            height: 180px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-            position: relative; 
-            overflow: hidden; 
-            border: 1px solid #475569; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
-        }
-        .banner img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            opacity: 0.9; 
-        }
-        
+        .top-bar { height: 60px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); z-index: 10; }
+        .p-info { display: flex; flex-direction: column; }
+        .logout-btn { color: #f43f5e; font-size: 10px; background: rgba(244,63,94,0.1); border: 1px solid #f43f5e; border-radius: 4px; padding: 3px 8px; margin-top: 4px; cursor: pointer; width: fit-content; transition: 0.2s; font-family: 'Courier New', Courier, monospace; }
+        .logout-btn:hover { background: #f43f5e; color: #fff; }
+        .top-right-wrap { display: flex; align-items: center; gap: 8px; }
+        .gold-ui { background: rgba(250,204,21,0.1); border: 1px solid rgba(250,204,21,0.4); padding: 5px 12px; border-radius: 6px; color: #facc15; font-weight: bold; font-size: 13px; box-shadow: 0 0 10px rgba(250,204,21,0.1); }
+        .mute-btn { background: rgba(30,41,59,0.6); border: 1px solid #334155; border-radius: 6px; padding: 5px 8px; cursor: pointer; font-size: 14px; transition: 0.2s; color: #94a3b8; }
+        .mute-btn:active { background: rgba(56,189,248,0.1); }
+        .mute-btn.muted { color: #475569; border-color: #1e293b; }
+
+        /* ================= 主視窗 ================= */
+        .main-view { flex: 1; overflow-y: auto; padding: 15px; position: relative; }
+        .pool-tabs { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; background: rgba(30,41,59,0.5); color: #94a3b8; border: 1px solid #334155; padding: 10px; text-align: center; font-weight: bold; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.3s; backdrop-filter: blur(4px); }
+        .tab-btn.active { background: rgba(56,189,248,0.15); color: #38bdf8; border-color: rgba(56,189,248,0.5); box-shadow: 0 0 10px rgba(56,189,248,0.1); }
+        .banner { width: 100%; height: 180px; border-radius: 8px; margin-bottom: 20px; position: relative; overflow: hidden; border: 1px solid #475569; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        .banner-label { position: absolute; bottom: 10px; left: 10px; color: #f8fafc; font-size: 13px; font-weight: bold; letter-spacing: 1px; text-shadow: 0 2px 5px #000; }
+
         /* ================= 抽卡按鈕與保底條 ================= */
-        .gacha-btns { 
-            display: flex; 
-            gap: 10px; 
-        }
-        .g-btn { 
-            flex: 1; 
-            padding: 15px; 
-            background: rgba(15, 23, 42, 0.8); 
-            border: 1px solid rgba(56,189,248,0.4); 
-            color: #38bdf8; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            backdrop-filter: blur(4px); 
-        }
-        .g-btn span { 
-            display: block; 
-            font-size: 10px; 
-            opacity: 0.6; 
-            margin-top: 4px; 
-        }
-        .g-btn:active { 
-            transform: scale(0.97); 
-            background: rgba(56,189,248,0.2); 
-        }
-        #pity-bar-wrap { 
-            margin-top: 14px; 
-        }
-        #pity-bar-wrap label { 
-            font-size: 10px; 
-            color: #94a3b8; 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 6px; 
-            letter-spacing: 1px; 
-        }
-        #pity-bar-track { 
-            width: 100%; 
-            height: 6px; 
-            background: #0f172a; 
-            overflow: hidden; 
-            border-radius: 3px; 
-            border: 1px solid #334155; 
-        }
-        #pity-bar-fill { 
-            height: 100%; 
-            background: linear-gradient(90deg, #3b82f6, #a855f7); 
-            transition: width 0.5s ease; 
-            box-shadow: 0 0 10px rgba(168,85,247,0.5); 
-        }
+        .gacha-btns { display: flex; gap: 10px; }
+        .g-btn { flex: 1; padding: 15px; background: rgba(15,23,42,0.8); border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px); font-family: 'Courier New', Courier, monospace; }
+        .g-btn.multi { border-color: rgba(168,85,247,0.4); color: #d8b4fe; }
+        .g-btn span { display: block; font-size: 10px; opacity: 0.6; margin-top: 4px; }
+        .g-btn:active { transform: scale(0.97); background: rgba(56,189,248,0.2); }
+        .g-btn.multi:active { background: rgba(168,85,247,0.2); }
+        .g-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        #pity-bar-wrap { margin-top: 14px; }
+        .pity-label { font-size: 10px; color: #94a3b8; display: flex; justify-content: space-between; margin-bottom: 6px; letter-spacing: 1px; }
+        #pity-bar-track { width: 100%; height: 6px; background: #0f172a; overflow: hidden; border-radius: 3px; border: 1px solid #334155; }
+        #pity-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #a855f7); transition: width 0.5s ease, background 0.5s ease; box-shadow: 0 0 10px rgba(168,85,247,0.5); }
 
-        /* ================= 委託任務卡片 ================= */
-        .m-card { 
-            background: rgba(30, 41, 59, 0.6); 
-            border: 1px solid #334155; 
-            border-left: 3px solid #38bdf8; 
-            padding: 15px; 
-            margin-bottom: 12px; 
-            border-radius: 6px; 
-            backdrop-filter: blur(4px); 
-        }
-        .m-btn { 
-            width: 100%; 
-            margin-top: 10px; 
-            padding: 10px; 
-            background: rgba(56,189,248,0.15); 
-            color: #38bdf8; 
-            border: 1px solid rgba(56,189,248,0.4); 
-            font-weight: bold; 
-            border-radius: 4px; 
-            cursor: pointer; 
-        }
-        .m-btn:disabled { 
-            background: rgba(15, 23, 42, 0.5); 
-            color: #475569; 
-            border-color: #334155; 
-            cursor: not-allowed; 
-        }
+        /* ================= 任務 ================= */
+        .section-title { color: #38bdf8; font-size: 14px; letter-spacing: 1px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #1e293b; }
+        .m-card { background: rgba(30,41,59,0.6); border: 1px solid #334155; border-left: 3px solid #38bdf8; padding: 15px; margin-bottom: 12px; border-radius: 6px; backdrop-filter: blur(4px); }
+        .m-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+        .m-card-title { color: #e2e8f0; font-weight: bold; font-size: 13px; }
+        .m-card-reward { color: #facc15; font-size: 12px; font-weight: bold; white-space: nowrap; margin-left: 8px; }
+        .m-card-desc { font-size: 11px; color: #94a3b8; margin-top: 4px; line-height: 1.5; }
+        .m-btn { width: 100%; margin-top: 10px; padding: 10px; background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4); font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 12px; font-family: 'Courier New', Courier, monospace; }
+        .m-btn:hover:not(:disabled) { background: rgba(56,189,248,0.25); }
+        .m-btn:disabled { background: rgba(15,23,42,0.5); color: #475569; border-color: #334155; cursor: not-allowed; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #475569; font-size: 12px; letter-spacing: 1px; line-height: 2.2; }
 
-        /* ================= 抽卡動畫疊層 (防摔死 Flexbox) ================= */
-        #overlay { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100dvh; 
-            background: rgba(2,6,23,0.9); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px); 
-            z-index: 10000; 
-            display: none; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-        }
-        .stack-wrap { 
-            width: 220px; 
-            height: 320px; 
-            perspective: 1200px; 
-            position: relative; 
-            margin-top: -50px; 
-        }
-        .stack { 
-            position: relative; 
-            width: 100%; 
-            height: 100%; 
-        }
-        #hint { 
-            margin-top: 50px; 
-            color: #94a3b8; 
-            font-size: 13px; 
-            letter-spacing: 2px; 
-            background: rgba(15,23,42,0.85); 
-            padding: 10px 25px; 
-            border-radius: 20px; 
-            border: 1px solid #334155; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.6); 
-        }
-        .card-w { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
-            cursor: pointer; 
-        }
-        .card-i { 
-            width: 100%; 
-            height: 100%; 
-            position: relative; 
-            transform-style: preserve-3d; 
-            transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        .card-i.flipped { 
-            transform: rotateY(180deg) scale(1.08); 
-        }
-        .face { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            backface-visibility: hidden; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.15); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
-        }
-        .back { 
-            background: linear-gradient(135deg, #1e293b 0%, #020617 100%); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            border: 1px solid rgba(56,189,248,0.3); 
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8); 
-            position: relative; 
-        }
-        .back::after { 
-            content: 'SL'; 
-            color: rgba(255, 255, 255, 0.05); 
-            font-size: 50px; 
-            font-weight: 900; 
-            letter-spacing: 8px; 
-        }
-        .front { 
-            transform: rotateY(180deg); 
-            background: #0f172a; 
-        }
-        .front img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            object-position: center top; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            z-index: 1; 
-            opacity: 0.9; 
-        }
-        .r-banner { 
-            position: absolute; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 40px; 
-            z-index: 2; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-weight: bold; 
-            font-size: 14px; 
-            letter-spacing: 1px; 
-            background: rgba(15, 23, 42, 0.85); 
-            backdrop-filter: blur(10px); 
-            -webkit-backdrop-filter: blur(10px); 
-            border-top: 1px solid rgba(255,255,255,0.1); 
-            text-transform: uppercase; 
-        }
-        @keyframes fly { 
-            0% { opacity: 1; transform: rotateY(180deg) scale(1.08); filter: blur(0px); } 
-            40% { opacity: 1; transform: rotateY(180deg) scale(1.15); filter: blur(1px); box-shadow: 0 0 40px #38bdf8; } 
-            100% { opacity: 0; transform: rotateY(180deg) scale(0.2); filter: blur(15px); } 
-        }
-        .dismissed { 
-            animation: fly 0.6s forwards; 
-            pointer-events: none; 
-        }
+        /* ================= 交易 ================= */
+        .trade-section-header { font-size: 15px; color: #a855f7; border-left: 3px solid #a855f7; padding-left: 8px; margin-bottom: 15px; font-weight: bold; }
+        .trade-post-box { background: rgba(15,23,42,0.8); padding: 12px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px; }
+        .trade-hint { font-size: 11px; color: #94a3b8; margin-bottom: 10px; }
+        .trade-inputs { display: flex; flex-direction: column; gap: 8px; }
+        .trade-sel { width: 100%; padding: 10px; background: #020617; color: #e2e8f0; border: 1px solid #475569; border-radius: 4px; font-size: 11px; outline: none; font-family: 'Courier New', Courier, monospace; }
+        .trade-bottom-row { display: flex; gap: 8px; }
+        .trade-price-inp { flex: 1; padding: 10px; background: #020617; color: #facc15; border: 1px solid #475569; border-radius: 4px; font-size: 11px; outline: none; font-family: 'Courier New', Courier, monospace; }
+        .trade-post-btn { padding: 0 20px; background: rgba(168,85,247,0.2); color: #d8b4fe; border: 1px solid #a855f7; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.2s; font-family: 'Courier New', Courier, monospace; }
+        .trade-post-btn:hover { background: rgba(168,85,247,0.35); }
+        .trade-item { background: rgba(30,41,59,0.8); border: 1px solid #334155; border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .trade-item.mine { border-left: 3px solid #94a3b8; }
+        .trade-item.others { border-left: 3px solid #38bdf8; }
+        .trade-item:hover { background: rgba(30,41,59,1); }
+        .trade-item-left { display: flex; gap: 10px; align-items: center; }
+        .trade-item-img { width: 35px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #475569; }
+        .trade-item-seller { font-size: 10px; color: #94a3b8; }
+        .trade-item-name { font-weight: bold; color: #e2e8f0; font-size: 12px; margin-top: 2px; }
+        .trade-item-right { text-align: right; }
+        .trade-item-price { color: #facc15; font-weight: bold; font-size: 12px; margin-bottom: 5px; }
+        .trade-action-btn { padding: 4px 12px; font-size: 10px; font-family: 'Courier New', Courier, monospace; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .trade-action-btn.buy { background: rgba(56,189,248,0.1); color: #38bdf8; border: 1px solid #38bdf8; }
+        .trade-action-btn.buy:hover { background: rgba(56,189,248,0.25); }
+        .trade-action-btn.cancel { background: rgba(100,116,139,0.1); color: #94a3b8; border: 1px solid #475569; }
+        .trade-action-btn.cancel:hover { background: rgba(100,116,139,0.2); }
+
+        /* ================= 抽卡動畫疊層 ================= */
+        #overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(2,6,23,0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .stack-wrap { width: 220px; height: 320px; perspective: 1200px; position: relative; margin-top: -50px; }
+        .stack { position: relative; width: 100%; height: 100%; }
+        #hint { margin-top: 50px; color: #94a3b8; font-size: 13px; letter-spacing: 2px; background: rgba(15,23,42,0.85); padding: 10px 25px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 0 20px rgba(0,0,0,0.6); }
+        .card-w { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: 0.6s cubic-bezier(0.2,0.8,0.2,1); cursor: pointer; }
+        .card-i { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: 0.8s cubic-bezier(0.175,0.885,0.32,1.275); }
+        .card-i.flipped { transform: rotateY(180deg) scale(1.08); }
+        .face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .back { background: linear-gradient(135deg, #1e293b 0%, #020617 100%); display: flex; justify-content: center; align-items: center; border: 1px solid rgba(56,189,248,0.3); box-shadow: inset 0 0 30px rgba(0,0,0,0.8); position: relative; }
+        .back::after { content: 'SL'; color: rgba(255,255,255,0.05); font-size: 50px; font-weight: 900; letter-spacing: 8px; }
+        .front { transform: rotateY(180deg); background: #0f172a; }
+        .front img { width: 100%; height: 100%; object-fit: cover; object-position: center top; position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.9; }
+        .r-banner { position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; z-index: 2; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; letter-spacing: 1px; background: rgba(15,23,42,0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; }
+        @keyframes fly { 0% { opacity:1; transform:rotateY(180deg) scale(1.08); filter:blur(0px); } 40% { opacity:1; transform:rotateY(180deg) scale(1.15); filter:blur(1px); box-shadow:0 0 40px #38bdf8; } 100% { opacity:0; transform:rotateY(180deg) scale(0.2); filter:blur(15px); } }
+        .dismissed { animation: fly 0.6s forwards; pointer-events: none; }
 
         /* ================= 圖鑑放大特效層 ================= */
-        #detail-overlay { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100dvh; 
-            background: rgba(2,6,23,0.92); 
-            backdrop-filter: blur(15px); 
-            -webkit-backdrop-filter: blur(15px); 
-            z-index: 10005; 
-            display: none; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            cursor: pointer; 
-        }
-        .detail-card { 
-            width: 280px; 
-            aspect-ratio: 2/3; 
-            position: relative; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            border: 2px solid #334155; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9); 
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
-            background: #0f172a; 
-        }
-        .detail-card img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            object-position: center top; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            z-index: 1; 
-        }
-        @keyframes popIn { 
-            0% { opacity: 0; transform: scale(0.6) translateY(40px); } 
-            100% { opacity: 1; transform: scale(1) translateY(0); } 
-        }
-        @keyframes detailBreathSSS { 
-            0% { box-shadow: 0 0 30px rgba(225,29,72,0.4); transform: scale(1); } 
-            100% { box-shadow: 0 0 70px rgba(225,29,72,0.8); transform: scale(1.02); } 
-        }
+        #detail-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(2,6,23,0.92); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 10005; display: none; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
+        .detail-card { width: 280px; aspect-ratio: 2/3; position: relative; border-radius: 12px; overflow: hidden; border: 2px solid #334155; box-shadow: 0 20px 60px rgba(0,0,0,0.9); animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards; background: #0f172a; }
+        .detail-card img { width: 100%; height: 100%; object-fit: cover; object-position: center top; position: absolute; top: 0; left: 0; z-index: 1; }
+        .detail-close-hint { margin-top: 30px; color: #94a3b8; font-size: 12px; letter-spacing: 2px; text-shadow: 0 2px 4px #000; }
+        @keyframes popIn { 0% { opacity:0; transform:scale(0.6) translateY(40px); } 100% { opacity:1; transform:scale(1) translateY(0); } }
+        @keyframes detailBreathSSS { 0% { box-shadow:0 0 30px rgba(225,29,72,0.4); transform:scale(1); } 100% { box-shadow:0 0 70px rgba(225,29,72,0.8); transform:scale(1.02); } }
         .detail-card.rarity-SSS { border-color: rgba(225,29,72,0.8); animation: detailBreathSSS 2s infinite alternate; }
         .detail-card.rarity-SS { border-color: rgba(249,115,22,0.8); box-shadow: 0 0 50px rgba(249,115,22,0.6); }
         .detail-card.rarity-S { border-color: rgba(168,85,247,0.8); box-shadow: 0 0 50px rgba(168,85,247,0.6); }
         .detail-card.rarity-A { border-color: rgba(234,179,8,0.6); box-shadow: 0 0 30px rgba(234,179,8,0.3); }
 
-        /* ================= 圖鑑與封印灰霧介面 ================= */
-        #bag-list { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 10px; 
-            padding-top: 5px; 
-        }
-        .bag-card { 
-            position: relative; 
-            border-radius: 6px; 
-            overflow: hidden; 
-            border: 1px solid #334155; 
-            background: rgba(15, 23, 42, 0.7); 
-            aspect-ratio: 2/3; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            backdrop-filter: blur(4px); 
-            transition: 0.2s; 
-        }
-        .bag-card:active { 
-            transform: scale(0.95); 
-        }
-        .bag-card img { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            object-position: center top; 
-            transition: 0.3s; 
-            z-index: 1; 
-        }
-        .bag-card .rarity-label { 
-            position: absolute; 
-            bottom: 0; 
-            left: 0; 
-            right: 0; 
-            height: 22px; 
-            line-height: 22px; 
-            text-align: center; 
-            font-size: 11px; 
-            font-weight: bold; 
-            background: rgba(15,23,42,0.9); 
-            letter-spacing: 1px; 
-            border-top: 1px solid rgba(255,255,255,0.05); 
-            z-index: 2; 
-        }
-        .bag-card .count-badge { 
-            position: absolute; 
-            top: 4px; 
-            right: 4px; 
-            background: rgba(15,23,42,0.9); 
-            border: 1px solid rgba(250,204,21,0.5); 
-            color: #facc15; 
-            font-size: 9px; 
-            border-radius: 4px; 
-            padding: 2px 5px; 
-            z-index: 3; 
-        }
-        .bag-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 14px; 
-        }
-        .bag-header h2 { 
-            color: #38bdf8; 
-            font-size: 14px; 
-            letter-spacing: 1px; 
-        }
-        .bag-header span { 
-            font-size: 11px; 
-            color: #94a3b8; 
-        }
-        .bag-card.locked { 
-            border-color: #1e293b !important; 
-            box-shadow: none !important; 
-            background: rgba(2,6,23,0.5); 
-            cursor: not-allowed; 
-        }
-        .bag-card.locked:active { 
-            transform: none; 
-        }
-        .bag-card.locked img { 
-            filter: grayscale(100%) brightness(0.4) contrast(0.8) blur(1px); 
-            opacity: 0.55; 
-        }
-        .bag-card.locked .rarity-label { 
-            color: #475569 !important; 
-            background: transparent; 
-            border-top-color: transparent; 
-        }
+        /* ================= 圖鑑 ================= */
+        #bag-list { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; padding-top: 5px; }
+        .bag-card { position: relative; border-radius: 6px; overflow: hidden; border: 1px solid #334155; background: rgba(15,23,42,0.7); aspect-ratio: 2/3; display: flex; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(4px); transition: 0.2s; }
+        .bag-card:active { transform: scale(0.95); }
+        .bag-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: 0.3s; z-index: 1; }
+        .bag-card .rarity-label { position: absolute; bottom: 0; left: 0; right: 0; height: 22px; line-height: 22px; text-align: center; font-size: 11px; font-weight: bold; background: rgba(15,23,42,0.9); letter-spacing: 1px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2; }
+        .bag-card .count-badge { position: absolute; top: 4px; right: 4px; background: rgba(15,23,42,0.9); border: 1px solid rgba(250,204,21,0.5); color: #facc15; font-size: 9px; border-radius: 4px; padding: 2px 5px; z-index: 3; }
+        .bag-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .bag-header h2 { color: #38bdf8; font-size: 14px; letter-spacing: 1px; }
+        .bag-header span { font-size: 11px; color: #94a3b8; }
+        .bag-card.locked { border-color: #1e293b !important; box-shadow: none !important; background: rgba(2,6,23,0.5); cursor: not-allowed; }
+        .bag-card.locked:active { transform: none; }
+        .bag-card.locked img { filter: grayscale(100%) brightness(0.4) contrast(0.8) blur(1px); opacity: 0.55; }
+        .bag-card.locked .rarity-label { color: #475569 !important; background: transparent; border-top-color: transparent; }
 
-        @keyframes breathSSS { 
-            0% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } 
-            50% { box-shadow: inset 0 0 25px rgba(225,29,72,0.5); } 
-            100% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } 
-        }
+        @keyframes breathSSS { 0% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } 50% { box-shadow: inset 0 0 25px rgba(225,29,72,0.5); } 100% { box-shadow: inset 0 0 10px rgba(225,29,72,0.2); } }
         .rarity-SSS { border-color: rgba(225,29,72,0.6) !important; animation: breathSSS 3s infinite ease-in-out; }
-        .rarity-SSS .r-banner { color: #fb7185; text-shadow: 0 0 8px rgba(251,113,133,0.5); border-top-color: rgba(225,29,72,0.4); }
-        .rarity-SSS .rarity-label { color: #fb7185; }
+        .rarity-SSS .r-banner, .rarity-SSS .rarity-label { color: #fb7185; text-shadow: 0 0 8px rgba(251,113,133,0.5); }
         .rarity-SS { border-color: rgba(249,115,22,0.4) !important; box-shadow: inset 0 0 15px rgba(249,115,22,0.15); }
         .rarity-SS .r-banner, .rarity-SS .rarity-label { color: #fdba74; }
         .rarity-S { border-color: rgba(168,85,247,0.4) !important; box-shadow: inset 0 0 15px rgba(168,85,247,0.15); }
         .rarity-S .r-banner, .rarity-S .rarity-label { color: #d8b4fe; }
-        .rarity-A { border-color: rgba(234,179,8,0.3) !important; } 
+        .rarity-A { border-color: rgba(234,179,8,0.3) !important; }
         .rarity-A .r-banner, .rarity-A .rarity-label { color: #fde047; }
-        .rarity-B { border-color: rgba(6,182,212,0.3) !important; } 
+        .rarity-B { border-color: rgba(6,182,212,0.3) !important; }
         .rarity-B .r-banner, .rarity-B .rarity-label { color: #67e8f9; }
-        .rarity-C { border-color: rgba(148,163,184,0.3) !important; } 
+        .rarity-C { border-color: rgba(148,163,184,0.3) !important; }
         .rarity-C .r-banner, .rarity-C .rarity-label { color: #cbd5e1; }
-        .rarity-D { border-color: rgba(51,65,85,0.5) !important; filter: grayscale(30%);} 
+        .rarity-D { border-color: rgba(51,65,85,0.5) !important; filter: grayscale(30%); }
         .rarity-D .r-banner, .rarity-D .rarity-label { color: #94a3b8; }
         .card-guaranteed .back { border-color: rgba(234,179,8,0.5) !important; box-shadow: inset 0 0 25px rgba(234,179,8,0.2); }
 
-        /* ================= 底部導覽列 (4格) ================= */
+        /* ================= 底部導覽列 ================= */
         .hidden { display: none !important; }
-        .nav { 
-            height: 70px; 
-            display: flex; 
-            align-items: center; 
-            border-top: 1px solid #334155; 
-            background: rgba(15, 23, 42, 0.9); 
-            backdrop-filter: blur(10px); 
-        }
-        .nav-i { 
-            flex: 1; 
-            color: #64748b; 
-            font-size: 11px; 
-            text-align: center; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            letter-spacing: 1px; 
-            font-weight: bold; 
-        }
-        .nav-i.active { 
-            color: #38bdf8; 
-            text-shadow: 0 0 10px rgba(56,189,248,0.4); 
-        }
+        .nav { height: 70px; display: flex; align-items: stretch; border-top: 1px solid #334155; background: rgba(15,23,42,0.9); backdrop-filter: blur(10px); }
+        .nav-i { flex: 1; color: #64748b; font-size: 10px; text-align: center; cursor: pointer; transition: 0.2s; letter-spacing: 1px; font-weight: bold; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; }
+        .nav-i .nav-icon { font-size: 18px; line-height: 1; }
+        .nav-i.active { color: #38bdf8; text-shadow: 0 0 10px rgba(56,189,248,0.4); }
+        .nav-i.active .nav-icon { filter: drop-shadow(0 0 4px rgba(56,189,248,0.6)); }
     </style>
 </head>
 <body>
+    <div id="toast-container"></div>
+
     <div id="app">
-        <!-- 🚨 V55: 改回正統拼字 frieren.mp3 -->
         <audio id="sys-bgm" loop>
             <source src="audio/frieren.mp3" type="audio/mpeg">
         </audio>
 
-        <!-- ================= 登入介面 ================= -->
+        <!-- 登入介面 -->
         <div id="login-view">
             <div class="sys-title">SYS_LOGIN</div>
             <div class="sys-sub">HUNTER ASSOCIATION</div>
             <input type="text" id="log-id" class="log-input" placeholder="Enter Hunter ID" autocomplete="off">
             <input type="password" id="log-pw" class="log-input" placeholder="Password">
-            <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px;">
-                <button class="log-btn btn-login" style="flex: 1;" onclick="executeLogin()">登入</button>
-                <button class="log-btn btn-reg" style="flex: 1;" onclick="executeRegister()">註冊新獵人</button>
+            <div style="display:flex; gap:10px; width:100%; margin-top:5px;">
+                <button class="log-btn btn-login" style="flex:1;" id="btn-login" onclick="executeLogin()">登入</button>
+                <button class="log-btn btn-reg" style="flex:1;" id="btn-reg" onclick="executeRegister()">註冊新獵人</button>
             </div>
             <p id="log-err"></p>
         </div>
 
-        <!-- ================= 頂部資訊列 ================= -->
+        <!-- 頂部資訊列 -->
         <div class="top-bar">
             <div class="p-info">
                 <h1 id="p-id" style="color:#38bdf8; font-size:12px; letter-spacing:1px;">ID: ...</h1>
                 <button class="logout-btn" onclick="executeLogout()">LOGOUT</button>
             </div>
             <div class="top-right-wrap">
+                <button class="mute-btn" id="mute-btn" onclick="toggleMute()" title="音樂開關">🔊</button>
                 <div class="gold-ui">G: <span id="p-gold">0</span></div>
             </div>
         </div>
 
-        <!-- ================= 抽卡動畫疊層 ================= -->
+        <!-- 抽卡動畫疊層 -->
         <div id="overlay">
             <div class="stack-wrap">
                 <div class="stack" id="stack"></div>
@@ -660,20 +215,18 @@
             <div id="hint">[ 點擊進行數據回收 ]</div>
         </div>
 
-        <!-- ================= 圖鑑放大檢視疊層 ================= -->
+        <!-- 圖鑑放大檢視疊層 -->
         <div id="detail-overlay" onclick="closeDetail()">
             <div class="detail-card" id="detail-card">
                 <img id="detail-img" src="">
                 <div id="detail-rarity" class="r-banner"></div>
             </div>
-            <div style="margin-top: 30px; color: #94a3b8; font-size: 12px; letter-spacing: 2px; text-shadow: 0 2px 4px #000;">
-                [ 點擊任意處關閉 ]
-            </div>
+            <div class="detail-close-hint">[ 點擊任意處關閉 ]</div>
         </div>
 
-        <!-- ================= 遊戲主要視窗 ================= -->
+        <!-- 遊戲主視窗 -->
         <div class="main-view">
-            <!-- 1. 召喚頁面 -->
+            <!-- 1. 召喚 -->
             <div id="page-gacha">
                 <div class="pool-tabs">
                     <div class="tab-btn active" onclick="switchPool('frieren', this)">芙莉蓮</div>
@@ -681,53 +234,45 @@
                 </div>
                 <div class="banner">
                     <img id="b-img" src="images/frieren/banner.jpg" onerror="this.src='https://via.placeholder.com/400x180/111/444'">
-                    <div style="position:absolute; bottom:10px; left:10px; color:#f8fafc; font-size: 13px; font-weight:bold; letter-spacing:1px; text-shadow: 0 2px 5px #000;" id="b-txt">
-                        > ARCHIVE: Frieren
-                    </div>
+                    <div class="banner-label" id="b-txt">> ARCHIVE: Frieren</div>
                 </div>
                 <div class="gacha-btns">
-                    <button class="g-btn" onclick="draw(1, 70)">單次解析<span>70 G</span></button>
-                    <button class="g-btn" style="border-color:rgba(168,85,247,0.4); color:#d8b4fe;" onclick="draw(5, 300)">五連解析<span>300 G</span></button>
+                    <button class="g-btn" id="btn-draw1" onclick="draw(1, 70)">單次解析<span>70 G</span></button>
+                    <button class="g-btn multi" id="btn-draw5" onclick="draw(5, 300)">五連解析<span>300 G</span></button>
                 </div>
                 <div id="pity-bar-wrap">
-                    <label>
+                    <div class="pity-label">
                         <span>🛡 S級以上保底演算</span>
                         <span id="pity-text">0 / 50</span>
-                    </label>
+                    </div>
                     <div id="pity-bar-track">
                         <div id="pity-bar-fill" style="width:0%"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- 2. 委託任務頁面 -->
+            <!-- 2. 委託任務 -->
             <div id="page-mission" class="hidden">
                 <div id="m-list"></div>
             </div>
-            
-            <!-- 3. 黑市交易頁面 -->
+
+            <!-- 3. 黑市交易 -->
             <div id="page-trade" class="hidden">
-                <h2 style="color:#a855f7; font-size:15px; border-left:3px solid #a855f7; padding-left:8px; margin-bottom:15px;">
-                    🌐 暗網交易大廳
-                </h2>
-                <div style="background:rgba(15,23,42,0.8); padding:12px; border-radius:6px; border:1px solid #334155; margin-bottom:15px;">
-                    <p style="font-size:11px; color:#94a3b8; margin-bottom:10px;">
-                        選擇圖鑑中的卡片掛單，向全服獵人出售換取金幣。
-                    </p>
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <select id="trade-card-sel" style="width:100%; padding:10px; background:#020617; color:#e2e8f0; border:1px solid #475569; border-radius:4px; font-size:11px; outline:none;"></select>
-                        <div style="display:flex; gap:8px;">
-                            <input type="number" id="trade-price" placeholder="請設定售價 (G)" style="flex:1; padding:10px; background:#020617; color:#facc15; border:1px solid #475569; border-radius:4px; font-size:11px; outline:none;">
-                            <button onclick="postTrade()" style="padding:0 20px; background:rgba(168,85,247,0.2); color:#d8b4fe; border:1px solid #a855f7; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px; transition:0.2s;">
-                                掛單
-                            </button>
+                <div class="trade-section-header">🌐 暗網交易大廳</div>
+                <div class="trade-post-box">
+                    <p class="trade-hint">選擇圖鑑中的卡片掛單，向全服獵人出售換取金幣。</p>
+                    <div class="trade-inputs">
+                        <select id="trade-card-sel" class="trade-sel"></select>
+                        <div class="trade-bottom-row">
+                            <input type="number" id="trade-price" class="trade-price-inp" placeholder="設定售價 (G)">
+                            <button onclick="postTrade()" class="trade-post-btn">掛單</button>
                         </div>
                     </div>
                 </div>
                 <div id="trade-board" style="display:flex; flex-direction:column; gap:10px;"></div>
             </div>
 
-            <!-- 4. 圖鑑頁面 -->
+            <!-- 4. 圖鑑 -->
             <div id="page-bag" class="hidden">
                 <div class="bag-header">
                     <h2>🎒 ARCHIVE</h2>
@@ -737,323 +282,291 @@
             </div>
         </div>
 
-        <!-- ================= 底部導覽列 ================= -->
+        <!-- 底部導覽列 -->
         <div class="nav">
-            <div class="nav-i active" onclick="tab('page-gacha', this)">召喚</div>
-            <div class="nav-i" onclick="tab('page-mission', this)">任務</div>
-            <div class="nav-i" onclick="tab('page-trade', this)">交易</div>
-            <div class="nav-i" onclick="tab('page-bag', this)">圖鑑</div>
+            <div class="nav-i active" onclick="tab('page-gacha', this)">
+                <span class="nav-icon">✦</span>召喚
+            </div>
+            <div class="nav-i" onclick="tab('page-mission', this)">
+                <span class="nav-icon">📋</span>任務
+            </div>
+            <div class="nav-i" onclick="tab('page-trade', this)">
+                <span class="nav-icon">⚡</span>交易
+            </div>
+            <div class="nav-i" onclick="tab('page-bag', this)">
+                <span class="nav-icon">🎒</span>圖鑑
+            </div>
         </div>
     </div>
 
-    <!-- ================= 程式邏輯核心 ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, collection, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // ================= Firebase 初始化 =================
-        const config = { 
-            apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo", 
-            authDomain: "my-gacha-game-f7663.firebaseapp.com", 
-            projectId: "my-gacha-game-f7663", 
-            storageBucket: "my-gacha-game-f7663.firebasestorage.app", 
-            messagingSenderId: "1035192644413", 
-            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54" 
+        const config = {
+            apiKey: "AIzaSyDJ-NRfp17PUpSdYG_JzN0xARc13z5rOwo",
+            authDomain: "my-gacha-game-f7663.firebaseapp.com",
+            projectId: "my-gacha-game-f7663",
+            storageBucket: "my-gacha-game-f7663.firebasestorage.app",
+            messagingSenderId: "1035192644413",
+            appId: "1:1035192644413:web:1ad5337b9760a154cf8b54"
         };
-        const app = initializeApp(config); 
+        const app = initializeApp(config);
         const db = getFirestore(app);
 
-        // ================= 全域變數 =================
-        let userRef = null; 
-        let uData = { gold: 0, inventory: [], pending: [], pity_count: 0 }; 
-        let currentPool = 'frieren'; 
+        let userRef = null;
+        let uData = { gold: 0, inventory: [], pending: [], pity_count: 0 };
+        let currentPool = 'frieren';
         let currentUserId = localStorage.getItem('hunter_id');
         let bgmAudio = document.getElementById('sys-bgm');
+        let isMuted = false;
 
-        // ================= 全域自動去殼過濾器 =================
-        const formatCardName = (filename) => {
-            if(!filename) return "未知";
-            let name = filename.replace(/\.[^/.]+$/, ""); 
-            name = name.replace(/^(sss|ss|s|a|b|c|d)\s*/i, ""); 
-            name = name.replace(/\s*\(\d+\)/g, ""); 
-            return name;
+        // ================= Toast 通知系統 =================
+        window.showToast = (msg, type = 'info', duration = 2500) => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('out');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
         };
 
-        // ================= 卡池設定 =================
+        // ================= 音樂控制 =================
+        window.toggleMute = () => {
+            isMuted = !isMuted;
+            bgmAudio.muted = isMuted;
+            const btn = document.getElementById('mute-btn');
+            btn.textContent = isMuted ? '🔇' : '🔊';
+            btn.classList.toggle('muted', isMuted);
+        };
+
+        const formatCardName = (filename) => {
+            if (!filename) return '未知';
+            return filename.replace(/\.[^/.]+$/, '').replace(/^(sss|ss|s|a|b|c|d)\s*/i, '').replace(/\s*\(\d+\)/g, '');
+        };
+
         const pools = {
-            'frieren': { 
-                sss: ['sss魔王城.jpg'], 
-                ss: ['ss月影.jpg'], 
-                s: ['s 日恆.webp', 's月光.jpg', 's欣梅爾.jpg', 's芙莉蓮.jpg', 's賽利耶 .jpg'], 
-                a: ['a修塔爾克.jpg', 'a費倫 (2).jpg', 'a費倫.jpg', 'a瑪哈特.jpg', 'a讚恩.jpg'], 
-                b: ['b冉則.jpg', 'b由貝爾 (2).jpg', 'b由貝爾 (3).jpg', 'b由貝爾.jpg', 'b威亞貝爾.jpg', 'b梅特戴.jpg', 'b葛納烏.jpg', 'b鄧肯.jpg', 'b蘭特.jpg'], 
-                c: ['c艾莉.jpg', 'c拉比涅.jpg', 'c拉歐芬.jpg', 'c阿烏拉 (2).jpg', 'c阿烏拉 (3).jpg', 'c阿烏拉 (4).jpg', 'c阿烏拉.jpg'], 
-                d: ['d未知 (2).jpg', 'd未知.jpg', 'd艾冉 (2).jpg', 'd艾冉.jpg', 'd欣梅爾.jpg', 'd海塔 (2).jpg', 'd海塔.jpg', 'd魔族 (2).jpg', 'd魔族 (3).jpg', 'd魔族 (4).jpg', 'd魔族.jpg'] 
+            'frieren': {
+                sss: ['sss魔王城.jpg'],
+                ss:  ['ss月影.jpg'],
+                s:   ['s 日恆.webp', 's月光.jpg', 's欣梅爾.jpg', 's芙莉蓮.jpg', 's賽利耶 .jpg'],
+                a:   ['a修塔爾克.jpg', 'a費倫 (2).jpg', 'a費倫.jpg', 'a瑪哈特.jpg', 'a讚恩.jpg'],
+                b:   ['b冉則.jpg', 'b由貝爾 (2).jpg', 'b由貝爾 (3).jpg', 'b由貝爾.jpg', 'b威亞貝爾.jpg', 'b梅特戴.jpg', 'b葛納烏.jpg', 'b鄧肯.jpg', 'b蘭特.jpg'],
+                c:   ['c艾莉.jpg', 'c拉比涅.jpg', 'c拉歐芬.jpg', 'c阿烏拉 (2).jpg', 'c阿烏拉 (3).jpg', 'c阿烏拉 (4).jpg', 'c阿烏拉.jpg'],
+                d:   ['d未知 (2).jpg', 'd未知.jpg', 'd艾冉 (2).jpg', 'd艾冉.jpg', 'd欣梅爾.jpg', 'd海塔 (2).jpg', 'd海塔.jpg', 'd魔族 (2).jpg', 'd魔族 (3).jpg', 'd魔族 (4).jpg', 'd魔族.jpg']
             },
-            'elite': { 
-                sss: ['sss1.jpg', 'sss2.jpg', 'sss3.jpg'], 
-                ss: ['ss1.jpg'], 
-                s: ['s1.jpg', 's2.jpg', 's3.jpg', 's4.jpg'], 
-                a: ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a4.jpg', 'a5.jpg', 'a6.jpg'], 
-                b: ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg'], 
-                c: ['c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg'], 
-                d: ['d1.jpg'] 
+            'elite': {
+                sss: ['sss1.jpg', 'sss2.jpg', 'sss3.jpg'],
+                ss:  ['ss1.jpg'],
+                s:   ['s1.jpg', 's2.jpg', 's3.jpg', 's4.jpg'],
+                a:   ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a4.jpg', 'a5.jpg', 'a6.jpg'],
+                b:   ['b1.jpg', 'b2.jpg', 'b3.jpg', 'b4.jpg', 'b5.jpg', 'b6.jpg'],
+                c:   ['c2.jpg', 'c3.jpg', 'c4.jpg', 'c5.jpg', 'c6.jpg'],
+                d:   ['d1.jpg']
             }
         };
 
-        const rates = [ 
-            {r:'d', p:0.4}, 
-            {r:'c', p:0.3}, 
-            {r:'b', p:0.18}, 
-            {r:'a', p:0.08}, 
-            {r:'s', p:0.03}, 
-            {r:'ss', p:0.008}, 
-            {r:'sss', p:0.002} 
+        const rates = [
+            {r:'d', p:0.4}, {r:'c', p:0.3}, {r:'b', p:0.18},
+            {r:'a', p:0.08}, {r:'s', p:0.03}, {r:'ss', p:0.008}, {r:'sss', p:0.002}
         ];
 
-        // ================= 隱形地雷：碰一下螢幕就播歌 =================
         function forcePlayMusic() {
-            bgmAudio.play().catch(e => {
-                const startAudio = () => {
-                    bgmAudio.play();
-                    document.removeEventListener('click', startAudio);
-                    document.removeEventListener('touchstart', startAudio);
-                };
-                document.addEventListener('click', startAudio);
-                document.addEventListener('touchstart', startAudio);
+            if (isMuted) return;
+            bgmAudio.play().catch(() => {
+                const start = () => { if (!isMuted) bgmAudio.play(); document.removeEventListener('click', start); document.removeEventListener('touchstart', start); };
+                document.addEventListener('click', start);
+                document.addEventListener('touchstart', start);
             });
         }
 
-        // ================= 讀取玩家資料 =================
         function loadUserData(id) {
-            document.getElementById('login-view').style.display = 'none'; 
+            document.getElementById('login-view').style.display = 'none';
             document.getElementById('p-id').innerText = `ID: ${id}`;
-            userRef = doc(db, "users", id);
-
+            userRef = doc(db, 'users', id);
             forcePlayMusic();
 
             onSnapshot(userRef, (s) => {
                 if (s.exists()) {
-                    uData = s.data(); 
-                    uData.pity_count = uData.pity_count || 0; 
-                    uData.inventory = uData.inventory || []; 
-                    uData.pending = uData.pending || [];
-                    
-                    document.getElementById('p-gold').innerText = Number(uData.gold) || 0; 
-                    updatePityBar(uData.pity_count); 
-                    renderBag(); 
+                    uData = s.data();
+                    uData.pity_count = uData.pity_count || 0;
+                    uData.inventory  = uData.inventory  || [];
+                    uData.pending    = uData.pending    || [];
+                    document.getElementById('p-gold').innerText = Number(uData.gold) || 0;
+                    updatePityBar(uData.pity_count);
+                    renderBag();
                     updateTradeSelect();
                 }
             });
 
-            syncMissions(); 
-            syncMarket();   
+            syncMissions();
+            syncMarket();
         }
 
-        if (currentUserId) { 
-            loadUserData(currentUserId); 
-        } else { 
-            document.getElementById('login-view').style.display = 'flex'; 
+        if (currentUserId) {
+            loadUserData(currentUserId);
+        } else {
+            document.getElementById('login-view').style.display = 'flex';
         }
 
-        // ================= 登入系統 =================
+        // Enter 鍵支援
+        document.getElementById('log-pw').addEventListener('keydown', (e) => { if (e.key === 'Enter') executeLogin(); });
+
         window.executeLogin = async () => {
-            const id = document.getElementById('log-id').value.trim(); 
-            const pw = document.getElementById('log-pw').value;
-            const errBox = document.getElementById('log-err');
-            
-            if(!id || !pw) { 
-                errBox.innerText = "ACCESS DENIED: 請輸入 ID 與密碼"; 
-                errBox.style.display = 'block'; 
-                return; 
-            }
-            
-            bgmAudio.play().catch(e => console.log('強播攔截'));
-
-            errBox.innerText = "驗證中..."; 
-            errBox.style.display = 'block';
-            
-            const snap = await getDoc(doc(db, "users", id));
-            
+            const id  = document.getElementById('log-id').value.trim();
+            const pw  = document.getElementById('log-pw').value;
+            const err = document.getElementById('log-err');
+            const b1  = document.getElementById('btn-login');
+            const b2  = document.getElementById('btn-reg');
+            if (!id || !pw) { err.innerText = 'ACCESS DENIED: 請輸入 ID 與密碼'; err.style.display = 'block'; return; }
+            b1.disabled = b2.disabled = true;
+            bgmAudio.play().catch(() => {});
+            err.innerText = '驗證中...'; err.style.display = 'block';
+            const snap = await getDoc(doc(db, 'users', id));
             if (!snap.exists() || snap.data().password !== pw) {
-                errBox.innerText = "ACCESS DENIED: 帳號不存在或密碼錯誤";
+                err.innerText = 'ACCESS DENIED: 帳號不存在或密碼錯誤';
+                b1.disabled = b2.disabled = false;
             } else {
-                errBox.style.display = 'none'; 
-                localStorage.setItem('hunter_id', id); 
-                currentUserId = id; 
+                err.style.display = 'none';
+                localStorage.setItem('hunter_id', id);
+                currentUserId = id;
                 loadUserData(id);
             }
         };
 
-        // ================= 註冊系統 =================
         window.executeRegister = async () => {
-            const id = document.getElementById('log-id').value.trim(); 
-            const pw = document.getElementById('log-pw').value;
-            const errBox = document.getElementById('log-err');
-            
-            if(!id || !pw) { 
-                errBox.innerText = "ERROR: 請輸入 ID 與密碼"; 
-                errBox.style.display = 'block'; 
-                return; 
-            }
-            
-            bgmAudio.play().catch(e => console.log('強播攔截'));
-
-            errBox.innerText = "註冊中..."; 
-            errBox.style.display = 'block';
-            
-            const snap = await getDoc(doc(db, "users", id));
-            
-            if (snap.exists()) { 
-                errBox.innerText = "ERROR: 註冊失敗，ID 已被使用！"; 
+            const id  = document.getElementById('log-id').value.trim();
+            const pw  = document.getElementById('log-pw').value;
+            const err = document.getElementById('log-err');
+            const b1  = document.getElementById('btn-login');
+            const b2  = document.getElementById('btn-reg');
+            if (!id || !pw) { err.innerText = 'ERROR: 請輸入 ID 與密碼'; err.style.display = 'block'; return; }
+            b1.disabled = b2.disabled = true;
+            bgmAudio.play().catch(() => {});
+            err.innerText = '註冊中...'; err.style.display = 'block';
+            const snap = await getDoc(doc(db, 'users', id));
+            if (snap.exists()) {
+                err.innerText = 'ERROR: 註冊失敗，ID 已被使用！';
+                b1.disabled = b2.disabled = false;
             } else {
-                errBox.style.display = 'none'; 
-                await setDoc(doc(db, "users", id), { 
-                    password: pw, 
-                    gold: 500, 
-                    inventory: [], 
-                    pending: [], 
-                    pity_count: 0 
-                });
-                localStorage.setItem('hunter_id', id); 
-                currentUserId = id; 
+                err.style.display = 'none';
+                await setDoc(doc(db, 'users', id), { password: pw, gold: 500, inventory: [], pending: [], pity_count: 0 });
+                localStorage.setItem('hunter_id', id);
+                currentUserId = id;
                 loadUserData(id);
             }
         };
 
-        // ================= 登出系統 =================
-        window.executeLogout = () => { 
-            if(confirm('確定要登出嗎？')) { 
-                localStorage.removeItem('hunter_id'); 
-                location.reload(); 
-            } 
+        window.executeLogout = () => {
+            if (confirm('確定要登出嗎？')) { localStorage.removeItem('hunter_id'); location.reload(); }
         };
 
-        // ================= 保底介面更新 =================
         function updatePityBar(count) {
-            const pity = Math.min(count, 50); 
-            document.getElementById('pity-text').innerText = `${pity} / 50`; 
-            document.getElementById('pity-bar-fill').style.width = `${(pity / 50) * 100}%`;
+            const pity = Math.min(count, 50);
+            const pct  = (pity / 50) * 100;
+            document.getElementById('pity-text').innerText = `${pity} / 50`;
+            const fill = document.getElementById('pity-bar-fill');
+            fill.style.width = `${pct}%`;
+            if (pct >= 80) {
+                fill.style.background  = 'linear-gradient(90deg, #a855f7, #f43f5e)';
+                fill.style.boxShadow   = '0 0 12px rgba(244,63,94,0.7)';
+            } else if (pct >= 50) {
+                fill.style.background  = 'linear-gradient(90deg, #3b82f6, #f97316)';
+                fill.style.boxShadow   = '0 0 10px rgba(249,115,22,0.5)';
+            } else {
+                fill.style.background  = 'linear-gradient(90deg, #3b82f6, #a855f7)';
+                fill.style.boxShadow   = '0 0 10px rgba(168,85,247,0.5)';
+            }
         }
 
-        // ================= 委託任務系統 =================
         function syncMissions() {
-            onSnapshot(doc(db, "config", "game_data"), (s) => {
-                const list = document.getElementById('m-list'); 
-                list.innerHTML = '<h2 style="color:#38bdf8;margin-bottom:15px; font-size:14px; letter-spacing:1px;">當前委託任務</h2>';
-                
+            onSnapshot(doc(db, 'config', 'game_data'), (s) => {
+                const list     = document.getElementById('m-list');
                 const missions = s.exists() ? (s.data().missions || []) : [];
-                
-                if (missions.length === 0) { 
-                    list.innerHTML += '<div style="color:#64748b; font-size:11px;">無待處理的任務。</div>'; 
-                    return; 
+                if (missions.length === 0) {
+                    list.innerHTML = `<div class="section-title">當前委託任務</div><div class="empty-state">目前沒有委託任務<br>請稍後再查看</div>`;
+                    return;
                 }
-                
+                list.innerHTML = '<div class="section-title">當前委託任務</div>';
                 missions.forEach(m => {
                     const isP = uData.pending?.includes(m.id);
-                    list.innerHTML += `
-                        <div class="m-card">
-                            <b style="color:#e2e8f0;">${m.title}</b>
-                            <span style="float:right;color:#facc15">+${m.reward} G</span>
-                            <p style="font-size:11px;color:#94a3b8;margin-top:6px;">${m.desc}</p>
-                            <button class="m-btn" onclick="rep('${m.id}')" ${isP ? 'disabled style="background:rgba(15,23,42,0.5);cursor:not-allowed"' : ''}>
-                                ${isP ? '審核中...' : '回報完成'}
-                            </button>
-                        </div>`;
+                    const card = document.createElement('div');
+                    card.className = 'm-card';
+                    card.innerHTML = `
+                        <div class="m-card-header">
+                            <span class="m-card-title">${m.title}</span>
+                            <span class="m-card-reward">+${m.reward} G</span>
+                        </div>
+                        <div class="m-card-desc">${m.desc}</div>
+                        <button class="m-btn" onclick="rep('${m.id}')" ${isP ? 'disabled' : ''}>
+                            ${isP ? '⏳ 審核中...' : '✓ 回報完成'}
+                        </button>`;
+                    list.appendChild(card);
                 });
             });
         }
 
         window.rep = async (id) => {
-            await updateDoc(userRef, { pending: arrayUnion(id) }); 
-            await setDoc(doc(db, "config", "game_data"), { reports: arrayUnion({ uid: currentUserId, mid: id }) }, { merge: true });
-            alert("資料已上傳至協會，請等待審核。");
+            await updateDoc(userRef, { pending: arrayUnion(id) });
+            await setDoc(doc(db, 'config', 'game_data'), { reports: arrayUnion({ uid: currentUserId, mid: id }) }, { merge: true });
+            showToast('資料已上傳至協會，請等待審核。', 'success');
         };
 
-        // ================= 抽卡運算邏輯 =================
         window.draw = async (n, cost) => {
             const currentGold = Number(uData.gold) || 0;
-            
-            if (currentGold < cost) {
-                return alert("系統配給不足！");
-            }
-            
-            let pityCount = uData.pity_count || 0; 
-            let results = []; 
+            if (currentGold < cost) return showToast('系統配給不足！', 'error');
+
+            const b1 = document.getElementById('btn-draw1');
+            const b5 = document.getElementById('btn-draw5');
+            b1.disabled = b5.disabled = true;
+
+            let pityCount    = uData.pity_count || 0;
+            let results      = [];
             let newPityCount = pityCount;
-            
+
             for (let i = 0; i < n; i++) {
-                let rank = 'd'; 
-                let isGuaranteed = false;
-                
-                if (newPityCount >= 49) { 
-                    rank = 's'; 
-                    isGuaranteed = true; 
-                    newPityCount = 0; 
+                let rank = 'd', isGuaranteed = false;
+                if (newPityCount >= 49) {
+                    rank = 's'; isGuaranteed = true; newPityCount = 0;
                 } else {
                     let rand = Math.random(), cum = 0;
-                    for (let c of rates) { 
-                        cum += c.p; 
-                        if (rand <= cum) { 
-                            rank = c.r; 
-                            break; 
-                        } 
-                    }
-                    if (['s', 'ss', 'sss'].includes(rank)) {
-                        newPityCount = 0; 
-                    } else {
-                        newPityCount++;
-                    }
+                    for (let c of rates) { cum += c.p; if (rand <= cum) { rank = c.r; break; } }
+                    if (['s','ss','sss'].includes(rank)) newPityCount = 0;
+                    else newPityCount++;
                 }
-                
-                const files = pools[currentPool][rank]; 
-                const file = files.length > 0 ? files[Math.floor(Math.random() * files.length)] : 'default.jpg';
+                const files = pools[currentPool][rank];
+                const file  = files.length ? files[Math.floor(Math.random() * files.length)] : 'default.jpg';
                 results.push({ rank, file, isGuaranteed, id: `${currentPool}_${rank}_${file}` });
             }
-            
-            const invMap = {}; 
+
+            const invMap = {};
             (uData.inventory || []).forEach(c => { invMap[c.id] = { ...c }; });
-            
             results.forEach(card => {
-                if (invMap[card.id]) { 
-                    invMap[card.id].count = (invMap[card.id].count || 1) + 1; 
-                } else { 
-                    invMap[card.id] = { 
-                        id: card.id, 
-                        pool: currentPool, 
-                        rarity: card.rank, 
-                        img: `images/${currentPool}/${card.file}`, 
-                        count: 1 
-                    }; 
-                }
+                if (invMap[card.id]) invMap[card.id].count = (invMap[card.id].count || 1) + 1;
+                else invMap[card.id] = { id: card.id, pool: currentPool, rarity: card.rank, img: `images/${currentPool}/${card.file}`, count: 1 };
             });
-            
-            await updateDoc(userRef, { 
-                gold: currentGold - cost, 
-                pity_count: newPityCount, 
-                inventory: Object.values(invMap) 
-            }); 
-            
+
+            await updateDoc(userRef, { gold: currentGold - cost, pity_count: newPityCount, inventory: Object.values(invMap) });
+            b1.disabled = b5.disabled = false;
             startGacha(results);
         };
 
-        // ================= 抽卡 3D 動畫 =================
         function startGacha(cards) {
-            const overlay = document.getElementById('overlay'); 
-            const stack = document.getElementById('stack');
-            
-            overlay.style.display = 'flex'; 
-            document.getElementById('hint').innerText = '[ 點擊進行數據回收 ]'; 
-            stack.innerHTML = ''; 
-            
+            const overlay = document.getElementById('overlay');
+            const stack   = document.getElementById('stack');
+            overlay.style.display = 'flex';
+            document.getElementById('hint').innerText = '[ 點擊進行數據回收 ]';
+            stack.innerHTML = '';
             let active = 0, rev = false;
-            
+
             cards.reverse().forEach((card, i) => {
-                const w = document.createElement('div'); 
-                w.className = 'card-w' + (card.isGuaranteed ? ' card-guaranteed' : ''); 
-                w.style.zIndex = cards.length - i; 
+                const w = document.createElement('div');
+                w.className = 'card-w' + (card.isGuaranteed ? ' card-guaranteed' : '');
+                w.style.zIndex    = cards.length - i;
                 w.style.transform = `translate(${i * 4}px, ${i * 4}px)`;
-                
                 w.innerHTML = `
                     <div class="card-i">
                         <div class="face back"></div>
@@ -1065,248 +578,169 @@
                             </div>
                         </div>
                     </div>`;
-                
                 w.onclick = () => {
                     if (i !== active) return;
-                    
-                    if (!rev) { 
-                        rev = true; 
-                        document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped')); 
+                    if (!rev) {
+                        rev = true;
+                        document.querySelectorAll('#stack .card-i').forEach(el => el.classList.add('flipped'));
                         document.getElementById('hint').innerText = '[ 點擊吸收資料庫 ]';
-                    } else { 
-                        w.style.pointerEvents = 'none'; 
-                        w.firstElementChild.classList.add('dismissed'); 
-                        active++; 
-                        
-                        if (active >= cards.length) { 
-                            setTimeout(() => { 
-                                overlay.style.display = 'none'; 
-                            }, 700); 
-                        } 
+                    } else {
+                        w.style.pointerEvents = 'none';
+                        w.firstElementChild.classList.add('dismissed');
+                        active++;
+                        if (active >= cards.length) setTimeout(() => { overlay.style.display = 'none'; }, 700);
                     }
                 };
                 stack.appendChild(w);
             });
         }
 
-        // ================= 圖鑑放大特效 =================
         window.showDetail = (pool, rarity, file, count) => {
             document.getElementById('detail-img').src = `images/${pool}/${file}`;
-            const countHtml = count > 1 ? `<span style="font-size:10px;color:#cbd5e1;margin-left:8px;">已擁有 x${count}</span>` : '';
-            
+            const countHtml = count > 1 ? `<span style="font-size:10px;color:#cbd5e1;margin-left:8px;">x${count}</span>` : '';
             document.getElementById('detail-rarity').innerHTML = `[${rarity.toUpperCase()}] ${formatCardName(file)} ${countHtml}`;
-            
-            const dCard = document.getElementById('detail-card'); 
-            dCard.className = 'detail-card'; 
+            const dCard = document.getElementById('detail-card');
+            dCard.className = 'detail-card';
             dCard.classList.add(`rarity-${rarity.toUpperCase()}`);
-            
             document.getElementById('detail-overlay').style.display = 'flex';
         };
 
-        window.closeDetail = () => { 
-            document.getElementById('detail-overlay').style.display = 'none'; 
-        };
+        window.closeDetail = () => { document.getElementById('detail-overlay').style.display = 'none'; };
 
-        // ================= 渲染圖鑑 =================
         function renderBag() {
-            const invMap = {}; 
+            const invMap  = {};
             (uData.inventory || []).forEach(c => { invMap[c.id] = c; });
-            const list = document.getElementById('bag-list'); 
-            
-            let html = ''; 
-            let totalCards = 0; 
-            let unlockedCards = 0; 
-            const order = ['sss', 'ss', 's', 'a', 'b', 'c', 'd'];
-            
+            const list    = document.getElementById('bag-list');
+            const order   = ['sss','ss','s','a','b','c','d'];
+            let html = '', totalCards = 0, unlockedCards = 0;
+
             order.forEach(r => {
-                if(!pools[currentPool][r]) return;
-                
+                if (!pools[currentPool][r]) return;
                 pools[currentPool][r].forEach(file => {
-                    totalCards++; 
-                    const cardId = `${currentPool}_${r}_${file}`; 
-                    const ownedCard = invMap[cardId]; 
-                    const isLocked = !ownedCard; 
-                    const count = ownedCard ? ownedCard.count : 0;
-                    
+                    totalCards++;
+                    const cardId    = `${currentPool}_${r}_${file}`;
+                    const ownedCard = invMap[cardId];
+                    const isLocked  = !ownedCard;
+                    const count     = ownedCard ? ownedCard.count : 0;
                     if (!isLocked) unlockedCards++;
-                    
                     html += `
-                        <div class="bag-card rarity-${r.toUpperCase()} ${isLocked ? 'locked' : ''}" 
-                             ${!isLocked ? `onclick="showDetail('${currentPool}', '${r}', '${file}', ${count})"` : ''} 
+                        <div class="bag-card rarity-${r.toUpperCase()} ${isLocked ? 'locked' : ''}"
+                             ${!isLocked ? `onclick="showDetail('${currentPool}','${r}','${file}',${count})"` : ''}
                              style="${!isLocked ? 'cursor:pointer;' : ''}">
                             <img src="images/${currentPool}/${file}" onerror="this.src='https://via.placeholder.com/100x150/111/444'">
-                            <div class="rarity-label">${isLocked ? 'UNKNOWN' : formatCardName(file)}</div>
+                            <div class="rarity-label">${isLocked ? '???' : formatCardName(file)}</div>
                             ${count > 1 ? `<div class="count-badge">x${count}</div>` : ''}
                         </div>`;
                 });
             });
-            
-            document.getElementById('bag-count').innerText = `${unlockedCards} / ${totalCards}`; 
+            document.getElementById('bag-count').innerText = `${unlockedCards} / ${totalCards}`;
             list.innerHTML = html;
         }
 
-        // ================= 交易系統: 更新下拉選單 =================
         function updateTradeSelect() {
-            const sel = document.getElementById('trade-card-sel'); 
+            const sel = document.getElementById('trade-card-sel');
             sel.innerHTML = '<option value="">選擇要出售的卡片...</option>';
-            
-            (uData.inventory || []).forEach(c => { 
-                if(c.count >= 1) { 
-                    sel.innerHTML += `<option value="${c.id}">[${c.rarity.toUpperCase()}] ${formatCardName(c.id.split('_')[2])} (可賣: ${c.count}張)</option>`; 
-                } 
+            (uData.inventory || []).forEach(c => {
+                if (c.count >= 1) sel.innerHTML += `<option value="${c.id}">[${c.rarity.toUpperCase()}] ${formatCardName(c.id.split('_')[2])} (x${c.count})</option>`;
             });
         }
 
-        // ================= 交易系統: 掛單 =================
         window.postTrade = async () => {
-            const cId = document.getElementById('trade-card-sel').value; 
+            const cId   = document.getElementById('trade-card-sel').value;
             const price = parseInt(document.getElementById('trade-price').value);
-            
-            if(!cId || isNaN(price) || price <= 0) {
-                return alert("請設定有效售價");
-            }
-            
-            let inv = [...uData.inventory]; 
+            if (!cId || isNaN(price) || price <= 0) return showToast('請選擇卡片並設定有效售價', 'error');
+            let inv      = [...uData.inventory];
             let cardIndex = inv.findIndex(c => c.id === cId);
-            
-            if(cardIndex > -1 && inv[cardIndex].count >= 1) {
-                let cardData = {...inv[cardIndex]};
-                
-                if (inv[cardIndex].count === 1) { 
-                    inv.splice(cardIndex, 1); 
-                } else { 
-                    inv[cardIndex].count -= 1; 
-                }
-                
+            if (cardIndex > -1 && inv[cardIndex].count >= 1) {
+                let cardData = { ...inv[cardIndex] };
+                if (inv[cardIndex].count === 1) inv.splice(cardIndex, 1);
+                else inv[cardIndex].count -= 1;
                 await updateDoc(userRef, { inventory: inv });
-                
-                await addDoc(collection(db, "market"), { 
-                    seller: currentUserId, 
-                    cardId: cardData.id, 
-                    img: cardData.img, 
-                    rarity: cardData.rarity, 
-                    price: price, 
-                    time: Date.now() 
-                });
-                
-                alert("卡片已掛上黑市！");
-            } else { 
-                alert("您沒有足夠的卡片！"); 
+                await addDoc(collection(db, 'market'), { seller: currentUserId, cardId: cardData.id, img: cardData.img, rarity: cardData.rarity, price, time: Date.now() });
+                document.getElementById('trade-price').value = '';
+                showToast('卡片已掛上黑市！', 'success');
+            } else {
+                showToast('您沒有足夠的卡片！', 'error');
             }
         };
 
-        // ================= 交易系統: 渲染市場 =================
         function syncMarket() {
-            onSnapshot(collection(db, "market"), (s) => {
-                const board = document.getElementById('trade-board'); 
+            onSnapshot(collection(db, 'market'), (s) => {
+                const board = document.getElementById('trade-board');
                 board.innerHTML = '';
-                
-                if(s.empty) { 
-                    board.innerHTML = '<div style="color:#64748b;font-size:11px;text-align:center;padding:20px;">黑市空無一物。</div>'; 
-                    return; 
+                if (s.empty) {
+                    board.innerHTML = '<div class="empty-state">黑市空無一物<br>成為第一個掛單的獵人</div>';
+                    return;
                 }
-                
-                let items = []; 
+                let items = [];
                 s.forEach(d => items.push({ id: d.id, ...d.data() }));
-                
-                items.sort((a,b) => b.time - a.time).forEach(item => {
+                items.sort((a, b) => b.time - a.time).forEach(item => {
                     const isMine = item.seller === currentUserId;
-                    board.innerHTML += `
-                        <div style="background:rgba(30,41,59,0.8); border:1px solid #334155; border-left:3px solid ${isMine ? '#94a3b8' : '#38bdf8'}; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-                            <div style="display:flex; gap:10px; align-items:center;">
-                                <img src="${item.img}" onerror="this.src='https://via.placeholder.com/35x50/111/444'" style="width:35px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #475569;">
-                                <div>
-                                    <div style="font-size:10px; color:#94a3b8;">賣方: ${item.seller}</div>
-                                    <div style="font-weight:bold; color:#e2e8f0; font-size:12px;">[${item.rarity.toUpperCase()}] ${formatCardName(item.cardId.split('_')[2])}</div>
-                                </div>
+                    const div    = document.createElement('div');
+                    div.className = `trade-item ${isMine ? 'mine' : 'others'}`;
+                    div.innerHTML = `
+                        <div class="trade-item-left">
+                            <img src="${item.img}" onerror="this.src='https://via.placeholder.com/35x50/111/444'" class="trade-item-img">
+                            <div>
+                                <div class="trade-item-seller">賣方: ${item.seller}</div>
+                                <div class="trade-item-name">[${item.rarity.toUpperCase()}] ${formatCardName(item.cardId.split('_')[2])}</div>
                             </div>
-                            <div style="text-align:right;">
-                                <div style="color:#facc15; font-weight:bold; font-size:12px; margin-bottom:5px;">${item.price} G</div>
-                                <button class="m-btn" style="padding:4px 10px; margin:0; font-size:10px; width:auto; border-color:${isMine?'#475569':'#38bdf8'}; color:${isMine?'#94a3b8':'#38bdf8'};" 
-                                    onclick="${isMine ? `cancelTrade('${item.id}', '${item.cardId}', '${item.rarity}', '${item.img}')` : `buyTrade('${item.id}', '${item.seller}', ${item.price}, '${item.cardId}', '${item.rarity}', '${item.img}')`}">
-                                    ${isMine ? '撤銷掛單' : '購買'}
-                                </button>
-                            </div>
+                        </div>
+                        <div class="trade-item-right">
+                            <div class="trade-item-price">${item.price} G</div>
+                            <button class="trade-action-btn ${isMine ? 'cancel' : 'buy'}"
+                                onclick="${isMine ? `cancelTrade('${item.id}','${item.cardId}','${item.rarity}','${item.img}')` : `buyTrade('${item.id}','${item.seller}',${item.price},'${item.cardId}','${item.rarity}','${item.img}')`}">
+                                ${isMine ? '撤銷' : '購買'}
+                            </button>
                         </div>`;
+                    board.appendChild(div);
                 });
             });
         }
 
-        // ================= 交易系統: 撤銷掛單 =================
         window.cancelTrade = async (docId, cardId, rarity, img) => {
-            if(!confirm("撤銷掛單？")) return;
-            
-            await deleteDoc(doc(db, "market", docId));
-            
-            let inv = [...uData.inventory]; 
+            if (!confirm('撤銷掛單？')) return;
+            await deleteDoc(doc(db, 'market', docId));
+            let inv = [...uData.inventory];
             let idx = inv.findIndex(c => c.id === cardId);
-            
-            if(idx > -1) { 
-                inv[idx].count += 1; 
-            } else { 
-                inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 }); 
-            }
-            
+            if (idx > -1) inv[idx].count += 1;
+            else inv.push({ id: cardId, pool: cardId.split('_')[0], rarity, img, count: 1 });
             await updateDoc(userRef, { inventory: inv });
+            showToast('掛單已撤銷，卡片已歸還', 'info');
         };
 
-        // ================= 交易系統: 購買卡片 =================
         window.buyTrade = async (docId, seller, price, cardId, rarity, img) => {
-            if(uData.gold < price) return alert("金幣不足！");
-            if(!confirm(`花費 ${price}G 購買？`)) return;
-            
-            let inv = [...uData.inventory]; 
+            if (uData.gold < price) return showToast('金幣不足！', 'error');
+            if (!confirm(`花費 ${price}G 購買？`)) return;
+            let inv = [...uData.inventory];
             let idx = inv.findIndex(c => c.id === cardId);
-            
-            if(idx > -1) { 
-                inv[idx].count += 1; 
-            } else { 
-                inv.push({ id: cardId, pool: cardId.split('_')[0], rarity: rarity, img: img, count: 1 }); 
-            }
-            
+            if (idx > -1) inv[idx].count += 1;
+            else inv.push({ id: cardId, pool: cardId.split('_')[0], rarity, img, count: 1 });
             await updateDoc(userRef, { gold: uData.gold - price, inventory: inv });
-            
-            const sSnap = await getDoc(doc(db, "users", seller));
-            if(sSnap.exists()) { 
-                await updateDoc(doc(db, "users", seller), { gold: (sSnap.data().gold || 0) + price }); 
-            }
-            
-            await deleteDoc(doc(db, "market", docId)); 
-            alert("交易成功！");
+            const sSnap = await getDoc(doc(db, 'users', seller));
+            if (sSnap.exists()) await updateDoc(doc(db, 'users', seller), { gold: (sSnap.data().gold || 0) + price });
+            await deleteDoc(doc(db, 'market', docId));
+            showToast('交易成功！卡片已入庫', 'success');
         };
 
-        // ================= UI: 切換卡池與音樂 =================
-        window.switchPool = (pId, btn) => { 
-            currentPool = pId; 
-            
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
-            btn.classList.add('active'); 
-            
-            document.getElementById('b-img').src = `images/${pId}/banner.jpg`; 
-            document.getElementById('b-txt').innerText = `> ARCHIVE: ${pId === 'frieren' ? 'Frieren' : 'Classroom of the Elite'}`; 
-            
+        window.switchPool = (pId, btn) => {
+            currentPool = pId;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('b-img').src = `images/${pId}/banner.jpg`;
+            document.getElementById('b-txt').innerText = `> ARCHIVE: ${pId === 'frieren' ? 'Frieren' : 'Classroom of the Elite'}`;
             bgmAudio.src = `audio/${pId}.mp3`;
             forcePlayMusic();
-
-            if(!document.getElementById('page-bag').classList.contains('hidden')) { 
-                renderBag(); 
-            }
-        };
-        
-        // ================= UI: 切換底部導覽列 =================
-        window.tab = (id, b) => { 
-            ['page-gacha', 'page-mission', 'page-trade', 'page-bag'].forEach(p => document.getElementById(p).classList.add('hidden')); 
-            
-            document.getElementById(id).classList.remove('hidden'); 
-            
-            document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active')); 
-            b.classList.add('active'); 
-            
-            if(id === 'page-bag') { 
-                renderBag(); 
-            }
+            if (!document.getElementById('page-bag').classList.contains('hidden')) renderBag();
         };
 
+        window.tab = (id, b) => {
+            ['page-gacha','page-mission','page-trade','page-bag'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
+            b.classList.add('active');
+            if (id === 'page-bag') renderBag();
+        };
     </script>
 </body>
 </html>
